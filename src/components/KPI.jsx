@@ -359,7 +359,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
   return (
     <div 
       ref={kpiRef}
-      className={`group bg-white dark:bg-gray-800 p-4 rounded-lg shadow ${
+      className={`group bg-white dark:bg-card p-4 rounded-lg shadow ${
         isActive 
           ? 'shadow-lg dark:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)]' 
           : 'hover:shadow-lg dark:hover:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)]'
