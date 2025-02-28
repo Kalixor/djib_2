@@ -20,11 +20,11 @@ export default function BarChart({ filters, setFilters }) {
   ]
 
   return (
-    <div 
-      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-[#343b4f] hover:shadow-lg dark:hover:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)] transition-all duration-300"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+  <div 
+	    className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300"
+	    onMouseEnter={() => setIsHovered(true)}
+	    onMouseLeave={() => setIsHovered(false)}
+  	>
       <style>{`
         @keyframes smoothBounce {
           0%, 100% { transform: translateY(0); }
