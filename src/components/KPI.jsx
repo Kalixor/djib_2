@@ -308,7 +308,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
     return (
       <div className="flex justify-between items-start w-full min-h-[60px]">
         <div className="flex-1">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
+          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
             {title}
           </h3>
           <p className="text-xl font-bold text-gray-900 dark:text-white">

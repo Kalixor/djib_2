@@ -41,7 +41,7 @@ export default function BarChart({ filters, setFilters }) {
           <select
             value={filters.period}
             onChange={(e) => setFilters({ ...filters, period: e.target.value })}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="bg-gray-50 border border-gray-300 text-card-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
           >
             <option value="day">Jour</option>
             <option value="week">Semaine</option>
@@ -50,7 +50,7 @@ export default function BarChart({ filters, setFilters }) {
           </select>
         </div>
         <div className="w-1/2 text-center">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
             Évolution des recettes
           </h3>
         </div>
@@ -58,7 +58,7 @@ export default function BarChart({ filters, setFilters }) {
           <i className={`fas fa-chart-line text-3xl ${
             isHovered 
               ? 'text-yellow-400 animate-[smoothBounce_1.5s_ease-in-out]' 
-              : 'text-gray-300 dark:text-gray-600'
+              : 'text-gray-300 dark:text-card-text'
           } transition-colors duration-300`} />
         </div>
       </div>

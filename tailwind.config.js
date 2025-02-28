@@ -20,7 +20,8 @@ module.exports = {
           950: '#040817',
         },
         card: {
-          DEFAULT: '#0b1739', // Nouvelle couleur pour les cartes
+          DEFAULT: '#0b1739',
+          text: '#aeb9e1', // Ajout de la couleur de texte
         },
         pastel: {
           yellow: '#fffef2',
