@@ -313,13 +313,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
         
         <div className="flex flex-col items-center justify-center mr-1">
           <div>
-            <i className={`${arrowClass} text-lg ${
-              isActive
-                ? variation.trend === 'up' 
-                  ? 'text-green-500' 
-                  : 'text-red-500'
-                : 'text-gray-400'
-            }`} />
+            <i className={`${arrowClass} text-sm text-card-text`} />
           </div>
           <span className={`text-xs ${
             isActive
@@ -333,11 +327,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
         </div>
   
         <div className="ml-4">
-          <i className={`${getIcon()} text-3xl ${
-            isActive
-              ? 'text-yellow-400'
-              : 'text-gray-300 dark:text-gray-600'
-          }`} />
+          <i className={`${getIcon()} text-xl text-card-text`} />
         </div>
       </div>
     )
