@@ -299,7 +299,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
     const isPositive = variation.trend === 'up'
     const arrowClass = isPositive 
       ? 'fas fa-arrow-up rotate-45' 
-      : 'fas fa-arrow-down rotate-45'
+      : 'fas fa-arrow-down rotate-[-35deg]'
 
     return (
       <div className={`
@@ -344,7 +344,7 @@ const KPI = ({ title, value, isActive, onClick }) => {
           </h3>
         </div>
 
-        <div className="flex items-end gap-2">
+        <div className="flex items-center gap-2">
           <p className="text-2xl font-semibold text-gray-900 dark:text-white">
             {value}
           </p>
