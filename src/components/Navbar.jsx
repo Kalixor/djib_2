@@ -31,9 +31,9 @@ export default function Navbar() {
     <nav className="bg-brand-800 shadow p-6 relative">
       <div className="w-full flex justify-between items-center">
         <div className="ml-2">
-          <h1 className="text-xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-white">
             Activités des Douanes
-            <p className="text-sm text-gray-400">Au {getCurrentDate()}</p>
+            <p className="text-sm text-gray-400 mt-1">Au {getCurrentDate()}</p>
           </h1>
         </div>
 
