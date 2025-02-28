@@ -28,15 +28,15 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-brand-800 shadow p-4 relative">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="w-36"></div>
+    <nav className="bg-brand-800 shadow p-6 relative">
+      <div className="container mx-1 flex justify-between items-center">
+        <div>
+          <h1 className="text-xl font-bold text-white">
+            Activités des Douanes
+            <p className="text-sm text-gray-400">Au {getCurrentDate()}</p>
+          </h1>
+        </div>
 
-        <h1 className="text-xl font-bold text-white text-center absolute left-1/2 transform -translate-x-1/2">
-          Activités des Douanes
-          <p className="text-sm text-gray-400"> Au {getCurrentDate()}</p>
-        </h1>
-        
         <div className="flex items-center gap-4">
           <button
             onClick={handlePeriodToggle}
