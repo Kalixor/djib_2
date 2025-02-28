@@ -287,97 +287,86 @@ const KPI = ({ title, value, isActive, onClick }) => {
     )
   }
 
-const variations = {
-  'Importations': { value: 2.5, trend: 'up' },
-  'Exportations': { value: 1.8, trend: 'down' },
-  'Manifestes': { value: 0.3, trend: 'up' },
-  'Recettes Totales': { value: 4.2, trend: 'up' }
-}
+ 	const variations = {
+    'Importations': { value: 2.5, trend: 'up' },
+    'Exportations': { value: 1.8, trend: 'down' },
+    'Manifestes': { value: 0.3, trend: 'up' },
+    'Recettes Totales': { value: 4.2, trend: 'up' }
+  }
 
-const renderVariationBadge = (title) => {
-	const variation = variations[title]
-	const isPositive = variation.trend === 'up'
-	const arrowClass = isPositive 
-		? 'fas fa-arrow-up rotate-45' 
-		: 'fas fa-arrow-down rotate-45'
+  const renderVariationBadge = (title) => {
+    const variation = variations[title]
+    const isPositive = variation.trend === 'up'
+    const arrowClass = isPositive 
+      ? 'fas fa-arrow-up rotate-45' 
+      : 'fas fa-arrow-down rotate-45'
 
-	return (
-		<div className={`
-			absolute -top-2 -right-2
-			px-2 py-1 rounded-full
-			border ${
-				isPositive 
-					? 'border-green-500/50' 
-					: 'border-red-500/50'
-			}
-			bg-${
-				isPositive 
-					? 'green-500/10' 
-					: 'red-500/10'
-			}
-			backdrop-blur-sm
-			shadow-sm
-			flex items-center gap-1
-			text-xs font-medium
-			${
-				isPositive 
-					? 'text-green-500' 
-					: 'text-red-500'
-			}
-		`}>
-			<span>{variation.value}%</span>
-			<i className={`${arrowClass} text-[0.6rem]`} />
-		</div>
-	)
-}
-
-const renderKPIHeader = () => {
-  const variation = variations[title]
-  const arrowClass = variation.trend === 'up' 
-    ? 'fas fa-arrow-up' 
-    : 'fas fa-arrow-down'
-
-  return (
-    <div className="flex flex-col w-full min-h-[60px]">
-      {/* Icône et libellé */}
-      <div className="flex items-center gap-2">
-        <i className={`${getIcon()} text-sm ${
-          isActive
-            ? 'text-yellow-400'
-            : 'text-gray-300 dark:text-card-text'
-        }`} />
-        <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
-          {title}
-        </h3>
+    return (
+      <div className={`
+        px-2 py-1 rounded-full
+        border ${
+          isPositive 
+            ? 'border-green-500/50' 
+            : 'border-red-500/50'
+        }
+        bg-${
+          isPositive 
+            ? 'green-500/10' 
+            : 'red-500/10'
+        }
+        backdrop-blur-sm
+        shadow-sm
+        flex items-center gap-1
+        text-xs font-medium
+        ${
+          isPositive 
+            ? 'text-green-500' 
+            : 'text-red-500'
+        }
+      `}>
+        <span>{variation.value}%</span>
+        <i className={`${arrowClass} text-[0.6rem]`} />
       </div>
+    )
+  }
 
-      {/* Valeur alignée à gauche */}
-      <div className="mt-2">
-        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-          {value}
-        </p>
+  const renderKPIHeader = () => {
+    return (
+      <div className="flex flex-col w-full min-h-[60px] space-y-4">
+        <div className="flex items-center gap-2">
+          <i className={`${getIcon()} text-sm ${
+            isActive
+              ? 'text-yellow-400'
+              : 'text-gray-300 dark:text-card-text'
+          }`} />
+          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+            {title}
+          </h3>
+        </div>
+
+        <div className="flex items-end gap-2">
+          <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+            {value}
+          </p>
+          {renderVariationBadge(title)}
+        </div>
       </div>
-      
-      {/* Variation */}
-      
-    </div>
-  )
-}
-  
+    )
+  }
+
  // Ajouter le badge dans le rendu principal
-return (
-  <div 
-    ref={kpiRef}
-    className={`group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] ${
-      isActive 
-        ? 'shadow-lg' 
-        : ''
-    } transition-all duration-300 cursor-pointer relative`}
-    onClick={onClick}
-  >
-    {renderVariationBadge(title)}
-    {renderKPIHeader()}
-  
+ return (
+    <div 
+      ref={kpiRef}
+      className={`group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] ${
+        isActive 
+          ? 'shadow-lg' 
+          : ''
+      } transition-all duration-300 cursor-pointer relative`}
+      onClick={onClick}
+    >
+      {renderKPIHeader()}
+    
       {isActive && (
         <>
           <div className="absolute bottom-2 right-2 flex gap-2">
