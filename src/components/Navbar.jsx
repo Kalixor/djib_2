@@ -29,15 +29,15 @@ export default function Navbar() {
 
   return (
     <nav className="bg-brand-800 shadow p-6 relative">
-      <div className="container mx-1 flex justify-between items-center">
-        <div>
+      <div className="w-full flex justify-between items-center">
+        <div className="ml-2">
           <h1 className="text-xl font-bold text-white">
             Activités des Douanes
             <p className="text-sm text-gray-400">Au {getCurrentDate()}</p>
           </h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="mr-2">
           <button
             onClick={handlePeriodToggle}
             className={`px-6 py-1.5 rounded-full text-sm font-medium transition-all duration-300
