@@ -294,44 +294,57 @@ const KPI = ({ title, value, isActive, onClick }) => {
     'Recettes Totales': { value: 4.2, trend: 'up' }
   }
 
-  const renderKPIHeader = () => {
-    const variation = variations[title]
-    const arrowClass = variation.trend === 'up' 
-      ? 'fas fa-arrow-up' 
-      : 'fas fa-arrow-down'
+const renderKPIHeader = () => {
+  const variation = variations[title]
+  const arrowClass = variation.trend === 'up' 
+    ? 'fas fa-arrow-up' 
+    : 'fas fa-arrow-down'
 
-    return (
-      <div className="flex justify-between items-start w-full min-h-[60px]">
-        <div className="flex-1 space-y-2">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
-            {title}
-          </h3>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-            {value}
-          </p>
-        </div>
-        
-        <div className="flex flex-col items-center justify-center mr-1">
-          <div>
-            <i className={`${arrowClass} text-sm text-card-text`} />
-          </div>
-          <span className={`text-xs ${
+  return (
+    <div className="flex flex-col w-full min-h-[60px]">
+      {/* Icône et libellé */}
+      <div className="flex items-center gap-2">
+        <i className={`${getIcon()} text-sm ${
+          isActive
+            ? 'text-yellow-400'
+            : 'text-gray-300 dark:text-card-text'
+        }`} />
+        <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+          {title}
+        </h3>
+      </div>
+
+      {/* Valeur alignée à gauche */}
+      <div className="mt-2">
+        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+          {value}
+        </p>
+      </div>
+      
+      {/* Variation */}
+      <div className="flex items-center gap-1 mt-1">
+        <div>
+          <i className={`${arrowClass} text-sm ${
             isActive
               ? variation.trend === 'up' 
                 ? 'text-green-500' 
                 : 'text-red-500'
               : 'text-gray-400'
-          }`}>
-            {variation.value}%
-          </span>
+          }`} />
         </div>
-  
-        <div className="ml-4">
-          <i className={`${getIcon()} text-sm text-card-text`} />
-        </div>
+        <span className={`text-xs ${
+          isActive
+            ? variation.trend === 'up' 
+              ? 'text-green-500' 
+              : 'text-red-500'
+            : 'text-gray-400'
+        }`}>
+          {variation.value}%
+        </span>
       </div>
-    )
-  }
+    </div>
+  )
+}
   
   return (
     <div 
