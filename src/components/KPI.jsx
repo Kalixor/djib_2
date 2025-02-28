@@ -301,7 +301,16 @@ const KPI = ({ title, value, isActive, onClick }) => {
       : 'fas fa-arrow-down'
 
     return (
-      <div className="flex justify-between items-start w-full min-h-[60px]">
+      <div className="flex items-start w-full min-h-[60px]">
+        {/* Icône déplacée ici */}
+        <div className="mr-2">
+          <i className={`${getIcon()} text-xl ${
+            isActive
+              ? 'text-yellow-400'
+              : 'text-gray-300 dark:text-gray-600'
+          }`} />
+        </div>
+
         <div className="flex-1 space-y-2">
           <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
             {title}
@@ -313,7 +322,13 @@ const KPI = ({ title, value, isActive, onClick }) => {
         
         <div className="flex flex-col items-center justify-center mr-1">
           <div>
-            <i className={`${arrowClass} text-sm text-card-text`} />
+            <i className={`${arrowClass} text-sm ${
+              isActive
+                ? variation.trend === 'up' 
+                  ? 'text-green-500' 
+                  : 'text-red-500'
+                : 'text-gray-400'
+            }`} />
           </div>
           <span className={`text-xs ${
             isActive
@@ -324,10 +339,6 @@ const KPI = ({ title, value, isActive, onClick }) => {
           }`}>
             {variation.value}%
           </span>
-        </div>
-  
-        <div className="ml-4">
-          <i className={`${getIcon()} text-xl text-card-text`} />
         </div>
       </div>
     )
