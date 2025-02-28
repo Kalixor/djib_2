@@ -11,8 +11,8 @@ export default function PieChartOffice({ filters, setFilters }) {
   ]
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg dark:hover:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)] transition-all duration-300">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-[#343b4f] hover:shadow-lg dark:hover:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)] transition-all duration-300">
+        <div className="flex justify-between items-center mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
           Répartition par bureau
         </h3>

@@ -359,13 +359,13 @@ const KPI = ({ title, value, isActive, onClick }) => {
   return (
     <div 
       ref={kpiRef}
-      className={`group bg-white dark:bg-card p-4 rounded-lg shadow ${
+      className={`group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] ${
         isActive 
           ? 'shadow-lg dark:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)]' 
           : 'hover:shadow-lg dark:hover:shadow-[0_0_15px_5px_rgba(255,255,0,0.3)]'
-      } border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 cursor-pointer relative`}
+      } hover:border-[#343b4f] dark:hover:border-[#343b4f] transition-all duration-300 cursor-pointer relative`}
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)} // Gestion du hover
+      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <style>{`
