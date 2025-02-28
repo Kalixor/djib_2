@@ -28,10 +28,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-brand-800 shadow p-5 relative">
+    <nav className="bg-brand-800 shadow p-6 relative">
       <div className="w-full flex justify-between items-center">
         <div className="ml-2">
-          <h1 className="text-2xl font-semibold text-white">
+          <h1 className="text-2xl font-bold text-white">
             Activités des Douanes
             <p className="text-sm text-card-text mt-1">Au {getCurrentDate()}</p>
           </h1>
@@ -43,8 +43,8 @@ export default function Navbar() {
             className={`px-6 py-1.5 rounded-full text-sm font-medium transition-all duration-300
               ${buttonColors[colorIndex]}
               text-pastel-yellow border-current
-              hover:scale-105 active:scale-95 w-36 text-center whitespace-nowrap
-              shadow-lg hover:shadow-xl`}
+              hover:scale-105 active:scale-95 w-36 text-center
+              shadow-lg hover:shadow-xl flex items-center justify-center`}
           >
             {period}
           </button>
