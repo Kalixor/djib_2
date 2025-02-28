@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Mona Sans', 'sans-serif'],
+      },
       colors: {
         brand: {
           50: '#f0f4ff',
@@ -21,7 +24,7 @@ module.exports = {
         },
         card: {
           DEFAULT: '#0b1739',
-          text: '#aeb9e1', // Ajout de la couleur de texte
+          text: '#aeb9e1',
         },
         pastel: {
           yellow: '#fffef2',

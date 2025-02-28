@@ -28,10 +28,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-brand-800 shadow p-6 relative">
+    <nav className="bg-brand-800 shadow p-5 relative">
       <div className="w-full flex justify-between items-center">
         <div className="ml-2">
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-semibold text-white">
             Activités des Douanes
             <p className="text-sm text-card-text mt-1">Au {getCurrentDate()}</p>
           </h1>
