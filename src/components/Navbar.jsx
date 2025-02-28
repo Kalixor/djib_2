@@ -33,7 +33,7 @@ export default function Navbar() {
         <div className="ml-2">
           <h1 className="text-2xl font-bold text-white">
             Activités des Douanes
-            <p className="text-sm text-gray-400 mt-1">Au {getCurrentDate()}</p>
+            <p className="text-sm text-card-text mt-1">Au {getCurrentDate()}</p>
           </h1>
         </div>
 
