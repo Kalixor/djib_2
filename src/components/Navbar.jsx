@@ -1,9 +1,11 @@
 import { usePeriod } from '../context/PeriodContext'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Navbar() {
   const { period, togglePeriod } = usePeriod()
   const [colorIndex, setColorIndex] = useState(0)
+  const [currentTime, setCurrentTime] = useState(getFormattedTime())
+  const animationFrameRef = useRef()
 
   const buttonColors = [
     'bg-[#1a2548] hover:bg-[#222f5a]',
@@ -12,19 +14,34 @@ export default function Navbar() {
     'bg-[#384694] hover:bg-[#1a2548]'
   ]
 
-  const handlePeriodToggle = () => {
-    togglePeriod()
-    setColorIndex((prevIndex) => (prevIndex + 1) % buttonColors.length)
+  const updateTime = () => {
+    setCurrentTime(getFormattedTime())
+    animationFrameRef.current = requestAnimationFrame(updateTime)
   }
 
-  const getCurrentDate = () => {
+  useEffect(() => {
+    animationFrameRef.current = requestAnimationFrame(updateTime)
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [])
+
+  function getFormattedTime() {
     const now = new Date()
     const day = String(now.getDate()).padStart(2, '0')
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const year = now.getFullYear()
     const hours = String(now.getHours()).padStart(2, '0')
     const minutes = String(now.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+  }
+
+  const handlePeriodToggle = () => {
+    togglePeriod()
+    setColorIndex((prevIndex) => (prevIndex + 1) % buttonColors.length)
   }
 
   return (
@@ -33,7 +50,7 @@ export default function Navbar() {
         <div className="ml-2">
           <h1 className="text-2xl font-bold text-white">
             Activités des Douanes
-            <p className="text-sm text-card-text mt-1">Au {getCurrentDate()}</p>
+            <p className="text-sm text-card-text mt-1">Au {currentTime}</p>
           </h1>
         </div>
 
