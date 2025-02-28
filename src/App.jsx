@@ -12,7 +12,7 @@ function App() {
 
   return (
     <PeriodProvider>
-      <div className="min-h-screen bg-[#081028] text-white">
+      <div className="min-h-screen bg-brand-800 text-white">
         <Navbar />
         <Dashboard filters={filters} setFilters={setFilters} />
       </div>

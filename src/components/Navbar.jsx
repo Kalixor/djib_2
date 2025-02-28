@@ -3,18 +3,18 @@ import { useState } from 'react'
 
 export default function Navbar() {
   const { period, togglePeriod } = usePeriod()
-  const [greenToneIndex, setGreenToneIndex] = useState(0)
+  const [colorIndex, setColorIndex] = useState(0)
 
-  const greenTones = [
-    'bg-green-700 hover:bg-green-600 border-green-700 text-green-200',
-    'bg-emerald-700 hover:bg-emerald-600 border-emerald-700 text-emerald-200',
-    'bg-lime-700 hover:bg-lime-600 border-lime-700 text-lime-200',
-    'bg-teal-700 hover:bg-teal-600 border-teal-700 text-teal-200'
+  const buttonColors = [
+    'bg-[#1a2548] hover:bg-[#222f5a]',
+    'bg-[#24305c] hover:bg-[#2c3a6e]',
+    'bg-[#2e3b70] hover:bg-[#364682]',
+    'bg-[#384694] hover:bg-[#1a2548]'
   ]
 
   const handlePeriodToggle = () => {
     togglePeriod()
-    setGreenToneIndex((prevIndex) => (prevIndex + 1) % greenTones.length)
+    setColorIndex((prevIndex) => (prevIndex + 1) % buttonColors.length)
   }
 
   const getCurrentDate = () => {
@@ -28,7 +28,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gray-800 shadow p-4 relative">
+    <nav className="bg-brand-800 shadow p-4 relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="w-36"></div>
 
@@ -41,8 +41,10 @@ export default function Navbar() {
           <button
             onClick={handlePeriodToggle}
             className={`px-6 py-1.5 rounded-full text-sm font-medium transition-all duration-300
-              ${greenTones[greenToneIndex]}
-              hover:scale-105 active:scale-95 w-36 text-center whitespace-nowrap`}
+              ${buttonColors[colorIndex]}
+              text-pastel-yellow border-current
+              hover:scale-105 active:scale-95 w-36 text-center whitespace-nowrap
+              shadow-lg hover:shadow-xl`}
           >
             {period}
           </button>
