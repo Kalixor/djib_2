@@ -142,9 +142,9 @@ const KPI = ({ title, value, isActive, onClick }) => {
 
   const getIcon = () => {
     switch(title) {
-      case 'Importations': return 'fas fa-boxes-packing'
-      case 'Exportations': return 'fas fa-truck-fast'
-      case 'Manifestes': return 'fas fa-clipboard-list'
+      case 'Imports': return 'fas fa-boxes-packing'
+      case 'Exports': return 'fas fa-truck-fast'
+      case 'Bureaux': return 'fas fa-clipboard-list'
       case 'Recettes Totales': return 'fas fa-coins'
       default: return 'fas fa-circle-info'
     }
@@ -170,19 +170,19 @@ const KPI = ({ title, value, isActive, onClick }) => {
   
   const getSubItems = () => {
     const items = {
-      'Importations': [
+      'Imports': [
         { name: 'Produits agricoles', value: 4.2 },
         { name: 'Matériel industriel', value: 3.8 },
         { name: 'Produits chimiques', value: 2.5 },
         { name: 'Autres', value: 2.0 }
       ],
-      'Exportations': [
+      'Exports': [
         { name: 'Textiles', value: 3.0 },
         { name: 'Produits pétroliers', value: 2.5 },
         { name: 'Métaux', value: 1.7 },
         { name: 'Autres', value: 1.0 }
       ],
-      'Manifestes': [
+      'Bureaux': [
         { name: 'Maritimes', value: 800 },
         { name: 'Aériens', value: 300 },
         { name: 'Terrestres', value: 100 }
@@ -288,9 +288,9 @@ const KPI = ({ title, value, isActive, onClick }) => {
   }
 
  	const variations = {
-    'Importations': { value: 2.5, trend: 'up' },
-    'Exportations': { value: 1.8, trend: 'down' },
-    'Manifestes': { value: 0.3, trend: 'up' },
+    'Imports': { value: 2.5, trend: 'up' },
+    'Exports': { value: 1.8, trend: 'down' },
+    'Bureaux': { value: 0.3, trend: 'up' },
     'Recettes Totales': { value: 4.2, trend: 'up' }
   }
 
