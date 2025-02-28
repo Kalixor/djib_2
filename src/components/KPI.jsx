@@ -301,20 +301,20 @@ const KPI = ({ title, value, isActive, onClick }) => {
 
   const renderKPIHeader = () => {
     const variation = variations[title]
-    const arrowClass = variation.trend === 'up' 
-      ? 'fas fa-arrow-up' 
-      : 'fas fa-arrow-down'
-  
-    return (
-      <div className="flex justify-between items-start w-full min-h-[60px]">
-        <div className="flex-1">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-            {title}
-          </h3>
-          <p className="text-xl font-bold text-gray-900 dark:text-white">
-            {value}
-          </p>
-        </div>
+  const arrowClass = variation.trend === 'up' 
+    ? 'fas fa-arrow-up' 
+    : 'fas fa-arrow-down'
+
+  return (
+    <div className="flex justify-between items-start w-full min-h-[60px]">
+      <div className="flex-1 space-y-2"> {/* Ajout de space-y-2 */}
+        <h3 className="text-sm font-medium text-gray-500 dark:text-card-text hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
+          {title}
+        </h3>
+        <p className="text-2xl font-semibold text-gray-900 dark:text-white"> {/* Changé de text-xl à text-2xl */}
+          {value}
+        </p>
+      </div>
         
         <div className="flex flex-col items-center justify-center mr-1">
           <div className="transition-colors duration-300">
