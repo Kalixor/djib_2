@@ -21,7 +21,7 @@ export default function BarChart({ filters, setFilters }) {
 
   return (
   <div 
-	    className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300"
+	    className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300"
 	    onMouseEnter={() => setIsHovered(true)}
 	    onMouseLeave={() => setIsHovered(false)}
   	>

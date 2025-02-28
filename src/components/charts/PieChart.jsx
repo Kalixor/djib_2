@@ -10,7 +10,7 @@ import { PieChart as RePieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 
       ]
 
       return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="bg-white dark:bg-card p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Répartition par bureau</h3>
             <select

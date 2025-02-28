@@ -11,7 +11,7 @@ export default function PieChartOffice({ filters, setFilters }) {
   ]
 
   return (
-  		<div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300">
+  		<div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300">
         <div className="flex justify-between items-center mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
           Répartition par bureau
