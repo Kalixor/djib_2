@@ -12,7 +12,7 @@ export default function Dashboard({ filters, setFilters }) {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 relative" style={{ gridAutoRows: '1fr' }}>
         <KPI 
           title="Importations" 
-          value="12.5M" 
+          value="12.52B" 
           isActive={activeKPI === 'Importations'}
           onClick={() => setActiveKPI(activeKPI === 'Importations' ? null : 'Importations')}
           style={{ gridRow: 'span 2' }}
