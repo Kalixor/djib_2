@@ -90,8 +90,20 @@ const KPI = ({ title, value }) => {
   }
 
   return (
-    <div className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300">
-      <div className="flex flex-col w-full min-h-[60px] space-y-4">
+    <div className="group bg-white dark:bg-card p-4 rounded-lg shadow transition-all duration-300 relative">
+      {/* Border gradient */}
+      <div className="absolute inset-0 rounded-lg p-[1px] pointer-events-none"
+           style={{
+             background: `radial-gradient(circle at top left, #cb3cff, transparent 70%)`,
+             mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             maskComposite: 'exclude',
+             WebkitMaskComposite: 'xor'
+           }}>
+        <div className="bg-white dark:bg-card w-full h-full rounded-[calc(0.5rem-1px)]" />
+      </div>
+      
+      <div className="flex flex-col w-full min-h-[60px] space-y-4 relative z-10">
         <div className="flex items-center gap-2">
           <i className={`${getIcon()} text-sm text-gray-300 dark:text-card-text`} />
           <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
