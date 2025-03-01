@@ -3,8 +3,8 @@ import React from 'react'
 const KPI = ({ title, value }) => {
   const getIcon = () => {
     switch(title) {
-      case 'Imports': return 'fas fa-boxes-packing'
-      case 'Exports': return 'fas fa-truck-fast'
+      case 'Prévues': return 'fas fa-boxes-packing'
+      case 'Effectives': return 'fas fa-truck-fast'
       case 'Bureaux': return 'fas fa-clipboard-list'
       case 'Recettes Totales': return 'fas fa-coins'
       default: return 'fas fa-circle-info'
@@ -12,8 +12,8 @@ const KPI = ({ title, value }) => {
   }
 
   const variations = {
-    'Imports': { value: 2.5, trend: 'up' },
-    'Exports': { value: 1.8, trend: 'down' },
+    'Prévues': { value: 2.5, trend: 'up' },
+    'Effectives': { value: 1.8, trend: 'down' },
     'Bureaux': { value: 0.3, trend: 'up' },
     'Recettes Totales': { value: 4.2, trend: 'up' }
   }

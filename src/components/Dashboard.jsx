@@ -6,18 +6,18 @@ import PieChartPayment from './charts/PieChartPayment'
 import KPI from './KPI'
 
 const areaChartData = [
-  { name: 'Jan', imports: 4000, exports: 2400 },
-  { name: 'Fév', imports: 3000, exports: 1398 },
-  { name: 'Mar', imports: 2000, exports: 9800 },
-  { name: 'Avr', imports: 2780, exports: 3908 },
-  { name: 'Mai', imports: 1890, exports: 4800 },
-  { name: 'Juin', imports: 2390, exports: 3800 },
-  { name: 'Juil', imports: 3490, exports: 4300 },
-  { name: 'Août', imports: 4000, exports: 2400 },
-  { name: 'Sep', imports: 3000, exports: 1398 },
-  { name: 'Oct', imports: 2000, exports: 9800 },
-  { name: 'Nov', imports: 2780, exports: 3908 },
-  { name: 'Déc', imports: 1890, exports: 4800 },
+  { name: 'Jan', prevues: 4000, effectives: 2400 },
+  { name: 'Fév', prevues: 3000, effectives: 1398 },
+  { name: 'Mar', prevues: 2000, effectives: 9800 },
+  { name: 'Avr', prevues: 2780, effectives: 3908 },
+  { name: 'Mai', prevues: 1890, effectives: 4800 },
+  { name: 'Juin', prevues: 2390, effectives: 3800 },
+  { name: 'Juil', prevues: 3490, effectives: 4300 },
+  { name: 'Août', prevues: 4000, effectives: 2400 },
+  { name: 'Sep', prevues: 3000, effectives: 1398 },
+  { name: 'Oct', prevues: 2000, effectives: 9800 },
+  { name: 'Nov', prevues: 2780, effectives: 3908 },
+  { name: 'Déc', prevues: 1890, effectives: 4800 },
 ]
 
 export default function Dashboard({ filters, setFilters }) {
@@ -62,17 +62,17 @@ export default function Dashboard({ filters, setFilters }) {
     <main className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 relative" style={{ gridAutoRows: '1fr' }}>
         <KPI 
-          title="Imports" 
+          title="Prévues" 
           value="12.52B" 
-          isActive={activeKPI === 'Imports'}
-          onClick={() => setActiveKPI(activeKPI === 'Imports' ? null : 'Imports')}
+          isActive={activeKPI === 'Prévues'}
+          onClick={() => setActiveKPI(activeKPI === 'Prévues' ? null : 'Prévues')}
           style={{ gridRow: 'span 2' }}
         />
         <KPI 
-          title="Exports" 
+          title="Effectives" 
           value="8.2M" 
-          isActive={activeKPI === 'Exports'}
-          onClick={() => setActiveKPI(activeKPI === 'Exports' ? null : 'Exports')}
+          isActive={activeKPI === 'Effectives'}
+          onClick={() => setActiveKPI(activeKPI === 'Effectives' ? null : 'Effectives')}
           style={{ gridRow: 'span 2' }}
         />
         <KPI 
@@ -93,12 +93,11 @@ export default function Dashboard({ filters, setFilters }) {
 
       <div className="flex gap-8 mb-8">
         <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
-          {/* Barre de légende */}
           <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <i className="fas fa-chart-area text-sm text-gray-300 dark:text-card-text" />
-                <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+                <i className="fas fa-chart-area text-lg text-gray-300 dark:text-card-text" />
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
                   Recettes Douanières
                 </h3>
               </div>
@@ -106,11 +105,11 @@ export default function Dashboard({ filters, setFilters }) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
-                  <span className="text-sm text-gray-500 dark:text-card-text">Importations</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
-                  <span className="text-sm text-gray-500 dark:text-card-text">Exportations</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
                 </div>
               </div>
             </div>
@@ -130,11 +129,11 @@ export default function Dashboard({ filters, setFilters }) {
                 margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
               >
                 <defs>
-                  <linearGradient id="importsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="prevuesGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#00c2ff" stopOpacity={0.4}/>
                     <stop offset="95%" stopColor="#00c2ff" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="exportsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="effectivesGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#cb3cff" stopOpacity={0.4}/>
                     <stop offset="95%" stopColor="#cb3cff" stopOpacity={0}/>
                   </linearGradient>
@@ -151,17 +150,17 @@ export default function Dashboard({ filters, setFilters }) {
                 <Tooltip />
                 <Area 
                   type="monotone" 
-                  dataKey="imports" 
+                  dataKey="prevues" 
                   stroke="#00c2ff" 
                   fillOpacity={1} 
-                  fill="url(#importsGradient)" 
+                  fill="url(#prevuesGradient)" 
                 />
                 <Area 
                   type="monotone" 
-                  dataKey="exports" 
+                  dataKey="effectives" 
                   stroke="#cb3cff" 
                   fillOpacity={1} 
-                  fill="url(#exportsGradient)" 
+                  fill="url(#effectivesGradient)" 
                 />
               </AreaChart>
             </ResponsiveContainer>
