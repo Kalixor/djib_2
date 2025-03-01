@@ -1,9 +1,7 @@
-import { BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { useState } from 'react'
 
-export default function BarChart({ filters, setFilters }) {
-  const [isHovered, setIsHovered] = useState(false)
-
+export default function BarChart() {
   const data = [
     { name: 'Janvier', value: 4200 },
     { name: 'Février', value: 3800 },
@@ -19,70 +17,88 @@ export default function BarChart({ filters, setFilters }) {
     { name: 'Décembre', value: 5000 },
   ]
 
+  const renderVariationBadge = (value, trend) => {
+    const isPositive = trend === 'up'
+    const arrowClass = isPositive 
+      ? 'fas fa-arrow-up rotate-45' 
+      : 'fas fa-arrow-down rotate-[-35deg]'
+
+    return (
+      <div className={`
+        px-2 py-1 rounded-full
+        border ${
+          isPositive 
+            ? 'border-green-500/50' 
+            : 'border-red-500/50'
+        }
+        bg-${
+          isPositive 
+            ? 'green-500/10' 
+            : 'red-500/10'
+        }
+        backdrop-blur-sm
+        shadow-sm
+        flex items-center gap-1
+        text-xs font-medium
+        ${
+          isPositive 
+            ? 'text-green-500' 
+            : 'text-red-500'
+        }
+      `}>
+        <span>{value}%</span>
+        <i className={`${arrowClass} text-[0.6rem]`} />
+      </div>
+    )
+  }
+
   return (
-    <div 
-      className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Border gradient */}
-      <div className="absolute inset-0 rounded-lg pointer-events-none"
-           style={{
-             background: `radial-gradient(circle at 17% -22%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
-             mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-             WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-             maskComposite: 'exclude',
-             WebkitMaskComposite: 'xor',
-             padding: '1px'
-           }}>
-        <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
+    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
+            <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+              Évolution des recettes
+            </h3>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+              20.7M
+            </p>
+            {renderVariationBadge(4.2, 'up')}
+          </div>
+        </div>
       </div>
 
-      <style>{`
-        @keyframes smoothBounce {
-          0%, 100% { transform: translateY(0); }
-          12.5% { transform: translateY(-10px); }
-          25% { transform: translateY(0); }
-          37.5% { transform: translateY(-7px); }
-          50% { transform: translateY(0); }
-          62.5% { transform: translateY(-4px); }
-          75% { transform: translateY(0); }
-        }
-      `}</style>
-      <div className="flex items-center mb-4">
-        <div className="w-1/4">
-          <select
-            value={filters.period}
-            onChange={(e) => setFilters({ ...filters, period: e.target.value })}
-            className="bg-gray-50 border border-gray-300 text-card-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-          >
-            <option value="day">Jour</option>
-            <option value="week">Semaine</option>
-            <option value="month">Mois</option>
-            <option value="year">Année</option>
-          </select>
-        </div>
-        <div className="w-1/2 text-center">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
-            Évolution des recettes
-          </h3>
-        </div>
-        <div className="w-1/4 flex justify-end">
-          <i className={`fas fa-chart-line text-3xl ${
-            isHovered 
-              ? 'text-yellow-400 animate-[smoothBounce_1.5s_ease-in-out]' 
-              : 'text-gray-300 dark:text-card-text'
-          } transition-colors duration-300`} />
-        </div>
-      </div>
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           <ReBarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-            <XAxis dataKey="name" stroke="#888888" />
-            <YAxis stroke="#888888" />
-            <Tooltip />
-            <Bar dataKey="value" fill="#8884d8" />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#aeb9e1', fontSize: 12 }}
+            />
+            <YAxis 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#aeb9e1', fontSize: 12 }}
+            />
+            <Tooltip 
+              cursor={false}
+              contentStyle={{
+                background: '#0b1739',
+                border: '1px solid #cb3cff50',
+                borderRadius: '8px',
+                backdropFilter: 'blur(4px)'
+              }}
+            />
+            <Bar 
+              dataKey="value" 
+              fill="#8884d8" 
+              radius={[4, 4, 0, 0]}
+            />
           </ReBarChart>
         </ResponsiveContainer>
       </div>
