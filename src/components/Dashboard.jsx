@@ -92,7 +92,20 @@ export default function Dashboard({ filters, setFilters }) {
       </div>
 
       <div className="flex gap-5 mb-6">
-        <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
+        <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] relative">
+          {/* Border gradient */}
+          <div className="absolute inset-0 rounded-lg pointer-events-none"
+               style={{
+                 background: `radial-gradient(circle at 17% -25%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+                 mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+                 WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+                 maskComposite: 'exclude',
+                 WebkitMaskComposite: 'xor',
+                 padding: '1px'
+               }}>
+            <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
+          </div>
+
           <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

@@ -20,11 +20,24 @@ export default function BarChart({ filters, setFilters }) {
   ]
 
   return (
-  <div 
-	    className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300"
-	    onMouseEnter={() => setIsHovered(true)}
-	    onMouseLeave={() => setIsHovered(false)}
-  	>
+    <div 
+      className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Border gradient */}
+      <div className="absolute inset-0 rounded-lg pointer-events-none"
+           style={{
+             background: `radial-gradient(circle at 17% -22%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+             mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             maskComposite: 'exclude',
+             WebkitMaskComposite: 'xor',
+             padding: '1px'
+           }}>
+        <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
+      </div>
+
       <style>{`
         @keyframes smoothBounce {
           0%, 100% { transform: translateY(0); }
