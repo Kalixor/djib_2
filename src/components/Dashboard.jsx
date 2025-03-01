@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import BarChart from './charts/BarChart'
 import PieChartOffice from './charts/PieChartOffice'
 import PieChartPayment from './charts/PieChartPayment'
@@ -22,6 +22,41 @@ const areaChartData = [
 
 export default function Dashboard({ filters, setFilters }) {
   const [activeKPI, setActiveKPI] = useState(null)
+
+  const renderVariationBadge = (value, trend) => {
+    const isPositive = trend === 'up'
+    const arrowClass = isPositive 
+      ? 'fas fa-arrow-up rotate-45' 
+      : 'fas fa-arrow-down rotate-[-35deg]'
+
+    return (
+      <div className={`
+        px-2 py-1 rounded-full
+        border ${
+          isPositive 
+            ? 'border-green-500/50' 
+            : 'border-red-500/50'
+        }
+        bg-${
+          isPositive 
+            ? 'green-500/10' 
+            : 'red-500/10'
+        }
+        backdrop-blur-sm
+        shadow-sm
+        flex items-center gap-1
+        text-xs font-medium
+        ${
+          isPositive 
+            ? 'text-green-500' 
+            : 'text-red-500'
+        }
+      `}>
+        <span>{value}%</span>
+        <i className={`${arrowClass} text-[0.6rem]`} />
+      </div>
+    )
+  }
 
   return (
     <main className="p-6">
@@ -57,12 +92,42 @@ export default function Dashboard({ filters, setFilters }) {
       </div>
 
       <div className="flex gap-8 mb-8">
-        <div className="w-3/4 bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
-          <div className="h-96">
+        <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
+          {/* Barre de légende */}
+          <div className="flex flex-col gap-2 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <i className="fas fa-chart-area text-sm text-gray-300 dark:text-card-text" />
+                <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+                  Recettes Douanières
+                </h3>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#8884d8]" />
+                  <span className="text-sm text-gray-500 dark:text-card-text">Importations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#82ca9d]" />
+                  <span className="text-sm text-gray-500 dark:text-card-text">Exportations</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                20.7M
+              </p>
+              {renderVariationBadge(4.2, 'up')}
+            </div>
+          </div>
+
+          <div className="h-96 -mx-4 translate-x-[-8px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={areaChartData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
               >
                 <defs>
                   <linearGradient id="importsGradient" x1="0" y1="0" x2="0" y2="1">
@@ -74,9 +139,15 @@ export default function Dashboard({ filters, setFilters }) {
                     <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fill: '#aeb9e1', fontSize: 12 }}
+                  axisLine={{ stroke: '#aeb9e1' }}
+                />
+                <YAxis 
+                  tick={{ fill: '#aeb9e1', fontSize: 12 }}
+                  axisLine={{ stroke: '#aeb9e1' }}
+                />
                 <Tooltip />
                 <Area 
                   type="monotone" 
@@ -97,7 +168,7 @@ export default function Dashboard({ filters, setFilters }) {
           </div>
         </div>
 
-        <div className="w-1/4">
+        <div className="w-[40%]">
           <BarChart filters={filters} setFilters={setFilters} />
         </div>
       </div>
