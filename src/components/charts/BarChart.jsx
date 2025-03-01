@@ -1,5 +1,24 @@
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-brand-800/95 backdrop-blur-sm p-3 rounded-lg border border-[#cb3cff]/50 shadow-lg">
+        <div className="flex flex-col gap-1">
+          <p className="text-xs text-card-text mb-1">{label}</p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white font-medium">
+              {payload[0].value}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
+
 export default function BarChart() {
   const data = [
     { name: 'Jan', value: 4200 },
@@ -40,8 +59,21 @@ export default function BarChart() {
   }
 
   return (
-    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
-      <div className="flex items-start justify-between mb-4">
+    <div className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+      {/* Border gradient */}
+      <div className="absolute inset-0 rounded-lg pointer-events-none"
+           style={{
+             background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+             mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             maskComposite: 'exclude',
+             WebkitMaskComposite: 'xor',
+             padding: '1px'
+           }}>
+        <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
+      </div>
+
+      <div className="flex items-start justify-between mb-4 relative z-10">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
@@ -58,7 +90,7 @@ export default function BarChart() {
         </div>
       </div>
 
-      <div className="h-48">
+      <div className="h-48 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
           <ReBarChart
             data={data}
@@ -80,17 +112,14 @@ export default function BarChart() {
               tickLine={false}
             />
             <Tooltip 
+              content={<CustomTooltip />}
               cursor={false}
-              contentStyle={{
-                background: '#0b1739',
-                border: '1px solid #cb3cff50',
-                borderRadius: '8px',
-                backdropFilter: 'blur(4px)'
-              }}
             />
             <Bar 
               dataKey="value"
-              fill="#8884d8"
+              stroke="#00c2ff"
+              fill="transparent"
+              strokeWidth={2}
               radius={[4, 4, 0, 0]}
               barSize={20}
             />
