@@ -141,11 +141,13 @@ export default function Dashboard({ filters, setFilters }) {
                 <XAxis 
                   dataKey="name" 
                   tick={{ fill: '#aeb9e1', fontSize: 12 }}
-                  axisLine={{ stroke: '#aeb9e1' }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <YAxis 
                   tick={{ fill: '#aeb9e1', fontSize: 12 }}
-                  axisLine={{ stroke: '#aeb9e1' }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <Tooltip />
                 <Area 
