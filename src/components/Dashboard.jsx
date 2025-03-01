@@ -4,6 +4,7 @@ import BarChart from './charts/BarChart'
 import PieChartOffice from './charts/PieChartOffice'
 import PieChartPayment from './charts/PieChartPayment'
 import KPI from './KPI'
+import CustomDatePicker from './CustomDatePicker'
 
 const areaChartData = [
   { name: 'Jan', prevues: 4000, effectives: 2400 },
@@ -22,6 +23,8 @@ const areaChartData = [
 
 export default function Dashboard({ filters, setFilters }) {
   const [activeKPI, setActiveKPI] = useState(null)
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0])
 
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
@@ -106,35 +109,58 @@ export default function Dashboard({ filters, setFilters }) {
             <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
           </div>
 
-          <div className="flex flex-col gap-2 mb-4">
-            <div className="flex items-center justify-between">
+          {/* Header Section */}
+          <div className="flex justify-between items-start mb-4">
+            {/* Title and Value Section */}
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <i className="fas fa-chart-area text-lg text-gray-300 dark:text-card-text" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
                   Recettes Douanières
                 </h3>
               </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                  20.7M
+                </p>
+                {renderVariationBadge(4.2, 'up')}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                20.7M
-              </p>
-              {renderVariationBadge(4.2, 'up')}
+            {/* DatePickers Section */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-card-text">Du :</span>
+                <CustomDatePicker 
+                  value={startDate}
+                  onChange={setStartDate}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-card-text">Au :</span>
+                <CustomDatePicker 
+                  value={endDate}
+                  onChange={setEndDate}
+                />
+              </div>
             </div>
           </div>
 
+          {/* Legends Section */}
+          <div className="flex justify-center mb-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
+                <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
+                <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Chart Section */}
           <div className="h-96 -mx-4 translate-x-[-8px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
