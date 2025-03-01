@@ -5,6 +5,7 @@ import PieChartOffice from './charts/PieChartOffice'
 import PieChartPayment from './charts/PieChartPayment'
 import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
+import NotificationPopup from './NotificationPopup'
 
 const areaChartData = [
   { name: 'Jan', prevues: 4000, effectives: 2400 },
@@ -50,6 +51,26 @@ export default function Dashboard({ filters, setFilters }) {
   const [activeKPI, setActiveKPI] = useState(null)
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0])
+  const [notification, setNotification] = useState(null)
+
+  const handleDateChange = (type, date) => {
+    const newStart = type === 'start' ? date : startDate
+    const newEnd = type === 'end' ? date : endDate
+
+    if (new Date(newStart) > new Date(newEnd)) {
+      setNotification({
+        type: 'error',
+        message: 'La date de début ne peut pas être postérieure à la date de fin'
+      })
+      return
+    }
+
+    if (type === 'start') {
+      setStartDate(date)
+    } else {
+      setEndDate(date)
+    }
+  }
 
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
@@ -88,6 +109,14 @@ export default function Dashboard({ filters, setFilters }) {
 
   return (
     <main className="p-6">
+      {notification && (
+        <NotificationPopup 
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 relative" style={{ gridAutoRows: '1fr' }}>
         <KPI 
           title="Imports" 
@@ -154,29 +183,27 @@ export default function Dashboard({ filters, setFilters }) {
                 <span className="text-sm text-card-text">Du :</span>
                 <CustomDatePicker 
                   value={startDate}
-                  onChange={setStartDate}
+                  onChange={(date) => handleDateChange('start', date)}
                 />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-card-text">Au :</span>
                 <CustomDatePicker 
                   value={endDate}
-                  onChange={setEndDate}
+                  onChange={(date) => handleDateChange('end', date)}
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
-                <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
-                <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
-              </div>
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
+              <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
+              <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
             </div>
           </div>
 

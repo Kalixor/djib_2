@@ -30,6 +30,30 @@ module.exports = {
           yellow: '#fffef2',
         },
       },
+      keyframes: {
+        'bounce-in': {
+          '0%': { 
+            transform: 'scale(0.8)', 
+            opacity: '0' 
+          },
+          '40%': { 
+            transform: 'scale(1.15)', 
+            opacity: '1' 
+          },
+          '60%': { 
+            transform: 'scale(0.95)' 
+          },
+          '80%': { 
+            transform: 'scale(1.05)' 
+          },
+          '100%': { 
+            transform: 'scale(1)' 
+          },
+        },
+      },
+      animation: {
+        'bounce-in': 'bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
     },
   },
   plugins: [],
