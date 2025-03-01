@@ -3,16 +3,10 @@ import { useState, useEffect, useRef } from 'react'
 
 export default function Navbar() {
   const { period, togglePeriod } = usePeriod()
-  const [colorIndex, setColorIndex] = useState(0)
   const [currentTime, setCurrentTime] = useState(getFormattedTime())
   const animationFrameRef = useRef()
 
-  const buttonColors = [
-    'bg-[#1a2548] hover:bg-[#222f5a]',
-    'bg-[#24305c] hover:bg-[#2c3a6e]',
-    'bg-[#2e3b70] hover:bg-[#364682]',
-    'bg-[#384694] hover:bg-[#1a2548]'
-  ]
+  const periods = ['Annuelles', 'Mensuelles', 'Hebdomadaires', 'Journalières']
 
   const updateTime = () => {
     setCurrentTime(getFormattedTime())
@@ -39,11 +33,6 @@ export default function Navbar() {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
   }
 
-  const handlePeriodToggle = () => {
-    togglePeriod()
-    setColorIndex((prevIndex) => (prevIndex + 1) % buttonColors.length)
-  }
-
   return (
     <nav className="bg-brand-800 shadow p-3 relative mx-1">
       <div className="w-full flex justify-between items-center mt-3">
@@ -55,16 +44,36 @@ export default function Navbar() {
         </div>
 
         <div className="mr-2">
-          <button
-            onClick={handlePeriodToggle}
-            className={`px-6 py-1.5 rounded-full text-sm font-medium transition-all duration-300
-              ${buttonColors[colorIndex]}
-              text-pastel-yellow border-current
-              hover:scale-105 active:scale-95 w-36 text-center
-              shadow-lg hover:shadow-xl flex items-center justify-center`}
-          >
-            {period}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            {periods.map((p) => (
+              <label 
+                key={p}
+                className={`
+                  flex items-center gap-2 
+                  px-4 py-2 rounded-lg
+                  transition-all duration-200
+                  ${
+                    period === p
+                      ? 'border-[#cb3cff]'
+                      : 'border-brand-800 hover:border-[#cb3cff]/50'
+                  }
+                  border-2
+                  bg-brand-800/50
+                  cursor-pointer
+                `}
+              >
+                <input
+                  type="radio"
+                  name="period"
+                  value={p}
+                  checked={period === p}
+                  onChange={() => togglePeriod(p)}
+                  className="w-4 h-4 appearance-none rounded-full border-2 border-[#cb3cff] checked:bg-[#cb3cff] checked:border-[#cb3cff]"
+                />
+                <span className="text-sm font-medium text-card-text">{p}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
     </nav>
