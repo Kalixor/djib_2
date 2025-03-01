@@ -62,17 +62,17 @@ export default function Dashboard({ filters, setFilters }) {
     <main className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 relative" style={{ gridAutoRows: '1fr' }}>
         <KPI 
-          title="Prévues" 
+          title="Imports" 
           value="12.52B" 
-          isActive={activeKPI === 'Prévues'}
-          onClick={() => setActiveKPI(activeKPI === 'Prévues' ? null : 'Prévues')}
+          isActive={activeKPI === 'Imports'}
+          onClick={() => setActiveKPI(activeKPI === 'Imports' ? null : 'Imports')}
           style={{ gridRow: 'span 2' }}
         />
         <KPI 
-          title="Effectives" 
+          title="Exports" 
           value="8.2M" 
-          isActive={activeKPI === 'Effectives'}
-          onClick={() => setActiveKPI(activeKPI === 'Effectives' ? null : 'Effectives')}
+          isActive={activeKPI === 'Exports'}
+          onClick={() => setActiveKPI(activeKPI === 'Exports' ? null : 'Exports')}
           style={{ gridRow: 'span 2' }}
         />
         <KPI 

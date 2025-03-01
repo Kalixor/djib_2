@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const KPI = ({ title, value }) => {
+  const [displayValue, setDisplayValue] = useState('0')
+  const targetValue = parseFloat(value.replace(/[^0-9.]/g, ''))
+  const suffix = value.replace(/[0-9.]/g, '')
+  const animationRef = useRef(null)
+  const startTimeRef = useRef(null)
+
   const getIcon = () => {
     switch(title) {
-      case 'Prévues': return 'fas fa-boxes-packing'
-      case 'Effectives': return 'fas fa-truck-fast'
+      case 'Imports': return 'fas fa-boxes-packing'
+      case 'Exports': return 'fas fa-truck-fast'
       case 'Bureaux': return 'fas fa-clipboard-list'
       case 'Recettes Totales': return 'fas fa-coins'
       default: return 'fas fa-circle-info'
@@ -12,11 +18,40 @@ const KPI = ({ title, value }) => {
   }
 
   const variations = {
-    'Prévues': { value: 2.5, trend: 'up' },
-    'Effectives': { value: 1.8, trend: 'down' },
+    'Imports': { value: 2.5, trend: 'up' },
+    'Exports': { value: 1.8, trend: 'down' },
     'Bureaux': { value: 0.3, trend: 'up' },
     'Recettes Totales': { value: 4.2, trend: 'up' }
   }
+
+  const animateValue = (timestamp) => {
+    if (!startTimeRef.current) startTimeRef.current = timestamp
+    const progress = timestamp - startTimeRef.current
+    const duration = 800
+    
+    if (progress < duration) {
+      const easedProgress = easeOutQuad(progress / duration)
+      const currentValue = Math.floor(easedProgress * targetValue)
+      setDisplayValue(currentValue.toLocaleString() + suffix)
+      animationRef.current = requestAnimationFrame(animateValue)
+    } else {
+      setDisplayValue(targetValue.toLocaleString() + suffix)
+    }
+  }
+
+  const easeOutQuad = (t) => {
+    return t * (2 - t)
+  }
+
+  useEffect(() => {
+    animationRef.current = requestAnimationFrame(animateValue)
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [targetValue])
 
   const renderVariationBadge = (title) => {
     const variation = variations[title]
@@ -66,7 +101,7 @@ const KPI = ({ title, value }) => {
 
         <div className="flex items-center gap-2">
           <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-            {value}
+            {displayValue}
           </p>
           {renderVariationBadge(title)}
         </div>
