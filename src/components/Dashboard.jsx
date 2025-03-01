@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import BarChart from './charts/BarChart'
 import PieChartOffice from './charts/PieChartOffice'
 import PieChartPayment from './charts/PieChartPayment'
@@ -20,6 +20,31 @@ const areaChartData = [
   { name: 'Nov', prevues: 2780, effectives: 3908 },
   { name: 'Déc', prevues: 1890, effectives: 4800 },
 ]
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-brand-800/95 backdrop-blur-sm p-3 rounded-lg border border-[#cb3cff]/50 shadow-lg">
+        <p className="text-xs text-card-text mb-2">{label}</p>
+        <div className="flex flex-col gap-1">
+          {payload.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div 
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="text-xs text-card-text">
+                {item.name}: <span className="font-medium">{item.value}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
 
 export default function Dashboard({ filters, setFilters }) {
   const [activeKPI, setActiveKPI] = useState(null)
@@ -167,6 +192,7 @@ export default function Dashboard({ filters, setFilters }) {
                 data={areaChartData}
                 margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
               >
+                <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
                 <defs>
                   <linearGradient id="prevuesGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#00c2ff" stopOpacity={0.4}/>
@@ -188,13 +214,15 @@ export default function Dashboard({ filters, setFilters }) {
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
                   dataKey="prevues" 
                   stroke="#00c2ff" 
                   fillOpacity={1} 
                   fill="url(#prevuesGradient)" 
+                  dot={{ fill: '#00c2ff', r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                 />
                 <Area 
                   type="monotone" 
@@ -202,6 +230,8 @@ export default function Dashboard({ filters, setFilters }) {
                   stroke="#cb3cff" 
                   fillOpacity={1} 
                   fill="url(#effectivesGradient)" 
+                  dot={{ fill: '#cb3cff', r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
