@@ -89,18 +89,19 @@ const KPI = ({ title, value }) => {
     )
   }
 
-  return (
-    <div className="group bg-white dark:bg-card p-4 rounded-lg shadow transition-all duration-300 relative">
+return (
+    <div className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
       {/* Border gradient */}
-      <div className="absolute inset-0 rounded-lg p-[1px] pointer-events-none"
+      <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
-             background: `radial-gradient(circle at top left, #cb3cff, transparent 70%)`,
+             background: `radial-gradient(circle at 17% -3%, #ce68fd 0%, #ce68fd 10%, transparent 30%)`,
              mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
              WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
              maskComposite: 'exclude',
-             WebkitMaskComposite: 'xor'
+             WebkitMaskComposite: 'xor',
+             padding: '1px'
            }}>
-        <div className="bg-white dark:bg-card w-full h-full rounded-[calc(0.5rem-1px)]" />
+        <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
       </div>
       
       <div className="flex flex-col w-full min-h-[60px] space-y-4 relative z-10">
