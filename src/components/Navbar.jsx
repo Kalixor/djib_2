@@ -45,7 +45,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-brand-800 shadow p-6 relative">
+    <nav className="bg-brand-800 shadow p-3 relative mx-1">
       <div className="w-full flex justify-between items-center">
         <div className="ml-2">
           <h1 className="text-2xl font-semibold text-white">

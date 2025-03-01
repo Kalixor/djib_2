@@ -60,7 +60,7 @@ export default function Dashboard({ filters, setFilters }) {
 
   return (
     <main className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 relative" style={{ gridAutoRows: '1fr' }}>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 relative" style={{ gridAutoRows: '1fr' }}>
         <KPI 
           title="Prévues" 
           value="12.52B" 
@@ -91,7 +91,7 @@ export default function Dashboard({ filters, setFilters }) {
         />
       </div>
 
-      <div className="flex gap-8 mb-8">
+      <div className="flex gap-5 mb-6">
         <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
           <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function Dashboard({ filters, setFilters }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <PieChartOffice filters={filters} setFilters={setFilters} />
         <PieChartPayment filters={filters} setFilters={setFilters} />
       </div>
