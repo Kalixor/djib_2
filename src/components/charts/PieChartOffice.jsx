@@ -101,7 +101,7 @@ export default function PieChartOffice({ filters, setFilters }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col justify-center items-center gap-2 ">
+      <div className="flex flex-col justify-center items-center gap-2">
        
         {/* Chart */}
         <div className="w-2/3 h-96">
@@ -132,8 +132,8 @@ export default function PieChartOffice({ filters, setFilters }) {
           </ResponsiveContainer>
         </div>
 
-				 {/* Legend */}
-        <div className="w-[22rem] flex flex-col justify-center">
+        {/* Legend */}
+        <div className="w-[22rem] flex flex-col justify-center mt-[-25%]">
           <div className="space-y-2">
             {data.map((entry, index) => (
               <div key={index} className="flex justify-between items-center">
@@ -153,7 +153,6 @@ export default function PieChartOffice({ filters, setFilters }) {
             ))}
           </div>
         </div>
-				
       </div>
     </div>
   )
