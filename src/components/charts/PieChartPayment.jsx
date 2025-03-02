@@ -1,51 +1,38 @@
-import { PieChart as RePieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { useState } from 'react'
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
-
-export default function PieChartOffice({ filters, setFilters }) {
+export default function PieChartPayment() {
   const data = [
-    { name: 'Bureau A', value: 400 },
-    { name: 'Bureau B', value: 300 },
-    { name: 'Bureau C', value: 200 },
-    { name: 'Bureau D', value: 100 },
+    { name: 'Recettes', value: 1200 },
+    { name: 'Bureaux', value: 800 },
+    { name: 'Taxes', value: 600 },
+    { name: 'Mode', value: 400 },
   ]
 
   return (
-  		<div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300">
-        <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-          Répartition par bureau
-        </h3>
-        <select
-          value={filters.period}
-          onChange={(e) => setFilters({ ...filters, period: e.target.value })}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-        >
-          <option value="day">Jour</option>
-          <option value="week">Semaine</option>
-          <option value="month">Mois</option>
-          <option value="year">Année</option>
-        </select>
+    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+      {/* Border gradient */}
+      <div className="absolute inset-0 rounded-lg pointer-events-none"
+           style={{
+             background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+             mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+             maskComposite: 'exclude',
+             WebkitMaskComposite: 'xor',
+             padding: '1px'
+           }}>
+        <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
       </div>
-      <div className="h-96">
-        <ResponsiveContainer width="100%" height="100%">
-          <RePieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={150}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </RePieChart>
-        </ResponsiveContainer>
+
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <i className="fas fa-money-bill-wave text-lg text-gray-300 dark:text-card-text" />
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
+              Recettes / Bureaux / Taxes / Mode
+            </h3>
+          </div>
+        </div>
       </div>
     </div>
   )

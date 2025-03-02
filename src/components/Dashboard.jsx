@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import BarChart from './charts/BarChart'
 import PieChartOffice from './charts/PieChartOffice'
-import PieChartPayment from './charts/PieChartPayment'
+import PaymentTableCard from './charts/PaymentTableCard'
 import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
 import NotificationPopup from './NotificationPopup'
@@ -163,7 +163,7 @@ export default function Dashboard({ filters, setFilters }) {
           onClick={() => setActiveKPI(activeKPI === 'Paiements' ? null : 'Paiements')}
           style={{ gridRow: 'span 2' }}
         />
-				<KPI 
+        <KPI 
           title="Bureaux" 
           value="1.2K" 
           isActive={activeKPI === 'Bureaux'}
@@ -234,17 +234,6 @@ export default function Dashboard({ filters, setFilters }) {
             </div>
           </div>
 
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#00c2ff]" />
-              <span className="text-sm font-medium text-gray-900 dark:text-card-text">Prévues</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#cb3cff]" />
-              <span className="text-sm font-medium text-gray-900 dark:text-card-text">Effectives</span>
-            </div>
-          </div>
-
           <div className="h-96 -mx-4 translate-x-[-8px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -309,7 +298,7 @@ export default function Dashboard({ filters, setFilters }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <PieChartOffice filters={filters} setFilters={setFilters} />
-        <PieChartPayment filters={filters} setFilters={setFilters} />
+        <PaymentTableCard />
       </div>
     </main>
   )
