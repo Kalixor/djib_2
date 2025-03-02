@@ -99,12 +99,12 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Pie
               data={data}
               cx="50%"
-              cy="95%" // Déplace le centre vers le bas pour créer un demi-cercle
+              cy="95%"
               startAngle={180}
               endAngle={0}
-              innerRadius={60}
-              outerRadius={120}
-              paddingAngle={5}
+              innerRadius={120} // Augmenté pour des segments encore plus fins
+              outerRadius={180} // Augmenté pour un rayon encore plus grand
+              paddingAngle={1} // Réduit au minimum pour des segments plus fins
               dataKey="value"
             >
               {data.map((entry, index) => (
