@@ -78,7 +78,7 @@ export default function PieChartOffice({ filters, setFilters }) {
       </div>
 
       {/* Chart Container */}
-      <div className="h-96 mt-8">
+      <div className="h-96 mt-8 relative">
         <ResponsiveContainer width="100%" height="100%">
           <RePieChart>
             <Pie
@@ -104,22 +104,22 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Tooltip />
           </RePieChart>
         </ResponsiveContainer>
-      </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-0 right-0 px-4 z-10">
-        <div className="flex flex-col gap-3">
-          {data.map((entry, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <div 
-                className="w-4 h-4 rounded-full" 
-                style={{ backgroundColor: COLORS[index % COLORS.length] }}
-              />
-              <span className="text-sm font-medium text-card-text flex-1 ml-4">
-                {entry.name}
-              </span>
-            </div>
-          ))}
+        {/* Legend - Centered below chart */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[180px]">
+          <div className="flex flex-col gap-3">
+            {data.map((entry, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <div 
+                  className="w-4 h-4 rounded-full" 
+                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                />
+                <span className="text-sm font-medium text-card-text">
+                  {entry.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
