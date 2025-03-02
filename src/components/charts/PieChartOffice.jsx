@@ -1,6 +1,6 @@
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts'
-import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
+import CustomDatePicker from '../CustomDatePicker'
 
 const COLORS = ['#00c2ff', '#0038ff', '#cb3cff']
 
@@ -39,7 +39,7 @@ export default function PieChartOffice({ filters, setFilters }) {
         x="50%"
         y="50%"
         textAnchor="middle"
-        fill="#aeb9e1" // Couleur fixe en text-card-text
+        fill="#aeb9e1"
         dominantBaseline="middle"
       >
         <tspan x="50%" dy="-2.0em" fontSize="20" fontWeight="700">
@@ -109,6 +109,7 @@ export default function PieChartOffice({ filters, setFilters }) {
           <CustomDatePicker 
             value={selectedDate}
             onChange={setSelectedDate}
+            disabled={true}
           />
         </div>
       </div>

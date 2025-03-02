@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function CustomDatePicker({ value, onChange }) {
+export default function CustomDatePicker({ value, onChange, disabled = false }) {
   const [isOpen, setIsOpen] = useState(false)
   const [view, setView] = useState('days')
   const currentDate = new Date(value)
@@ -23,22 +23,26 @@ export default function CustomDatePicker({ value, onChange }) {
 
   // Handlers
   const handleDateSelect = (day) => {
+    if (disabled) return
     const newDate = new Date(Date.UTC(currentYear, currentMonth, day))
     onChange(newDate.toISOString().split('T')[0])
     setIsOpen(false)
   }
 
   const handleMonthSelect = (monthIndex) => {
+    if (disabled) return
     setCurrentMonth(monthIndex)
     setView('days')
   }
 
   const handleYearSelect = (year) => {
+    if (disabled) return
     setCurrentYear(year)
     setView('months')
   }
 
   const navigateMonth = (direction, e) => {
+    if (disabled) return
     e.stopPropagation()
     let newMonth = currentMonth + direction
     let newYear = currentYear
@@ -56,6 +60,7 @@ export default function CustomDatePicker({ value, onChange }) {
   }
 
   const handleViewChange = (newView, e) => {
+    if (disabled) return
     e.stopPropagation()
     setView(newView)
   }
@@ -70,27 +75,31 @@ export default function CustomDatePicker({ value, onChange }) {
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={(e) => navigateMonth(-1, e)}
-            className="text-card-text hover:text-[#cb3cff] transition-colors"
+            className={`text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={disabled}
           >
             &lt;
           </button>
           <div className="flex gap-2">
             <button
               onClick={(e) => handleViewChange('months', e)}
-              className="text-sm text-card-text hover:text-[#cb3cff] transition-colors"
+              className={`text-sm text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={disabled}
             >
               {months[currentMonth]}
             </button>
             <button
               onClick={(e) => handleViewChange('years', e)}
-              className="text-sm text-card-text hover:text-[#cb3cff] transition-colors"
+              className={`text-sm text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={disabled}
             >
               {currentYear}
             </button>
           </div>
           <button
             onClick={(e) => navigateMonth(1, e)}
-            className="text-card-text hover:text-[#cb3cff] transition-colors"
+            className={`text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={disabled}
           >
             &gt;
           </button>
@@ -119,7 +128,7 @@ export default function CustomDatePicker({ value, onChange }) {
                 onClick={() => handleDateSelect(day)}
                 className={`w-6 h-6 flex items-center justify-center rounded-full cursor-pointer hover:bg-[#cb3cff]/10 transition-colors ${
                   isSelected ? 'bg-[#cb3cff] text-white' : ''
-                }`}
+                } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {day}
               </div>
@@ -137,7 +146,9 @@ export default function CustomDatePicker({ value, onChange }) {
           <div
             key={month}
             onClick={() => handleMonthSelect(index)}
-            className="p-2 text-center text-sm text-card-text rounded cursor-pointer hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] transition-colors"
+            className={`p-2 text-center text-sm text-card-text rounded cursor-pointer hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] transition-colors ${
+              disabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             {month}
           </div>
@@ -153,7 +164,9 @@ export default function CustomDatePicker({ value, onChange }) {
           <div
             key={year}
             onClick={() => handleYearSelect(year)}
-            className="p-2 text-center text-sm text-card-text rounded cursor-pointer hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] transition-colors"
+            className={`p-2 text-center text-sm text-card-text rounded cursor-pointer hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] transition-colors ${
+              disabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             {year}
           </div>
@@ -165,8 +178,10 @@ export default function CustomDatePicker({ value, onChange }) {
   return (
     <div className="relative">
       <div 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-brand-800/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-brand-700/50 transition-colors border border-[#cb3cff]/50 hover:border-[#cb3cff]/70"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        className={`flex items-center gap-2 bg-brand-800/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-brand-700/50 transition-colors border border-[#cb3cff]/50 hover:border-[#cb3cff]/70 ${
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
       >
         <span className="text-sm text-card-text">
           {new Date(value).toLocaleDateString('fr-FR')}
@@ -189,7 +204,10 @@ export default function CustomDatePicker({ value, onChange }) {
                     e.stopPropagation()
                     setView('days')
                   }}
-                  className="text-sm text-card-text hover:text-[#cb3cff] px-3 py-1 rounded hover:bg-[#cb3cff]/10 transition-colors"
+                  className={`text-sm text-card-text hover:text-[#cb3cff] px-3 py-1 rounded hover:bg-[#cb3cff]/10 transition-colors ${
+                    disabled ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={disabled}
                 >
                   Retour
                 </button>
