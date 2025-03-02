@@ -4,6 +4,27 @@ import { useState } from 'react'
 
 const COLORS = ['#00c2ff80', '#cb3cff80', '#00ff8880']
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-brand-800/95 backdrop-blur-sm p-3 rounded-lg border border-[#cb3cff]/50 shadow-lg">
+        <div className="flex flex-col gap-1">
+          {payload.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              
+              <span className="text-xs text-card-text">
+                {item.name}: <span className="font-medium text-white">{item.value}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
+
 export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   
@@ -80,29 +101,8 @@ export default function PieChartOffice({ filters, setFilters }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex gap-8">
-        {/* Legend */}
-        <div className="w-1/3 flex flex-col justify-center">
-          <div className="space-y-4">
-            {data.map((entry, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  />
-                  <span className="text-sm font-medium text-card-text">
-                    {entry.name}
-                  </span>
-                </div>
-                <span className="text-sm font-medium text-card-text">
-                  {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
+      <div className="flex flex-col justify-center items-center gap-2 ">
+       
         {/* Chart */}
         <div className="w-2/3 h-96">
           <ResponsiveContainer width="100%" height="100%">
@@ -127,10 +127,33 @@ export default function PieChartOffice({ filters, setFilters }) {
                   />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
             </RePieChart>
           </ResponsiveContainer>
         </div>
+
+				 {/* Legend */}
+        <div className="w-[22rem] flex flex-col justify-center">
+          <div className="space-y-2">
+            {data.map((entry, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
+                  <span className="text-sm font-medium text-card-text">
+                    {entry.name}
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-white">
+                  {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+				
       </div>
     </div>
   )
