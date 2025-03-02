@@ -21,36 +21,50 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null
 }
 
-const weeklyTrendData = [
-  { name: 'Lun', value: 4000 },
-  { name: 'Mar', value: 3000 },
-  { name: 'Mer', value: 4500 },
-  { name: 'Jeu', value: 2500 },
-  { name: 'Ven', value: 5000 },
-  { name: 'Sam', value: 3500 },
-  { name: 'Dim', value: 4200 },
-]
+const generateData = (period) => {
+  switch(period) {
+    case 'Jour':
+      return Array.from({length: 24}, (_, i) => ({
+        name: `${i}`,
+        value: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+      }))
+    case 'Sem':
+      return ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => ({
+        name: day,
+        value: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+      }))
+    case 'Mois':
+      return Array.from({length: 30}, (_, i) => ({
+        name: `${i + 1}`,
+        value: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+      }))
+    case 'Année':
+      return ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'].map(month => ({
+        name: month,
+        value: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+      }))
+    default:
+      return []
+  }
+}
 
 export default function BarChart() {
   const [period, setPeriod] = useState('Mois')
-  const data = [
-    { name: 'Jan', value: 4200 },
-    { name: 'Fév', value: 3800 },
-    { name: 'Mar', value: 4500 },
-    { name: 'Avr', value: 4100 },
-    { name: 'Mai', value: 4700 },
-    { name: 'Juin', value: 4900 },
-    { name: 'Juil', value: 5100 },
-    { name: 'Août', value: 4800 },
-    { name: 'Sep', value: 4600 },
-    { name: 'Oct', value: 4400 },
-    { name: 'Nov', value: 4300 },
-    { name: 'Déc', value: 5000 },
-  ]
+  const [data, setData] = useState(generateData('Mois'))
+  const [lineChartPeriod, setLineChartPeriod] = useState('Sem')
+  const [lineChartData, setLineChartData] = useState(generateData('Sem'))
 
   const handlePeriodChange = (newPeriod) => {
     if (newPeriod !== period) {
       setPeriod(newPeriod)
+      setData(generateData(newPeriod))
+    }
+  }
+
+  const handleLineChartPeriodChange = (newPeriod) => {
+    if (newPeriod !== lineChartPeriod) {
+      setLineChartPeriod(newPeriod)
+      setLineChartData(generateData(newPeriod))
     }
   }
 
@@ -152,12 +166,15 @@ export default function BarChart() {
           >
             <XAxis 
               dataKey="name"
-              tick={{ fill: '#aeb9e1', fontSize: 12 }}
+              tick={{ 
+                fill: '#aeb9e1', 
+                fontSize: period === 'Mois' ? 8 : (period === 'Jour' ? 10 : 12)
+              }}
               axisLine={false}
               tickLine={false}
               interval={0}
-              angle={-45}
-              textAnchor="end"
+              angle={period === 'Année' ? -45 : 0}
+              textAnchor={period === 'Année' ? 'end' : 'middle'}
               height={40}
             />
             <YAxis 
@@ -173,9 +190,9 @@ export default function BarChart() {
               dataKey="value"
               stroke="#00c2ff"
               fill="transparent"
-              strokeWidth={2}
+              strokeWidth={period === 'Jour' || period === 'Mois' ? 1 : 2}
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={period === 'Jour' || period === 'Mois' ? 4 : 20}
             />
           </ReBarChart>
         </ResponsiveContainer>
@@ -198,9 +215,42 @@ export default function BarChart() {
               {renderVariationBadge(2.1, 'up')}
             </div>
           </div>
+          <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50">
+            <div className="flex gap-1">
+              {['Sem', 'Mois', 'Année'].map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => handleLineChartPeriodChange(p)}
+                  className={`
+                    relative
+                    px-2 py-1 rounded-md
+                    text-xs font-medium
+                    transition-colors duration-100
+                    ${
+                      lineChartPeriod === p
+                        ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                        : 'text-card-text'
+                    }
+                    after:absolute
+                    after:inset-0
+                    after:rounded-md
+                    after:border
+                    after:border-transparent
+                    focus:after:border-[#cb3cff]/50
+                    hover:after:border-[#cb3cff]/50
+                    after:pointer-events-none
+                    hover:text-[#cb3cff]
+                  `}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <LineChart data={weeklyTrendData} />
+        <LineChart data={lineChartData} />
       </div>
     </div>
   )
