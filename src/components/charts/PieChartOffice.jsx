@@ -1,4 +1,4 @@
-import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Text } from 'recharts'
+import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts'
 import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
 
@@ -25,33 +25,27 @@ export default function PieChartOffice({ filters, setFilters }) {
     setActiveIndex(null)
   }
 
-  const renderCenterLabel = ({ viewBox }) => {
-    const { cx, cy } = viewBox
+  const renderCenterLabel = () => {
     const activeItem = activeIndex !== null ? data[activeIndex] : null
-    
+    const labelColor = activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'
+    const labelText = activeItem ? activeItem.name : 'Total'
+    const valueText = activeItem ? activeItem.value : total.toLocaleString()
+
     return (
-      <g>
-        <Text 
-          x={cx} 
-          y={cy - 10} 
-          textAnchor="middle" 
-          fill={activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'}
-          fontSize={14}
-          fontWeight={500}
-        >
-          {activeItem ? activeItem.name : 'Total'}
-        </Text>
-        <Text 
-          x={cx} 
-          y={cy + 15} 
-          textAnchor="middle" 
-          fill={activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'}
-          fontSize={18}
-          fontWeight={700}
-        >
-          {activeItem ? activeItem.value : total.toLocaleString()}
-        </Text>
-      </g>
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        fill={labelColor}
+        dominantBaseline="middle"
+      >
+        <tspan x="50%" dy="-2.6em" fontSize="15" fontWeight="400"> {/* Ajustement ici */}
+          {labelText}
+        </tspan>
+        <tspan x="50%" dy="2.3em" fontSize="18" fontWeight="700">
+          {valueText}
+        </tspan>
+      </text>
     )
   }
 
@@ -153,14 +147,17 @@ export default function PieChartOffice({ filters, setFilters }) {
                     fillOpacity={activeIndex === index ? 1 : 0.3}
                   />
                 ))}
+                <Label
+                  content={renderCenterLabel}
+                  position="center"
+                />
               </Pie>
-              {renderCenterLabel}
             </RePieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Legend */}
-        <div className="w-[22rem] flex flex-col justify-center mt-[-30%]">
+        <div className="w-[22rem] flex flex-col justify-center mt-[-25%]">
           <div className="space-y-2">
             {data.map((entry, index) => (
               <div key={index} className="flex justify-between items-center">
