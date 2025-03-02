@@ -44,53 +44,6 @@ export default function PieChartOffice({ filters, setFilters }) {
     setActiveIndex(null)
   }
 
-  const renderActiveShape = (props) => {
-    const {
-      cx,
-      cy,
-      midAngle,
-      innerRadius,
-      outerRadius,
-      startAngle,
-      endAngle,
-      fill,
-    } = props
-
-    const sin = Math.sin(-midAngle * (Math.PI / 180))
-    const cos = Math.cos(-midAngle * (Math.PI / 180))
-    const sx = cx + (outerRadius + 5) * cos
-    const sy = cy + (outerRadius + 5) * sin
-    const mx = cx + (outerRadius + 15) * cos
-    const my = cy + (outerRadius + 15) * sin
-
-    return (
-      <g>
-        <path
-          d={`
-            M${cx},${cy}
-            L${cx + outerRadius * Math.cos(-startAngle * (Math.PI / 180))},
-            ${cy + outerRadius * Math.sin(-startAngle * (Math.PI / 180))}
-            A${outerRadius},${outerRadius} 0 0,1
-            ${cx + outerRadius * Math.cos(-endAngle * (Math.PI / 180))},
-            ${cy + outerRadius * Math.sin(-endAngle * (Math.PI / 180))}
-            L${cx},${cy}
-            Z
-          `}
-          fill={fill}
-          fillOpacity={1}
-        />
-        <path
-          d={`
-            M${sx},${sy}
-            L${mx},${my}
-          `}
-          stroke={fill}
-          strokeWidth={2}
-        />
-      </g>
-    )
-  }
-
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
     const arrowClass = isPositive 
@@ -159,30 +112,34 @@ export default function PieChartOffice({ filters, setFilters }) {
       <div className="flex flex-col justify-center items-center gap-2">
        
         {/* Chart */}
-        <div className="w-2/3 h-96">
+        <div className="w-[70%] h-96">
           <ResponsiveContainer width="100%" height="100%">
-            <RePieChart>
+            <RePieChart margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
                 startAngle={180}
                 endAngle={0}
-                innerRadius={120}
-                outerRadius={180}
+                innerRadius={110}
+                outerRadius={170}
                 paddingAngle={1}
                 dataKey="value"
                 onMouseEnter={onPieEnter}
                 onMouseLeave={onPieLeave}
                 activeIndex={activeIndex}
-                activeShape={renderActiveShape}
+                activeShape={{
+                  outerRadius: 175,
+                  innerRadius: 105,
+                  fillOpacity: 1
+                }}
               >
                 {data.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
                     fill={COLORS[index % COLORS.length]}
                     stroke={COLORS[index % COLORS.length]}
-                    strokeWidth={2}
+                    strokeWidth={activeIndex === index ? 2 : 1}
                     fillOpacity={activeIndex === index ? 1 : 0.3}
                   />
                 ))}
