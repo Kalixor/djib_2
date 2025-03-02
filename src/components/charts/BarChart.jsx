@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
+import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import LineChart from './LineChart'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -20,7 +21,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null
 }
 
-const miniLineData = [
+const weeklyTrendData = [
   { name: 'Lun', value: 4000 },
   { name: 'Mar', value: 3000 },
   { name: 'Mer', value: 4500 },
@@ -180,7 +181,7 @@ export default function BarChart() {
         </ResponsiveContainer>
       </div>
 
-      {/* Mini LineChart */}
+      {/* LineChart pour la tendance hebdomadaire */}
       <div className="relative">
         <div className="flex items-start justify-between mb-4">
           <div className="flex flex-col gap-2">
@@ -199,31 +200,7 @@ export default function BarChart() {
           </div>
         </div>
 
-        <div className="h-32">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={miniLineData}
-              margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
-            >
-              <XAxis 
-                dataKey="name"
-                tick={{ fill: '#aeb9e1', fontSize: 10 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis 
-                hide={true}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#00c2ff" 
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <LineChart data={weeklyTrendData} />
       </div>
     </div>
   )
