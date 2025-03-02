@@ -99,7 +99,7 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Pie
               data={data}
               cx="50%"
-              cy="35%" // Changé de 95% à 35% pour rehausser de 60%
+              cy="50%" // Changé de 35% à 50% pour recentrer
               startAngle={180}
               endAngle={0}
               innerRadius={120}
