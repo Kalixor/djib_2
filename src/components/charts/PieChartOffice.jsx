@@ -13,6 +13,8 @@ export default function PieChartOffice({ filters, setFilters }) {
     { name: 'Paiement contentieux', value: 200 },
   ]
 
+  const total = data.reduce((sum, item) => sum + item.value, 0)
+
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
     const arrowClass = isPositive 
@@ -62,7 +64,7 @@ export default function PieChartOffice({ filters, setFilters }) {
           </div>
           <div className="flex items-center gap-2">
             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-              20.7M
+              {total.toLocaleString()}
             </p>
             {renderVariationBadge(4.2, 'up')}
           </div>
@@ -77,49 +79,57 @@ export default function PieChartOffice({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Chart Container */}
-      <div className="h-96 mt-8 relative">
-        <ResponsiveContainer width="100%" height="100%">
-          <RePieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              startAngle={180}
-              endAngle={0}
-              innerRadius={120}
-              outerRadius={180}
-              paddingAngle={1}
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={COLORS[index % COLORS.length]}
-                  stroke={COLORS[index % COLORS.length].replace('80', '')}
-                  strokeWidth={2}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </RePieChart>
-        </ResponsiveContainer>
-
-        {/* Legend - Centered below chart */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[180px]">
-          <div className="flex flex-col gap-3">
+      {/* Main Content */}
+      <div className="flex gap-8">
+        {/* Legend */}
+        <div className="w-1/3 flex flex-col justify-center">
+          <div className="space-y-4">
             {data.map((entry, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div 
-                  className="w-4 h-4 rounded-full" 
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                />
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
+                  <span className="text-sm font-medium text-card-text">
+                    {entry.name}
+                  </span>
+                </div>
                 <span className="text-sm font-medium text-card-text">
-                  {entry.name}
+                  {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
                 </span>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Chart */}
+        <div className="w-2/3 h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <RePieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                startAngle={180}
+                endAngle={0}
+                innerRadius={120}
+                outerRadius={180}
+                paddingAngle={1}
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]}
+                    stroke={COLORS[index % COLORS.length].replace('80', '')}
+                    strokeWidth={2}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RePieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
