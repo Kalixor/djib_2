@@ -205,7 +205,7 @@ export default function BarChart() {
             <div className="flex items-center gap-2">
               <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
               <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
-                Tendance hebdomadaire
+                Paiements
               </h3>
             </div>
             <div className="flex items-center gap-2">

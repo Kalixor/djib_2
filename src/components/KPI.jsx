@@ -12,8 +12,8 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
   const getIcon = useCallback(() => {
     switch(title) {
-      case 'Imports': return 'fas fa-boxes-packing'
-      case 'Exports': return 'fas fa-truck-fast'
+      case 'Paiements': return 'fas fa-cash-register'
+      case 'Recettes Prévues': return 'fas fa-truck-fast'
       case 'Bureaux': return 'fas fa-clipboard-list'
       case 'Recettes Totales': return 'fas fa-coins'
       default: return 'fas fa-circle-info'
@@ -22,8 +22,8 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
   const getKpiData = useCallback(() => {
     const baseValues = {
-      'Imports': { value: 12520000000, suffix: '', trend: 'up' },
-      'Exports': { value: 8200000, suffix: '', trend: 'down' },
+      'Paiements': { value: 12520000000, suffix: '', trend: 'up' },
+      'Recettes Prévues': { value: 8200000, suffix: '', trend: 'down' },
       'Bureaux': { value: 1200, suffix: '', trend: 'up' },
       'Recettes Totales': { value: 20700000, suffix: '', trend: 'up' }
     }
