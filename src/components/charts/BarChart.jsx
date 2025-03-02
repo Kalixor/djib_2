@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -19,6 +19,16 @@ const CustomTooltip = ({ active, payload, label }) => {
 
   return null
 }
+
+const miniLineData = [
+  { name: 'Lun', value: 4000 },
+  { name: 'Mar', value: 3000 },
+  { name: 'Mer', value: 4500 },
+  { name: 'Jeu', value: 2500 },
+  { name: 'Ven', value: 5000 },
+  { name: 'Sam', value: 3500 },
+  { name: 'Dim', value: 4200 },
+]
 
 export default function BarChart() {
   const [period, setPeriod] = useState('Mois')
@@ -133,7 +143,7 @@ export default function BarChart() {
         </div>
       </div>
 
-      <div className="h-48 relative z-10">
+      <div className="h-48 relative z-10 mb-6">
         <ResponsiveContainer width="100%" height="100%">
           <ReBarChart
             data={data}
@@ -168,6 +178,52 @@ export default function BarChart() {
             />
           </ReBarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Mini LineChart */}
+      <div className="relative">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
+              <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+                Tendance hebdomadaire
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                15.3M
+              </p>
+              {renderVariationBadge(2.1, 'up')}
+            </div>
+          </div>
+        </div>
+
+        <div className="h-32">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={miniLineData}
+              margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+            >
+              <XAxis 
+                dataKey="name"
+                tick={{ fill: '#aeb9e1', fontSize: 10 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis 
+                hide={true}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#00c2ff" 
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
