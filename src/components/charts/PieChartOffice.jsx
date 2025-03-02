@@ -1,28 +1,8 @@
-import { PieChart as RePieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Text } from 'recharts'
 import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
 
 const COLORS = ['#00c2ff', '#cb3cff', '#00ff88']
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-brand-800/95 backdrop-blur-sm p-3 rounded-lg border border-[#cb3cff]/50 shadow-lg">
-        <div className="flex flex-col gap-1">
-          {payload.map((item, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span className="text-xs text-card-text">
-                {item.name}: <span className="font-medium text-white">{item.value}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  return null
-}
 
 export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
@@ -35,6 +15,7 @@ export default function PieChartOffice({ filters, setFilters }) {
   ]
 
   const total = data.reduce((sum, item) => sum + item.value, 0)
+  const variation = 4.2 // Valeur de variation en pourcentage
 
   const onPieEnter = (_, index) => {
     setActiveIndex(index)
@@ -44,8 +25,38 @@ export default function PieChartOffice({ filters, setFilters }) {
     setActiveIndex(null)
   }
 
-  const renderVariationBadge = (value, trend) => {
-    const isPositive = trend === 'up'
+  const renderCenterLabel = ({ viewBox }) => {
+    const { cx, cy } = viewBox
+    const activeItem = activeIndex !== null ? data[activeIndex] : null
+    
+    return (
+      <g>
+        <Text 
+          x={cx} 
+          y={cy - 10} 
+          textAnchor="middle" 
+          fill={activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'}
+          fontSize={14}
+          fontWeight={500}
+        >
+          {activeItem ? activeItem.name : 'Total'}
+        </Text>
+        <Text 
+          x={cx} 
+          y={cy + 15} 
+          textAnchor="middle" 
+          fill={activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'}
+          fontSize={18}
+          fontWeight={700}
+        >
+          {activeItem ? activeItem.value : total.toLocaleString()}
+        </Text>
+      </g>
+    )
+  }
+
+  const renderVariationBadge = () => {
+    const isPositive = variation >= 0
     const arrowClass = isPositive 
       ? 'fas fa-arrow-up rotate-45' 
       : 'fas fa-arrow-down rotate-[-35deg]'
@@ -61,7 +72,7 @@ export default function PieChartOffice({ filters, setFilters }) {
         text-xs font-medium
         ${isPositive ? 'text-green-500' : 'text-red-500'}
       `}>
-        <span>{value}%</span>
+        <span>{variation}%</span>
         <i className={`${arrowClass} text-[0.6rem]`} />
       </div>
     )
@@ -95,7 +106,7 @@ export default function PieChartOffice({ filters, setFilters }) {
             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
               {total.toLocaleString()}
             </p>
-            {renderVariationBadge(4.2, 'up')}
+            {renderVariationBadge()}
           </div>
         </div>
 
@@ -110,7 +121,6 @@ export default function PieChartOffice({ filters, setFilters }) {
 
       {/* Main Content */}
       <div className="flex flex-col justify-center items-center gap-2">
-       
         {/* Chart */}
         <div className="w-[70%] h-96">
           <ResponsiveContainer width="100%" height="100%">
@@ -144,7 +154,7 @@ export default function PieChartOffice({ filters, setFilters }) {
                   />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} cursor={false} />
+              {renderCenterLabel}
             </RePieChart>
           </ResponsiveContainer>
         </div>
