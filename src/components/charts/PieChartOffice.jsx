@@ -8,9 +8,9 @@ export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   
   const data = [
-    { name: 'Recouvré', value: 400 },
-    { name: 'Attente', value: 300 },
-    { name: 'Acompte', value: 200 },
+    { name: 'Paiements recouvrés', value: 400 },
+    { name: 'Paiements en relance', value: 300 },
+    { name: 'Paiement contentieux', value: 200 },
   ]
 
   const renderVariationBadge = (value, trend) => {
@@ -77,21 +77,6 @@ export default function PieChartOffice({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 z-10">
-        {data.map((entry, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <div 
-              className="w-3 h-3 rounded-full" 
-              style={{ backgroundColor: COLORS[index % COLORS.length] }}
-            />
-            <span className="text-xs text-card-text">
-              {entry.name}
-            </span>
-          </div>
-        ))}
-      </div>
-
       {/* Chart Container */}
       <div className="h-96 mt-8">
         <ResponsiveContainer width="100%" height="100%">
@@ -99,7 +84,7 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Pie
               data={data}
               cx="50%"
-              cy="50%" // Changé de 35% à 50% pour recentrer
+              cy="50%"
               startAngle={180}
               endAngle={0}
               innerRadius={120}
@@ -119,6 +104,23 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Tooltip />
           </RePieChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-4 left-0 right-0 px-4 z-10">
+        <div className="flex flex-col gap-3">
+          {data.map((entry, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <div 
+                className="w-4 h-4 rounded-full" 
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              />
+              <span className="text-sm font-medium text-card-text flex-1 ml-4">
+                {entry.name}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
