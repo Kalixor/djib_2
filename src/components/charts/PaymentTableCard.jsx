@@ -1,4 +1,11 @@
 import { useState } from 'react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function PaymentTableCard() {
   const initialData = [
@@ -86,30 +93,49 @@ export default function PaymentTableCard() {
 
       {/* Filters */}
       <div className="flex gap-4 mb-4 items-center">
-        <select
-          value={selectedColumn || ''}
-          onChange={(e) => handleColumnSelect(e.target.value)}
-          className="bg-brand-800/10 border border-[#343b4f] rounded-lg p-2 text-sm text-card-text focus:outline-none focus:border-[#00c2ff]"
-        >
-          <option value="" disabled>Sélectionner une colonne</option>
-          <option value="bureau">Bureau</option>
-          <option value="taxe">Taxe</option>
-        </select>
+        {/* Column Select */}
+        <Select onValueChange={handleColumnSelect}>
+          <SelectTrigger className="w-48 bg-brand-800/20 border border-[#343b4f] hover:bg-brand-800/30 text-card-text">
+            <SelectValue placeholder="Sélectionner une colonne" />
+          </SelectTrigger>
+          <SelectContent className="bg-brand-800/20 border border-[#343b4f]">
+            <SelectItem 
+              value="bureau"
+              className="hover:bg-[#ce68fd]/10 focus:bg-[#ce68fd]/10 text-card-text"
+            >
+              Bureau
+            </SelectItem>
+            <SelectItem 
+              value="taxe"
+              className="hover:bg-[#ce68fd]/10 focus:bg-[#ce68fd]/10 text-card-text"
+            >
+              Taxe
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
-          value={selectedFilter || ''}
-          onChange={(e) => handleFilterSelect(e.target.value)}
+        {/* Value Select */}
+        <Select 
+          onValueChange={handleFilterSelect}
           disabled={!selectedColumn}
-          className={`bg-brand-800/10 border border-[#343b4f] rounded-lg p-2 text-sm ${
-            selectedColumn ? 'text-card-text' : 'text-gray-400'
-          } focus:outline-none focus:border-[#00c2ff]`}
         >
-          <option value="" disabled>Sélectionner une valeur</option>
-          {filterValues.map((value, index) => (
-            <option key={index} value={value}>{value}</option>
-          ))}
-        </select>
+          <SelectTrigger className="w-48 bg-brand-800/20 border border-[#343b4f] hover:bg-brand-800/30 text-card-text disabled:opacity-50 disabled:cursor-not-allowed">
+            <SelectValue placeholder="Sélectionner une valeur" />
+          </SelectTrigger>
+          <SelectContent className="bg-brand-800/20 border border-[#343b4f]">
+            {filterValues.map((value, index) => (
+              <SelectItem
+                key={index}
+                value={value}
+                className="hover:bg-[#ce68fd]/10 focus:bg-[#ce68fd]/10 text-card-text"
+              >
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
+        {/* Reset Button */}
         <button
           onClick={resetFilters}
           className="px-3 py-2 text-sm bg-[#ce68fd]/10 hover:bg-[#ce68fd]/20 text-[#ce68fd] rounded-lg border border-[#ce68fd]/50 transition-colors"
@@ -118,7 +144,7 @@ export default function PaymentTableCard() {
         </button>
       </div>
 
-      {/* Table with vertical scroll */}
+      {/* Table */}
       <div className="overflow-x-auto max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#00c2ff]/50 scrollbar-track-[#343b4f]/20">
         <table className="w-full text-sm text-left text-card-text">
           <thead className="text-xs sticky top-0 bg-brand-800/10 backdrop-blur-sm">
