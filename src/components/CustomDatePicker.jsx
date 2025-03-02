@@ -166,7 +166,7 @@ export default function CustomDatePicker({ value, onChange }) {
     <div className="relative">
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-brand-800/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-brand-700/50 transition-colors border-2 border-[#cb3cff]/50 hover:border-[#cb3cff]/70"
+        className="flex items-center gap-2 bg-brand-800/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-brand-700/50 transition-colors border border-[#cb3cff]/50 hover:border-[#cb3cff]/70"
       >
         <span className="text-sm text-card-text">
           {new Date(value).toLocaleDateString('fr-FR')}
@@ -175,7 +175,7 @@ export default function CustomDatePicker({ value, onChange }) {
         
         {isOpen && (
           <div 
-            className="absolute top-full right-0 mt-2 w-64 bg-brand-800/95 rounded-lg shadow-lg border-2 border-[#cb3cff]/50 backdrop-blur-sm z-10 p-4"
+            className="absolute top-full right-0 mt-2 w-64 bg-brand-800/95 rounded-lg shadow-lg border border-[#cb3cff]/50 backdrop-blur-sm z-[9999] p-4"
             onClick={(e) => e.stopPropagation()}
           >
             {view === 'days' && renderDays()}
@@ -183,7 +183,7 @@ export default function CustomDatePicker({ value, onChange }) {
             {view === 'years' && renderYears()}
             
             {view !== 'days' && (
-              <div className="flex justify-between mt-4 pt-4 border-t-2 border-[#cb3cff]/30">
+              <div className="flex justify-between mt-4 pt-4 border-t border-[#cb3cff]/30">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()

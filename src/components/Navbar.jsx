@@ -1,9 +1,11 @@
 import { usePeriod } from '../context/PeriodContext'
 import { useState, useEffect, useRef } from 'react'
+import CustomDatePicker from './CustomDatePicker'
 
 export default function Navbar() {
   const { period, togglePeriod } = usePeriod()
   const [currentTime, setCurrentTime] = useState(getFormattedTime())
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const animationFrameRef = useRef()
 
   const updateTime = () => {
@@ -41,7 +43,15 @@ export default function Navbar() {
           </h1>
         </div>
 
-        <div className="mr-2">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-card-text">Au :</span>
+            <CustomDatePicker 
+              value={selectedDate}
+              onChange={setSelectedDate}
+            />
+          </div>
+          
           <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50">
             <div className="flex gap-1">
               {['Journalières', 'Hebdomadaires', 'Mensuelles', 'Annuelles'].map((p) => (
