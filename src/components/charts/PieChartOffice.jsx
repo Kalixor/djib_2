@@ -2,7 +2,7 @@ import { PieChart as RePieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 
 import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
 
-const COLORS = ['#00c2ff80', '#cb3cff80', '#00ff8880']
+const COLORS = ['#00c2ff', '#cb3cff', '#00ff88']
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -11,7 +11,6 @@ const CustomTooltip = ({ active, payload, label }) => {
         <div className="flex flex-col gap-1">
           {payload.map((item, index) => (
             <div key={index} className="flex items-center gap-2">
-              
               <span className="text-xs text-card-text">
                 {item.name}: <span className="font-medium text-white">{item.value}</span>
               </span>
@@ -27,6 +26,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [activeIndex, setActiveIndex] = useState(null)
   
   const data = [
     { name: 'Paiements recouvrés', value: 400 },
@@ -35,6 +35,61 @@ export default function PieChartOffice({ filters, setFilters }) {
   ]
 
   const total = data.reduce((sum, item) => sum + item.value, 0)
+
+  const onPieEnter = (_, index) => {
+    setActiveIndex(index)
+  }
+
+  const onPieLeave = () => {
+    setActiveIndex(null)
+  }
+
+  const renderActiveShape = (props) => {
+    const {
+      cx,
+      cy,
+      midAngle,
+      innerRadius,
+      outerRadius,
+      startAngle,
+      endAngle,
+      fill,
+    } = props
+
+    const sin = Math.sin(-midAngle * (Math.PI / 180))
+    const cos = Math.cos(-midAngle * (Math.PI / 180))
+    const sx = cx + (outerRadius + 5) * cos
+    const sy = cy + (outerRadius + 5) * sin
+    const mx = cx + (outerRadius + 15) * cos
+    const my = cy + (outerRadius + 15) * sin
+
+    return (
+      <g>
+        <path
+          d={`
+            M${cx},${cy}
+            L${cx + outerRadius * Math.cos(-startAngle * (Math.PI / 180))},
+            ${cy + outerRadius * Math.sin(-startAngle * (Math.PI / 180))}
+            A${outerRadius},${outerRadius} 0 0,1
+            ${cx + outerRadius * Math.cos(-endAngle * (Math.PI / 180))},
+            ${cy + outerRadius * Math.sin(-endAngle * (Math.PI / 180))}
+            L${cx},${cy}
+            Z
+          `}
+          fill={fill}
+          fillOpacity={1}
+        />
+        <path
+          d={`
+            M${sx},${sy}
+            L${mx},${my}
+          `}
+          stroke={fill}
+          strokeWidth={2}
+        />
+      </g>
+    )
+  }
 
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
@@ -117,13 +172,18 @@ export default function PieChartOffice({ filters, setFilters }) {
                 outerRadius={180}
                 paddingAngle={1}
                 dataKey="value"
+                onMouseEnter={onPieEnter}
+                onMouseLeave={onPieLeave}
+                activeIndex={activeIndex}
+                activeShape={renderActiveShape}
               >
                 {data.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
                     fill={COLORS[index % COLORS.length]}
-                    stroke={COLORS[index % COLORS.length].replace('80', '')}
+                    stroke={COLORS[index % COLORS.length]}
                     strokeWidth={2}
+                    fillOpacity={activeIndex === index ? 1 : 0.3}
                   />
                 ))}
               </Pie>
@@ -133,7 +193,7 @@ export default function PieChartOffice({ filters, setFilters }) {
         </div>
 
         {/* Legend */}
-        <div className="w-[22rem] flex flex-col justify-center mt-[-25%]">
+        <div className="w-[22rem] flex flex-col justify-center mt-[-30%]">
           <div className="space-y-2">
             {data.map((entry, index) => (
               <div key={index} className="flex justify-between items-center">
