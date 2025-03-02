@@ -2,7 +2,7 @@ import { PieChart as RePieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 
 import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
 
-const COLORS = ['#00c2ff', '#cb3cff', '#00ff88']
+const COLORS = ['#00c2ff80', '#cb3cff80', '#00ff8880']
 
 export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
@@ -99,16 +99,21 @@ export default function PieChartOffice({ filters, setFilters }) {
             <Pie
               data={data}
               cx="50%"
-              cy="95%"
+              cy="35%" // Changé de 95% à 35% pour rehausser de 60%
               startAngle={180}
               endAngle={0}
-              innerRadius={120} // Augmenté pour des segments encore plus fins
-              outerRadius={180} // Augmenté pour un rayon encore plus grand
-              paddingAngle={1} // Réduit au minimum pour des segments plus fins
+              innerRadius={120}
+              outerRadius={180}
+              paddingAngle={1}
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={COLORS[index % COLORS.length]}
+                  stroke={COLORS[index % COLORS.length].replace('80', '')}
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Tooltip />
