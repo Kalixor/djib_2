@@ -2,7 +2,7 @@ import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Label } from 'r
 import CustomDatePicker from '../CustomDatePicker'
 import { useState } from 'react'
 
-const COLORS = ['#00c2ff', '#cb3cff', '#00ff88']
+const COLORS = ['#00c2ff', '#0038ff', '#cb3cff']
 
 export default function PieChartOffice({ filters, setFilters }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
@@ -25,9 +25,12 @@ export default function PieChartOffice({ filters, setFilters }) {
     setActiveIndex(null)
   }
 
+  const getOpacity = (index) => {
+    return activeIndex === null ? 0.3 : (activeIndex === index ? 1 : 0.1)
+  }
+
   const renderCenterLabel = () => {
     const activeItem = activeIndex !== null ? data[activeIndex] : null
-    const labelColor = activeItem ? COLORS[activeIndex % COLORS.length] : '#aeb9e1'
     const labelText = activeItem ? activeItem.name : 'Total'
     const valueText = activeItem ? activeItem.value : total.toLocaleString()
 
@@ -36,13 +39,10 @@ export default function PieChartOffice({ filters, setFilters }) {
         x="50%"
         y="50%"
         textAnchor="middle"
-        fill={labelColor}
+        fill="#aeb9e1" // Couleur fixe en text-card-text
         dominantBaseline="middle"
       >
-        <tspan x="50%" dy="-2.6em" fontSize="15" fontWeight="400"> {/* Ajustement ici */}
-          {labelText}
-        </tspan>
-        <tspan x="50%" dy="2.3em" fontSize="18" fontWeight="700">
+        <tspan x="50%" dy="-2.0em" fontSize="20" fontWeight="700">
           {valueText}
         </tspan>
       </text>
@@ -144,7 +144,7 @@ export default function PieChartOffice({ filters, setFilters }) {
                     fill={COLORS[index % COLORS.length]}
                     stroke={COLORS[index % COLORS.length]}
                     strokeWidth={activeIndex === index ? 2 : 1}
-                    fillOpacity={activeIndex === index ? 1 : 0.3}
+                    fillOpacity={getOpacity(index)}
                   />
                 ))}
                 <Label
@@ -157,14 +157,22 @@ export default function PieChartOffice({ filters, setFilters }) {
         </div>
 
         {/* Legend */}
-        <div className="w-[22rem] flex flex-col justify-center mt-[-25%]">
+        <div className="w-[22rem] flex flex-col justify-center mt-[-30%]">
           <div className="space-y-2">
             {data.map((entry, index) => (
-              <div key={index} className="flex justify-between items-center">
+              <div 
+                key={index} 
+                className="flex justify-between items-center"
+                onMouseEnter={() => onPieEnter(null, index)}
+                onMouseLeave={onPieLeave}
+              >
                 <div className="flex items-center gap-3">
                   <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    className="w-4 h-4 rounded-full transition-opacity" 
+                    style={{ 
+                      backgroundColor: COLORS[index % COLORS.length],
+                      opacity: getOpacity(index)
+                    }}
                   />
                   <span className="text-sm font-medium text-card-text">
                     {entry.name}
