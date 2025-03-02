@@ -6,8 +6,6 @@ export default function Navbar() {
   const [currentTime, setCurrentTime] = useState(getFormattedTime())
   const animationFrameRef = useRef()
 
-  const periods = ['Annuelles', 'Mensuelles', 'Hebdomadaires', 'Journalières']
-
   const updateTime = () => {
     setCurrentTime(getFormattedTime())
     animationFrameRef.current = requestAnimationFrame(updateTime)
@@ -44,35 +42,38 @@ export default function Navbar() {
         </div>
 
         <div className="mr-2">
-          <div className="grid grid-cols-2 gap-2">
-            {periods.map((p) => (
-              <label 
-                key={p}
-                className={`
-                  flex items-center gap-2 
-                  px-4 py-2 rounded-lg
-                  transition-all duration-200
-                  ${
-                    period === p
-                      ? 'border-[#cb3cff]'
-                      : 'border-brand-800 hover:border-[#cb3cff]/50'
-                  }
-                  border-2
-                  bg-brand-800/50
-                  cursor-pointer
-                `}
-              >
-                <input
-                  type="radio"
-                  name="period"
-                  value={p}
-                  checked={period === p}
-                  onChange={() => togglePeriod(p)}
-                  className="w-4 h-4 appearance-none rounded-full border-2 border-[#cb3cff] checked:bg-[#cb3cff] checked:border-[#cb3cff]"
-                />
-                <span className="text-sm font-medium text-card-text">{p}</span>
-              </label>
-            ))}
+          <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50">
+            <div className="flex gap-1">
+              {['Journalières', 'Hebdomadaires', 'Mensuelles', 'Annuelles'].map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => togglePeriod(p)}
+                  className={`
+                    relative
+                    px-2 py-1 rounded-md
+                    text-xs font-medium
+                    transition-colors duration-100
+                    ${
+                      period === p
+                        ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                        : 'text-card-text'
+                    }
+                    after:absolute
+                    after:inset-0
+                    after:rounded-md
+                    after:border
+                    after:border-transparent
+                    focus:after:border-[#cb3cff]/50
+                    hover:after:border-[#cb3cff]/50
+                    after:pointer-events-none
+                    hover:text-[#cb3cff]
+                  `}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

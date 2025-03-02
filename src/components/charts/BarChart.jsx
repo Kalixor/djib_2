@@ -90,17 +90,24 @@ export default function BarChart() {
               type="button"
               onClick={() => handlePeriodChange(p)}
               className={`
+                relative
                 px-2 py-1 rounded-md
                 text-xs font-medium
-                transition-colors
-                focus:outline-none
-                focus:ring-2
-                focus:ring-[#00c2ff]/50
+                transition-colors duration-100
                 ${
                   period === p
-                    ? 'bg-[#00c2ff]/10 text-[#00c2ff] border border-[#00c2ff]/50'
-                    : 'text-card-text hover:text-[#00c2ff] hover:bg-[#00c2ff]/10'
+                    ? 'bg-[#00c2ff]/10 text-[#00c2ff]'
+                    : 'text-card-text'
                 }
+                after:absolute
+                after:inset-0
+                after:rounded-md
+                after:border
+                after:border-transparent
+                focus:after:border-[#00c2ff]/50
+                hover:after:border-[#00c2ff]/50
+                after:pointer-events-none
+                hover:text-[#00c2ff]
               `}
             >
               {p}
