@@ -88,7 +88,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
       : 'fas fa-arrow-down rotate-[-35deg]'
 
     return (
-      <div className="absolute top-4 right-4">
+      <div className="flex flex-col items-end">
         <div className={`
           px-2 py-1 rounded-full
           border ${isPositive ? 'border-green-500/50' : 'border-red-500/50'}
@@ -102,7 +102,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
           <span>{variationValue}%</span>
           <i className={`${arrowClass} text-[0.6rem]`} />
         </div>
-        <div className={`text-[0.6rem] mt-1 text-right ${
+        <div className={`text-[0.6rem] mt-1 ${
           isPositive ? 'text-green-500' : 'text-red-500'
         }`}>
           {isPositive ? '+' : '-'}{Math.abs(variationAmount).toLocaleString()}
@@ -130,12 +130,14 @@ const KPI = ({ title, isActive, onClick, style }) => {
       </div>
       
       <div className="flex flex-col w-full min-h-[60px] space-y-4 relative z-10">
-        {renderVariationBadge()}
-        <div className="flex items-center gap-2">
-          <i className={`${getIcon()} text-sm text-gray-300 dark:text-card-text`} />
-          <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
-            {title}
-          </h3>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <i className={`${getIcon()} text-sm text-gray-300 dark:text-card-text`} />
+            <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+              {title}
+            </h3>
+          </div>
+          {renderVariationBadge()}
         </div>
 
         <div className="flex items-center gap-2">
