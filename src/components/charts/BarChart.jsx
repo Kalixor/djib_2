@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -20,6 +21,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 }
 
 export default function BarChart() {
+  const [period, setPeriod] = useState('Mois')
   const data = [
     { name: 'Jan', value: 4200 },
     { name: 'Fév', value: 3800 },
@@ -34,6 +36,12 @@ export default function BarChart() {
     { name: 'Nov', value: 4300 },
     { name: 'Déc', value: 5000 },
   ]
+
+  const handlePeriodChange = (newPeriod) => {
+    if (newPeriod !== period) {
+      setPeriod(newPeriod)
+    }
+  }
 
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
@@ -71,6 +79,34 @@ export default function BarChart() {
              padding: '1px'
            }}>
         <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
+      </div>
+
+      {/* Period Selector */}
+      <div className="absolute top-4 right-4 z-20 bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#00c2ff]/50">
+        <div className="flex gap-1">
+          {['Jour', 'Sem', 'Mois', 'Année'].map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => handlePeriodChange(p)}
+              className={`
+                px-2 py-1 rounded-md
+                text-xs font-medium
+                transition-colors
+                focus:outline-none
+                focus:ring-2
+                focus:ring-[#00c2ff]/50
+                ${
+                  period === p
+                    ? 'bg-[#00c2ff]/10 text-[#00c2ff] border border-[#00c2ff]/50'
+                    : 'text-card-text hover:text-[#00c2ff] hover:bg-[#00c2ff]/10'
+                }
+              `}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex items-start justify-between mb-4 relative z-10">
