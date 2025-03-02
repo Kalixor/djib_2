@@ -4,11 +4,12 @@ import { usePeriod } from '../context/PeriodContext'
 const KPI = ({ title, isActive, onClick, style }) => {
   const { period } = usePeriod()
   const [displayValue, setDisplayValue] = useState('0')
+  const [variationValue, setVariationValue] = useState(0)
+  const [variationAmount, setVariationAmount] = useState(0)
   const targetValue = useRef(0)
   const animationRef = useRef(null)
   const startTimeRef = useRef(null)
 
-  // Fonction getIcon
   const getIcon = useCallback(() => {
     switch(title) {
       case 'Imports': return 'fas fa-boxes-packing'
@@ -19,7 +20,6 @@ const KPI = ({ title, isActive, onClick, style }) => {
     }
   }, [title])
 
-  // Données générées en fonction de la période
   const getKpiData = useCallback(() => {
     const baseValues = {
       'Imports': { value: 12520000000, suffix: '', trend: 'up' },
@@ -36,18 +36,22 @@ const KPI = ({ title, isActive, onClick, style }) => {
     }
 
     const factor = periodFactors[period] || 1
-    const variation = Math.random() * 0.05 // Variation jusqu'à 5%
+    const variation = Math.random() * 0.05
+    const baseValue = baseValues[title].value * factor
+    const variationAmount = baseValue * variation
 
     return {
       ...baseValues[title],
-      value: Math.round(baseValues[title].value * factor * (1 + variation))
+      value: Math.round(baseValue * (1 + variation)),
+      variationAmount: Math.round(variationAmount)
     }
   }, [period, title])
 
-  // Initialisation et mise à jour des valeurs
   useEffect(() => {
-    const { value } = getKpiData()
+    const { value, variationAmount } = getKpiData()
     targetValue.current = value
+    setVariationAmount(variationAmount)
+    setVariationValue(Math.round((variationAmount / (value - variationAmount)) * 100))
     startTimeRef.current = null
     setDisplayValue('0')
     animationRef.current = requestAnimationFrame(animateValue)
@@ -59,7 +63,6 @@ const KPI = ({ title, isActive, onClick, style }) => {
     }
   }, [getKpiData])
 
-  // Animation des valeurs
   const animateValue = useCallback((timestamp) => {
     if (!startTimeRef.current) startTimeRef.current = timestamp
     const progress = timestamp - startTimeRef.current
@@ -77,7 +80,6 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
   const easeOutQuad = useCallback((t) => t * (2 - t), [])
 
-  // Affichage de la variation
   const renderVariationBadge = useCallback(() => {
     const { trend } = getKpiData()
     const isPositive = trend === 'up'
@@ -85,24 +87,29 @@ const KPI = ({ title, isActive, onClick, style }) => {
       ? 'fas fa-arrow-up rotate-45' 
       : 'fas fa-arrow-down rotate-[-35deg]'
 
-    const variationValue = Math.round(Math.random() * 5) // Variation entre 0% et 5%
-
     return (
-      <div className={`
-        px-2 py-1 rounded-full
-        border ${isPositive ? 'border-green-500/50' : 'border-red-500/50'}
-        bg-${isPositive ? 'green-500/10' : 'red-500/10'}
-        backdrop-blur-sm
-        shadow-sm
-        flex items-center gap-1
-        text-xs font-medium
-        ${isPositive ? 'text-green-500' : 'text-red-500'}
-      `}>
-        <span>{variationValue}%</span>
-        <i className={`${arrowClass} text-[0.6rem]`} />
+      <div className="flex flex-col items-end">
+        <div className={`
+          px-2 py-1 rounded-full
+          border ${isPositive ? 'border-green-500/50' : 'border-red-500/50'}
+          bg-${isPositive ? 'green-500/10' : 'red-500/10'}
+          backdrop-blur-sm
+          shadow-sm
+          flex items-center gap-1
+          text-xs font-medium
+          ${isPositive ? 'text-green-500' : 'text-red-500'}
+        `}>
+          <span>{variationValue}%</span>
+          <i className={`${arrowClass} text-[0.6rem]`} />
+        </div>
+        <div className={`text-[0.6rem] mt-1 ${
+          isPositive ? 'text-green-500' : 'text-red-500'
+        }`}>
+          {isPositive ? '+' : '-'}{Math.abs(variationAmount).toLocaleString()}
+        </div>
       </div>
     )
-  }, [getKpiData])
+  }, [getKpiData, variationValue, variationAmount])
 
   return (
     <div 
