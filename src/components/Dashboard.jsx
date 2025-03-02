@@ -7,26 +7,30 @@ import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
 import NotificationPopup from './NotificationPopup'
 
-const areaChartData = [
-  { name: 'Jan', prevues: 4000, effectives: 2400 },
-  { name: 'Fév', prevues: 3000, effectives: 1398 },
-  { name: 'Mar', prevues: 2000, effectives: 9800 },
-  { name: 'Avr', prevues: 2780, effectives: 3908 },
-  { name: 'Mai', prevues: 1890, effectives: 4800 },
-  { name: 'Juin', prevues: 2390, effectives: 3800 },
-  { name: 'Juil', prevues: 3490, effectives: 4300 },
-  { name: 'Août', prevues: 4000, effectives: 2400 },
-  { name: 'Sep', prevues: 3000, effectives: 1398 },
-  { name: 'Oct', prevues: 2000, effectives: 9800 },
-  { name: 'Nov', prevues: 2780, effectives: 3908 },
-  { name: 'Déc', prevues: 1890, effectives: 4800 },
-]
+// Génération des données pour une année complète
+const generateYearData = () => {
+  const startDate = new Date('2023-12-01')
+  const endDate = new Date('2024-12-01')
+  const data = []
+  
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    data.push({
+      date: new Date(d).toISOString().split('T')[0],
+      prevues: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000,
+      effectives: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+    })
+  }
+  
+  return data
+}
+
+const allData = generateYearData()
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-brand-800/95 backdrop-blur-sm p-3 rounded-lg border border-[#cb3cff]/50 shadow-lg">
-        <p className="text-xs text-card-text mb-2">{label}</p>
+        <p className="text-xs text-card-text mb-2">{new Date(label).toLocaleDateString('fr-FR')}</p>
         <div className="flex flex-col gap-1">
           {payload.map((item, index) => (
             <div key={index} className="flex items-center gap-2">
@@ -49,13 +53,25 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function Dashboard({ filters, setFilters }) {
   const [activeKPI, setActiveKPI] = useState(null)
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
-  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0])
+  const [startDate, setStartDate] = useState('2023-12-01')
+  const [endDate, setEndDate] = useState('2024-01-01')
   const [notification, setNotification] = useState(null)
 
   const handleDateChange = (type, date) => {
     const newStart = type === 'start' ? date : startDate
     const newEnd = type === 'end' ? date : endDate
+
+    // Vérification des limites
+    const minDate = new Date('2023-12-01')
+    const maxDate = new Date('2024-12-01')
+    
+    if (new Date(newStart) < minDate || new Date(newEnd) > maxDate) {
+      setNotification({
+        type: 'error',
+        message: 'La période doit être comprise entre 01/12/2023 et 01/12/2024'
+      })
+      return
+    }
 
     if (new Date(newStart) > new Date(newEnd)) {
       setNotification({
@@ -69,6 +85,28 @@ export default function Dashboard({ filters, setFilters }) {
       setStartDate(date)
     } else {
       setEndDate(date)
+    }
+  }
+
+  // Filtrage des données selon la période sélectionnée
+  const filteredData = allData.filter(d => {
+    const currentDate = new Date(d.date)
+    return currentDate >= new Date(startDate) && currentDate <= new Date(endDate)
+  })
+
+  // Calcul du nombre de jours sélectionnés
+  const daysDifference = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24))
+
+  // Configuration de l'axe X en fonction du nombre de jours
+  const xAxisConfig = {
+    interval: Math.max(0, Math.floor(daysDifference / 10)),
+    angle: daysDifference > 50 ? -45 : 0,
+    fontSize: daysDifference > 50 ? 10 : 12,
+    tickFormatter: (date) => {
+      const d = new Date(date)
+      return daysDifference > 50 ? 
+        `${d.getDate()}/${d.getMonth() + 1}` : 
+        d.toLocaleDateString('fr-FR')
     }
   }
 
@@ -210,8 +248,8 @@ export default function Dashboard({ filters, setFilters }) {
           <div className="h-96 -mx-4 translate-x-[-8px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={areaChartData}
-                margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                data={filteredData}
+                margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
               >
                 <defs>
                   <linearGradient id="prevuesGradient" x1="0" y1="0" x2="0" y2="1">
@@ -224,10 +262,18 @@ export default function Dashboard({ filters, setFilters }) {
                   </linearGradient>
                 </defs>
                 <XAxis 
-                  dataKey="name" 
-                  tick={{ fill: '#aeb9e1', fontSize: 12 }}
+                  dataKey="date"
+                  tickFormatter={xAxisConfig.tickFormatter}
+                  tick={{ 
+                    fill: '#aeb9e1', 
+                    fontSize: xAxisConfig.fontSize
+                  }}
                   axisLine={false}
                   tickLine={false}
+                  interval={xAxisConfig.interval}
+                  angle={xAxisConfig.angle}
+                  textAnchor={xAxisConfig.angle === 0 ? 'middle' : 'end'}
+                  height={xAxisConfig.angle === 0 ? 40 : 60}
                 />
                 <YAxis 
                   tick={{ fill: '#aeb9e1', fontSize: 12 }}
