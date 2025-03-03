@@ -296,7 +296,7 @@ export default function Dashboard({ filters, setFilters }) {
         </div>
       </div>
 
-      <div className="flex gap-5 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <PieChartOffice filters={filters} setFilters={setFilters} />
         <PaymentTableCard />
       </div>

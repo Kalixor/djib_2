@@ -73,7 +73,7 @@ export default function PieChartOffice({ filters, setFilters }) {
   }
 
   return (
-    <div className="bg-white dark:bg-card w-[40%] p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card w-full p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
       {/* Border gradient */}
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
