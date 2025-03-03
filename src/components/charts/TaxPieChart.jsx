@@ -1,12 +1,29 @@
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts'
-import { useMemo } from 'react'
+import { useState } from 'react'
 
 const COLORS = ['#00c2ff', '#0038ff', '#cb3cff', '#ff8042', '#00c49f']
 
 export default function TaxPieChart({ data }) {
+  const [activeIndex, setActiveIndex] = useState(null)
   const total = data.reduce((sum, item) => sum + item.value, 0)
-  
+
+  const onPieEnter = (_, index) => {
+    setActiveIndex(index)
+  }
+
+  const onPieLeave = () => {
+    setActiveIndex(null)
+  }
+
+  const getOpacity = (index) => {
+    return activeIndex === null ? 0.3 : (activeIndex === index ? 1 : 0.1)
+  }
+
   const renderCenterLabel = () => {
+    const activeItem = activeIndex !== null ? data[activeIndex] : null
+    const labelText = activeItem ? activeItem.name : 'Total'
+    const valueText = activeItem ? activeItem.value : total.toLocaleString()
+
     return (
       <text
         x="50%"
@@ -16,7 +33,7 @@ export default function TaxPieChart({ data }) {
         dominantBaseline="middle"
       >
         <tspan x="50%" dy="-2.0em" fontSize="20" fontWeight="700">
-          {total.toLocaleString()}
+          {valueText}
         </tspan>
       </text>
     )
@@ -47,34 +64,75 @@ export default function TaxPieChart({ data }) {
         </div>
       </div>
 
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <RePieChart margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              startAngle={180}
-              endAngle={0}
-              innerRadius={80}
-              outerRadius={120}
-              paddingAngle={1}
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={COLORS[index % COLORS.length]}
-                  stroke={COLORS[index % COLORS.length]}
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div className="w-[70%] h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <RePieChart margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                startAngle={180}
+                endAngle={0}
+                innerRadius={110}
+                outerRadius={170}
+                paddingAngle={1}
+                dataKey="value"
+                onMouseEnter={onPieEnter}
+                onMouseLeave={onPieLeave}
+                activeIndex={activeIndex}
+                activeShape={{
+                  outerRadius: 175,
+                  innerRadius: 105,
+                  fillOpacity: 1
+                }}
+              >
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]}
+                    stroke={COLORS[index % COLORS.length]}
+                    strokeWidth={activeIndex === index ? 2 : 1}
+                    fillOpacity={getOpacity(index)}
+                  />
+                ))}
+                <Label
+                  content={renderCenterLabel}
+                  position="center"
                 />
-              ))}
-              <Label
-                content={renderCenterLabel}
-                position="center"
-              />
-            </Pie>
-          </RePieChart>
-        </ResponsiveContainer>
+              </Pie>
+            </RePieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="w-[22rem] flex flex-col justify-center mt-[-8rem]">
+          <div className="space-y-4">
+            {data.map((entry, index) => (
+              <div 
+                key={index} 
+                className="flex justify-between items-center"
+                onMouseEnter={() => onPieEnter(null, index)}
+                onMouseLeave={onPieLeave}
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-4 rounded-full transition-opacity" 
+                    style={{ 
+                      backgroundColor: COLORS[index % COLORS.length],
+                      opacity: getOpacity(index)
+                    }}
+                  />
+                  <span className="text-sm font-medium text-card-text">
+                    {entry.name}
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-white">
+                  {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
