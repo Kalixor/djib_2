@@ -40,13 +40,26 @@ export default function PaymentTableCard() {
     return data
   }, [bureauFilter, taxeFilter])
 
+  const totals = useMemo(() => {
+    return filteredData.reduce(
+      (acc, item) => {
+        acc.espece += item.espece
+        acc.cheque += item.cheque
+        acc.certifie += item.certifie
+        acc.total += item.total
+        return acc
+      },
+      { espece: 0, cheque: 0, certifie: 0, total: 0 }
+    )
+  }, [filteredData])
+
   const handleResetFilters = () => {
     setBureauFilter(null)
     setTaxeFilter(null)
   }
 
   return (
-    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative overflow-hidden">
       {/* Border gradient */}
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
@@ -164,6 +177,26 @@ export default function PaymentTableCard() {
               </tr>
             ))}
           </tbody>
+          {/* Ligne des totaux */}
+          <tfoot>
+            <tr className="bg-brand-800/10 backdrop-blur-sm border-t border-[#343b4f]">
+              <td colSpan={2} className="px-3 py-1.5 font-bold text-white text-right">
+                Total
+              </td>
+              <td className="px-3 py-1.5 font-bold text-white">
+                {totals.espece.toLocaleString()}
+              </td>
+              <td className="px-3 py-1.5 font-bold text-white">
+                {totals.cheque.toLocaleString()}
+              </td>
+              <td className="px-3 py-1.5 font-bold text-white">
+                {totals.certifie.toLocaleString()}
+              </td>
+              <td className="px-3 py-1.5 font-bold text-white">
+                {totals.total.toLocaleString()}
+              </td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
