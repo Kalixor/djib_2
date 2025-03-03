@@ -50,6 +50,16 @@ export default function PaymentTableCard() {
     return Array.from(values).sort()
   }
 
+  const handleFilterClick = (filterType, setFilter, setShowFilter, currentFilter) => {
+    if (currentFilter) {
+      // Si un filtre est actif, le désactiver
+      setFilter(null)
+    } else {
+      // Sinon, afficher le menu de filtrage
+      setShowFilter(prev => !prev)
+    }
+  }
+
   const filteredData = useMemo(() => {
     let data = [...initialData]
     
@@ -85,6 +95,9 @@ export default function PaymentTableCard() {
     setBureauFilter(null)
     setTaxeFilter(null)
     setDateFilter(null)
+    setShowBureauFilter(false)
+    setShowTaxeFilter(false)
+    setShowDateFilter(false)
   }
 
   return (
@@ -129,10 +142,10 @@ export default function PaymentTableCard() {
                 <div className="flex items-center gap-1">
                   Date
                   <button 
-                    onClick={() => setShowDateFilter(!showDateFilter)}
+                    onClick={() => handleFilterClick('date', setDateFilter, setShowDateFilter, dateFilter)}
                     className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                   >
-                    <i className="fas fa-filter text-xs" />
+                    <i className={`fas ${dateFilter ? 'fa-filter-circle-xmark text-[#ce68fd]' : 'fa-filter'} text-xs`} />
                   </button>
                   {showDateFilter && (
                     <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
@@ -158,10 +171,10 @@ export default function PaymentTableCard() {
                 <div className="flex items-center gap-1">
                   Bureau
                   <button 
-                    onClick={() => setShowBureauFilter(!showBureauFilter)}
+                    onClick={() => handleFilterClick('bureau', setBureauFilter, setShowBureauFilter, bureauFilter)}
                     className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                   >
-                    <i className="fas fa-filter text-xs" />
+                    <i className={`fas ${bureauFilter ? 'fa-filter-circle-xmark text-[#ce68fd]' : 'fa-filter'} text-xs`} />
                   </button>
                   {showBureauFilter && (
                     <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
@@ -187,10 +200,10 @@ export default function PaymentTableCard() {
                 <div className="flex items-center gap-1">
                   Taxe
                   <button 
-                    onClick={() => setShowTaxeFilter(!showTaxeFilter)}
+                    onClick={() => handleFilterClick('taxe', setTaxeFilter, setShowTaxeFilter, taxeFilter)}
                     className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                   >
-                    <i className="fas fa-filter text-xs" />
+                    <i className={`fas ${taxeFilter ? 'fa-filter-circle-xmark text-[#ce68fd]' : 'fa-filter'} text-xs`} />
                   </button>
                   {showTaxeFilter && (
                     <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
