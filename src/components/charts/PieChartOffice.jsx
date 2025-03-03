@@ -158,7 +158,7 @@ export default function PieChartOffice({ filters, setFilters }) {
         </div>
 
         {/* Legend */}
-        <div className="w-[22rem] flex flex-col justify-center mt-[-30%]">
+        <div className="w-[22rem] flex flex-col justify-center mt-[-8rem]">
           <div className="space-y-2">
             {data.map((entry, index) => (
               <div 
