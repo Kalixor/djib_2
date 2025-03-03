@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import Select from 'react-select'
 
 const initialData = [
   { bureau: 'Bureau A', taxe: 'Taxe Import', espece: 500, cheque: 300, certifie: 200, total: 1000 },
@@ -16,79 +15,34 @@ const initialData = [
   { bureau: 'Bureau D', taxe: 'Droit Douane', espece: 500, cheque: 400, certifie: 300, total: 1200 }
 ]
 
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    backgroundColor: '#0b1739',
-    borderColor: '#343b4f',
-    color: '#aeb9e1',
-    minHeight: '32px',
-    boxShadow: 'none',
-    fontSize: '0.875rem',
-    '&:hover': {
-      borderColor: '#cb3cff'
-    }
-  }),
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: '#0b1739',
-    borderColor: '#343b4f',
-    fontSize: '0.875rem'
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected ? '#cb3cff' : state.isFocused ? '#cb3cff20' : 'transparent',
-    color: state.isSelected ? '#fff' : '#aeb9e1',
-    fontSize: '0.875rem',
-    '&:hover': {
-      backgroundColor: '#cb3cff40'
-    }
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: '#aeb9e1',
-    fontSize: '0.875rem'
-  }),
-  input: (provided) => ({
-    ...provided,
-    color: '#aeb9e1',
-    fontSize: '0.875rem'
-  }),
-  indicatorSeparator: () => ({
-    display: 'none'
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: '#aeb9e1',
-    padding: '4px',
-    '&:hover': {
-      color: '#cb3cff'
-    }
-  })
-}
-
 export default function PaymentTableCard() {
-  const [filterColumn, setFilterColumn] = useState(null)
-  const [filterValue, setFilterValue] = useState(null)
-
-  const columnOptions = [
-    { value: 'bureau', label: 'Bureau' },
-    { value: 'taxe', label: 'Taxe' }
-  ]
+  const [bureauFilter, setBureauFilter] = useState(null)
+  const [taxeFilter, setTaxeFilter] = useState(null)
+  const [showBureauFilter, setShowBureauFilter] = useState(false)
+  const [showTaxeFilter, setShowTaxeFilter] = useState(false)
 
   const getUniqueValues = (column) => {
     const values = new Set(initialData.map(item => item[column]))
-    return Array.from(values).map(value => ({ value, label: value }))
+    return Array.from(values)
   }
 
   const filteredData = useMemo(() => {
-    if (!filterColumn || !filterValue) return initialData
-    return initialData.filter(item => item[filterColumn] === filterValue.value)
-  }, [filterColumn, filterValue])
+    let data = [...initialData]
+    
+    if (bureauFilter) {
+      data = data.filter(item => item.bureau === bureauFilter)
+    }
+    
+    if (taxeFilter) {
+      data = data.filter(item => item.taxe === taxeFilter)
+    }
+    
+    return data
+  }, [bureauFilter, taxeFilter])
 
   const handleResetFilters = () => {
-    setFilterColumn(null)
-    setFilterValue(null)
+    setBureauFilter(null)
+    setTaxeFilter(null)
   }
 
   return (
@@ -116,36 +70,9 @@ export default function PaymentTableCard() {
             </h3>
           </div>
         </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex-1 flex gap-2">
-          <Select
-            options={columnOptions}
-            value={columnOptions.find(opt => opt.value === filterColumn)}
-            onChange={(option) => {
-              setFilterColumn(option?.value)
-              setFilterValue(null)
-            }}
-            placeholder="Colonne"
-            styles={customStyles}
-            className="flex-1"
-          />
-          <Select
-            options={filterColumn ? getUniqueValues(filterColumn) : []}
-            value={filterValue}
-            onChange={setFilterValue}
-            isDisabled={!filterColumn}
-            placeholder="Valeur"
-            styles={customStyles}
-            className="flex-1"
-          />
-        </div>
-
         <button
           onClick={handleResetFilters}
-          className="px-3 py-1.5 text-sm text-card-text hover:text-[#cb3cff] transition-colors border border-[#343b4f] rounded-lg hover:border-[#cb3cff]"
+          className="px-3 py-1.5 text-xs text-card-text hover:text-[#cb3cff] transition-colors border border-[#343b4f] rounded-lg hover:border-[#cb3cff]"
         >
           Réinitialiser
         </button>
@@ -156,8 +83,64 @@ export default function PaymentTableCard() {
         <table className="w-full text-xs text-left text-card-text">
           <thead className="sticky top-0 bg-brand-800/10 backdrop-blur-sm">
             <tr>
-              <th scope="col" className="px-3 py-1.5 text-[#00c2ff]">Bureau</th>
-              <th scope="col" className="px-3 py-1.5 text-[#00c2ff]">Taxe</th>
+              <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
+                <div className="flex items-center gap-1">
+                  Bureau
+                  <button 
+                    onClick={() => setShowBureauFilter(!showBureauFilter)}
+                    className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
+                  >
+                    <i className="fas fa-filter text-xs" />
+                  </button>
+                  {showBureauFilter && (
+                    <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
+                      <div className="max-h-48 overflow-y-auto text-[0.75rem]">
+                        {getUniqueValues('bureau').map((value, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              setBureauFilter(value)
+                              setShowBureauFilter(false)
+                            }}
+                            className="px-3 py-1.5 text-card-text hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] cursor-pointer"
+                          >
+                            {value}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
+                <div className="flex items-center gap-1">
+                  Taxe
+                  <button 
+                    onClick={() => setShowTaxeFilter(!showTaxeFilter)}
+                    className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
+                  >
+                    <i className="fas fa-filter text-xs" />
+                  </button>
+                  {showTaxeFilter && (
+                    <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
+                      <div className="max-h-48 overflow-y-auto text-[0.75rem]">
+                        {getUniqueValues('taxe').map((value, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              setTaxeFilter(value)
+                              setShowTaxeFilter(false)
+                            }}
+                            className="px-3 py-1.5 text-card-text hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] cursor-pointer"
+                          >
+                            {value}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </th>
               <th scope="col" className="px-3 py-1.5 text-[#00c2ff]">Espèce</th>
               <th scope="col" className="px-3 py-1.5 text-[#00c2ff]">Chèque</th>
               <th scope="col" className="px-3 py-1.5 text-[#00c2ff]">Certifié</th>
