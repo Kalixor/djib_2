@@ -21,21 +21,32 @@ export default function PaymentTypePieChart({ data }) {
 
   const renderCenterLabel = () => {
     const activeItem = activeIndex !== null ? data[activeIndex] : null
-    const labelText = activeItem ? activeItem.name : 'Total'
-    const valueText = activeItem ? activeItem.value : total.toLocaleString()
+    const labelText = activeItem ? activeItem.value.toLocaleString() : total.toLocaleString()
+    const titleText = activeItem ? activeItem.name : 'Total'
 
     return (
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        fill="#aeb9e1"
-        dominantBaseline="middle"
-      >
-        <tspan x="50%" dy="-2.0em" fontSize="20" fontWeight="700">
-          {valueText}
-        </tspan>
-      </text>
+      <>
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          fill="#aeb9e1"
+          dominantBaseline="middle"
+          fontSize="20"
+          fontWeight="700"
+        >
+          {labelText}
+        </text>
+        <text
+          x="50%"
+          y="60%"
+          textAnchor="middle"
+          fill="#aeb9e1"
+          fontSize="14"
+        >
+          {titleText}
+        </text>
+      </>
     )
   }
 
@@ -58,7 +69,7 @@ export default function PaymentTypePieChart({ data }) {
           <div className="flex items-center gap-1">
             <i className="fas fa-money-bill-wave text-lg text-gray-300 dark:text-card-text" />
             <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
-              Répartition des Paiements
+              Modes de Paiement
             </h3>
           </div>
         </div>
