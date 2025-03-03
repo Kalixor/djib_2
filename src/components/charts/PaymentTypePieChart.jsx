@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 const COLORS = ['#00c2ff', '#0038ff', '#cb3cff']
 
-export default function PaymentTypePieChart({ data }) {
+export default function PaymentTypePieChart({ data, bureauFilter }) {
   const [activeIndex, setActiveIndex] = useState(null)
   const total = data.reduce((sum, item) => sum + item.value, 0)
 
@@ -51,7 +51,7 @@ export default function PaymentTypePieChart({ data }) {
   }
 
   return (
-    <div className="bg-white dark:bg-card p-3 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card p-3 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative h-[420px]">
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
              background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
@@ -82,7 +82,7 @@ export default function PaymentTypePieChart({ data }) {
               <Pie
                 data={data}
                 cx="50%"
-                cy="50%"
+                cy="52%"
                 startAngle={180}
                 endAngle={0}
                 innerRadius={90}
@@ -116,6 +116,14 @@ export default function PaymentTypePieChart({ data }) {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {bureauFilter && (
+        <div className="absolute bottom-4 left-0 right-0 text-center">
+          <h2 className="text-2xl font-bold text-white">
+            {bureauFilter}
+          </h2>
+        </div>
+      )}
     </div>
   )
 }

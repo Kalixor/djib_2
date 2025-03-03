@@ -71,7 +71,7 @@ export default function TaxPieChart({ data }) {
               <Pie
                 data={data}
                 cx="50%"
-                cy="50%"
+                cy="52%"
                 startAngle={180}
                 endAngle={0}
                 innerRadius={90}

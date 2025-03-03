@@ -279,11 +279,16 @@ export default function PaymentTableCard() {
 
       {/* Pie Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PaymentTypePieChart data={[
-          { name: 'Espèce', value: totals.espece },
-          { name: 'Chèque', value: totals.cheque },
-          { name: 'Certifié', value: totals.certifie }
-        ]} />
+        <div>
+          <PaymentTypePieChart 
+            data={[
+              { name: 'Espèce', value: totals.espece },
+              { name: 'Chèque', value: totals.cheque },
+              { name: 'Certifié', value: totals.certifie }
+            ]}
+            bureauFilter={bureauFilter}
+          />
+        </div>
         
         <TaxPieChart data={useMemo(() => {
           const taxes = {}
