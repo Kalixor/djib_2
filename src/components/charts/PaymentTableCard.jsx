@@ -105,7 +105,7 @@ export default function PaymentTableCard() {
   return (
     <div className="space-y-4">
       {/* Table Card */}
-      <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative overflow-hidden">
+      <div className="bg-white w-full dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative overflow-hidden">
         {/* Border gradient */}
         <div className="absolute inset-0 rounded-lg pointer-events-none"
              style={{
@@ -138,7 +138,7 @@ export default function PaymentTableCard() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#00c2ff]/50 scrollbar-track-[#343b4f]/20">
+        <div className="overflow-x-auto w-full max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#00c2ff]/50 scrollbar-track-[#343b4f]/20">
           <table className="w-full text-xs text-left text-card-text">
             <thead className="sticky top-0 bg-brand-800/10 backdrop-blur-sm">
               <tr>

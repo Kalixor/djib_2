@@ -40,7 +40,7 @@ export default function TaxPieChart({ data }) {
   }
 
   return (
-    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card p-3 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
              background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
@@ -53,9 +53,9 @@ export default function TaxPieChart({ data }) {
         <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
       </div>
 
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
+      <div className="flex justify-between items-start mb-1">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
             <i className="fas fa-file-invoice-dollar text-lg text-gray-300 dark:text-card-text" />
             <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
               Répartition par Taxe
@@ -64,8 +64,8 @@ export default function TaxPieChart({ data }) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center gap-2">
-        <div className="w-[70%] h-96">
+      <div className="flex flex-col justify-center items-center mt-8">
+        <div className="w-full h-72">
           <ResponsiveContainer width="100%" height="100%">
             <RePieChart margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
               <Pie
@@ -74,16 +74,16 @@ export default function TaxPieChart({ data }) {
                 cy="50%"
                 startAngle={180}
                 endAngle={0}
-                innerRadius={110}
-                outerRadius={170}
+                innerRadius={90}
+                outerRadius={140}
                 paddingAngle={1}
                 dataKey="value"
                 onMouseEnter={onPieEnter}
                 onMouseLeave={onPieLeave}
                 activeIndex={activeIndex}
                 activeShape={{
-                  outerRadius: 175,
-                  innerRadius: 105,
+                  outerRadius: 145,
+                  innerRadius: 85,
                   fillOpacity: 1
                 }}
               >
@@ -105,8 +105,8 @@ export default function TaxPieChart({ data }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="w-[22rem] flex flex-col justify-center mt-[-8rem]">
-          <div className="space-y-4">
+        <div className="w-full flex flex-col justify-center mt-[-5rem] px-2">
+          <div className="space-y-1">
             {data.map((entry, index) => (
               <div 
                 key={index} 
@@ -114,19 +114,19 @@ export default function TaxPieChart({ data }) {
                 onMouseEnter={() => onPieEnter(null, index)}
                 onMouseLeave={onPieLeave}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
                   <div 
-                    className="w-4 h-4 rounded-full transition-opacity" 
+                    className="w-2.5 h-2.5 rounded-full transition-opacity" 
                     style={{ 
                       backgroundColor: COLORS[index % COLORS.length],
                       opacity: getOpacity(index)
                     }}
                   />
-                  <span className="text-sm font-medium text-card-text">
+                  <span className="text-xs font-medium text-card-text">
                     {entry.name}
                   </span>
                 </div>
-                <span className="text-sm font-medium text-white">
+                <span className="text-xs font-medium text-white ml-1">
                   {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
                 </span>
               </div>

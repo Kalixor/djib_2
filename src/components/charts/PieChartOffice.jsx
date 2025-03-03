@@ -73,7 +73,7 @@ export default function PieChartOffice({ filters, setFilters }) {
   }
 
   return (
-    <div className="bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card w-[40%] p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
       {/* Border gradient */}
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
@@ -117,7 +117,7 @@ export default function PieChartOffice({ filters, setFilters }) {
       {/* Main Content */}
       <div className="flex flex-col justify-center items-center gap-2">
         {/* Chart */}
-        <div className="w-[70%] h-96">
+        <div className="w-[80%] h-96">
           <ResponsiveContainer width="100%" height="100%">
             <RePieChart margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
               <Pie
