@@ -21,26 +21,37 @@ export default function TaxPieChart({ data }) {
 
   const renderCenterLabel = () => {
     const activeItem = activeIndex !== null ? data[activeIndex] : null
-    const labelText = activeItem ? activeItem.name : 'Total'
-    const valueText = activeItem ? activeItem.value : total.toLocaleString()
+    const labelText = activeItem ? activeItem.value.toLocaleString() : total.toLocaleString()
+    const titleText = activeItem ? activeItem.name : 'Total'
 
     return (
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        fill="#aeb9e1"
-        dominantBaseline="middle"
-      >
-        <tspan x="50%" dy="-2.0em" fontSize="20" fontWeight="700">
-          {valueText}
-        </tspan>
-      </text>
+      <>
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          fill="#aeb9e1"
+          dominantBaseline="middle"
+          fontSize="20"
+          fontWeight="700"
+        >
+          {labelText}
+        </text>
+        <text
+          x="50%"
+          y="60%"
+          textAnchor="middle"
+          fill="#aeb9e1"
+          fontSize="14"
+        >
+          {titleText}
+        </text>
+      </>
     )
   }
 
   return (
-    <div className="bg-white dark:bg-card p-3 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+    <div className="bg-white dark:bg-card p-3 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative h-[420px]">
       <div className="absolute inset-0 rounded-lg pointer-events-none"
            style={{
              background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
@@ -71,7 +82,7 @@ export default function TaxPieChart({ data }) {
               <Pie
                 data={data}
                 cx="50%"
-                cy="52%"
+                cy="50%"
                 startAngle={180}
                 endAngle={0}
                 innerRadius={90}
@@ -104,34 +115,34 @@ export default function TaxPieChart({ data }) {
             </RePieChart>
           </ResponsiveContainer>
         </div>
+      </div>
 
-        <div className="w-full flex flex-col justify-center mt-[-5rem] px-2">
-          <div className="space-y-1">
-            {data.map((entry, index) => (
-              <div 
-                key={index} 
-                className="flex justify-between items-center"
-                onMouseEnter={() => onPieEnter(null, index)}
-                onMouseLeave={onPieLeave}
-              >
-                <div className="flex items-center gap-1">
-                  <div 
-                    className="w-2.5 h-2.5 rounded-full transition-opacity" 
-                    style={{ 
-                      backgroundColor: COLORS[index % COLORS.length],
-                      opacity: getOpacity(index)
-                    }}
-                  />
-                  <span className="text-xs font-medium text-card-text">
-                    {entry.name}
-                  </span>
-                </div>
-                <span className="text-xs font-medium text-white ml-1">
-                  {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
+      <div className="w-full flex flex-col justify-center mt-[-5rem] px-2">
+        <div className="space-y-1">
+          {data.map((entry, index) => (
+            <div 
+              key={index} 
+              className="flex justify-between items-center"
+              onMouseEnter={() => onPieEnter(null, index)}
+              onMouseLeave={onPieLeave}
+            >
+              <div className="flex items-center gap-1">
+                <div 
+                  className="w-2.5 h-2.5 rounded-full transition-opacity" 
+                  style={{ 
+                    backgroundColor: COLORS[index % COLORS.length],
+                    opacity: getOpacity(index)
+                  }}
+                />
+                <span className="text-xs font-medium text-card-text">
+                  {entry.name}
                 </span>
               </div>
-            ))}
-          </div>
+              <span className="text-xs font-medium text-white ml-1">
+                {entry.value.toLocaleString()} ({((entry.value/total)*100).toFixed(1)}%)
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
