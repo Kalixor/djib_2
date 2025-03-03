@@ -140,7 +140,7 @@ export default function PaymentTableCard() {
         {/* Table */}
         <div className="overflow-x-auto w-full max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#00c2ff]/50 scrollbar-track-[#343b4f]/20">
           <table className="w-full text-xs text-left text-card-text">
-            <thead className="sticky top-0 bg-brand-800/10 backdrop-blur-sm">
+            <thead className="sticky top-0 bg-brand-800/90">
               <tr>
                 <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
                   <div className="flex items-center gap-1">
@@ -255,7 +255,7 @@ export default function PaymentTableCard() {
             </tbody>
             {/* Ligne des totaux */}
             <tfoot className="sticky bottom-0">
-              <tr className="bg-brand-800/10 backdrop-blur-sm border-t border-[#343b4f]">
+              <tr className="bg-brand-800/90 border-t border-[#343b4f]">
                 <td colSpan={3} className="px-3 py-1.5 font-bold text-white text-right">
                   Total
                 </td>
