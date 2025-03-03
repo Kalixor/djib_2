@@ -78,7 +78,6 @@ export default function CustomDatePicker({ value, onChange, disabled = false }) 
             className={`text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={disabled}
           >
-            &lt;
           </button>
           <div className="flex gap-2">
             <button
@@ -101,7 +100,7 @@ export default function CustomDatePicker({ value, onChange, disabled = false }) 
             className={`text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={disabled}
           >
-            &gt;
+            >
           </button>
         </div>
         
