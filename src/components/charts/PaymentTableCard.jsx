@@ -1,29 +1,53 @@
 import { useState, useMemo } from 'react'
 
-const initialData = [
-  { bureau: 'Bureau A', taxe: 'Taxe Import', espece: 500, cheque: 300, certifie: 200, total: 1000 },
-  { bureau: 'Bureau A', taxe: 'Taxe Export', espece: 400, cheque: 250, certifie: 150, total: 800 },
-  { bureau: 'Bureau A', taxe: 'Droit Douane', espece: 300, cheque: 200, certifie: 100, total: 600 },
-  { bureau: 'Bureau B', taxe: 'Taxe Import', espece: 450, cheque: 280, certifie: 170, total: 900 },
-  { bureau: 'Bureau B', taxe: 'Taxe Transit', espece: 350, cheque: 220, certifie: 130, total: 700 },
-  { bureau: 'Bureau B', taxe: 'Droit Douane', espece: 250, cheque: 180, certifie: 70, total: 500 },
-  { bureau: 'Bureau C', taxe: 'Taxe Export', espece: 600, cheque: 400, certifie: 300, total: 1300 },
-  { bureau: 'Bureau C', taxe: 'Taxe Import', espece: 500, cheque: 350, certifie: 250, total: 1100 },
-  { bureau: 'Bureau C', taxe: 'Droit Douane', espece: 400, cheque: 300, certifie: 200, total: 900 },
-  { bureau: 'Bureau D', taxe: 'Taxe Transit', espece: 700, cheque: 500, certifie: 400, total: 1600 },
-  { bureau: 'Bureau D', taxe: 'Taxe Export', espece: 600, cheque: 450, certifie: 350, total: 1400 },
-  { bureau: 'Bureau D', taxe: 'Droit Douane', espece: 500, cheque: 400, certifie: 300, total: 1200 }
-]
+// Fonction pour générer des dates aléatoires dans une plage
+const randomDate = (start, end) => {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+    .toISOString()
+    .split('T')[0]
+}
+
+// Génération des données initiales
+const generateInitialData = () => {
+  const bureaux = ['Bureau A', 'Bureau B', 'Bureau C', 'Bureau D']
+  const taxes = ['Taxe Import', 'Taxe Export', 'Taxe Transit', 'Droit Douane']
+  const data = []
+  
+  for (let i = 0; i < 100; i++) {
+    const bureau = bureaux[Math.floor(Math.random() * bureaux.length)]
+    const taxe = taxes[Math.floor(Math.random() * taxes.length)]
+    const espece = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
+    const cheque = Math.floor(Math.random() * (3000 - 500 + 1)) + 500
+    const certifie = Math.floor(Math.random() * (2000 - 300 + 1)) + 300
+    const total = espece + cheque + certifie
+    
+    data.push({
+      date: randomDate(new Date(2023, 0, 1), new Date()),
+      bureau,
+      taxe,
+      espece,
+      cheque,
+      certifie,
+      total
+    })
+  }
+  
+  return data
+}
+
+const initialData = generateInitialData()
 
 export default function PaymentTableCard() {
   const [bureauFilter, setBureauFilter] = useState(null)
   const [taxeFilter, setTaxeFilter] = useState(null)
+  const [dateFilter, setDateFilter] = useState(null)
   const [showBureauFilter, setShowBureauFilter] = useState(false)
   const [showTaxeFilter, setShowTaxeFilter] = useState(false)
+  const [showDateFilter, setShowDateFilter] = useState(false)
 
   const getUniqueValues = (column) => {
     const values = new Set(initialData.map(item => item[column]))
-    return Array.from(values)
+    return Array.from(values).sort()
   }
 
   const filteredData = useMemo(() => {
@@ -37,8 +61,12 @@ export default function PaymentTableCard() {
       data = data.filter(item => item.taxe === taxeFilter)
     }
     
+    if (dateFilter) {
+      data = data.filter(item => item.date === dateFilter)
+    }
+    
     return data
-  }, [bureauFilter, taxeFilter])
+  }, [bureauFilter, taxeFilter, dateFilter])
 
   const totals = useMemo(() => {
     return filteredData.reduce(
@@ -56,6 +84,7 @@ export default function PaymentTableCard() {
   const handleResetFilters = () => {
     setBureauFilter(null)
     setTaxeFilter(null)
+    setDateFilter(null)
   }
 
   return (
@@ -96,6 +125,35 @@ export default function PaymentTableCard() {
         <table className="w-full text-xs text-left text-card-text">
           <thead className="sticky top-0 bg-brand-800/10 backdrop-blur-sm">
             <tr>
+              <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
+                <div className="flex items-center gap-1">
+                  Date
+                  <button 
+                    onClick={() => setShowDateFilter(!showDateFilter)}
+                    className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
+                  >
+                    <i className="fas fa-filter text-xs" />
+                  </button>
+                  {showDateFilter && (
+                    <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
+                      <div className="max-h-48 overflow-y-auto text-[0.75rem]">
+                        {getUniqueValues('date').map((value, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              setDateFilter(value)
+                              setShowDateFilter(false)
+                            }}
+                            className="px-3 py-1.5 text-card-text hover:bg-[#cb3cff]/10 hover:text-[#cb3cff] cursor-pointer"
+                          >
+                            {value}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </th>
               <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
                 <div className="flex items-center gap-1">
                   Bureau
@@ -166,6 +224,7 @@ export default function PaymentTableCard() {
                 key={index} 
                 className="border-b border-[#343b4f] hover:bg-[#ce68fd]/10 transition-colors"
               >
+                <td className="px-3 py-1.5">{item.date}</td>
                 <td className="px-3 py-1.5 font-medium">{item.bureau}</td>
                 <td className="px-3 py-1.5">{item.taxe}</td>
                 <td className="px-3 py-1.5">{item.espece.toLocaleString()}</td>
@@ -180,7 +239,7 @@ export default function PaymentTableCard() {
           {/* Ligne des totaux */}
           <tfoot className="sticky bottom-0">
             <tr className="bg-brand-800/10 backdrop-blur-sm border-t border-[#343b4f]">
-              <td colSpan={2} className="px-3 py-1.5 font-bold text-white text-right">
+              <td colSpan={3} className="px-3 py-1.5 font-bold text-white text-right">
                 Total
               </td>
               <td className="px-3 py-1.5 font-bold text-white">
