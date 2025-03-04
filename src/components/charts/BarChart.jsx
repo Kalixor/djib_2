@@ -278,7 +278,7 @@ export default function BarChart() {
             </div>
 
             {/* Chart */}
-            <div className="h-52 relative z-10 mb-4">
+            <div className="h-56 relative z-10 mt-16 mb-2">
                 <ResponsiveContainer width="100%" height="100%">
                     <ReBarChart
                         data={data}
