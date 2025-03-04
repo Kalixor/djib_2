@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import BarChart from './charts/BarChart'
 import PieChartOffice from './charts/PieChartOffice'
 import PaymentTableCard from './charts/PaymentTableCard'
+import EvolutionAreaChart from './charts/EvolutionAreaChart'
 import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
 import NotificationPopup from './NotificationPopup'
@@ -12,7 +13,7 @@ const generateYearData = () => {
   const startDate = new Date('2023-12-01')
   const endDate = new Date('2024-12-01')
   const data = []
-  
+
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     data.push({
       date: new Date(d).toISOString().split('T')[0],
@@ -20,7 +21,7 @@ const generateYearData = () => {
       effectives: Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000
     })
   }
-  
+
   return data
 }
 
@@ -34,7 +35,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <div className="flex flex-col gap-1">
           {payload.map((item, index) => (
             <div key={index} className="flex items-center gap-2">
-              <div 
+              <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: item.color }}
               />
@@ -64,7 +65,7 @@ export default function Dashboard({ filters, setFilters }) {
     // Vérification des limites
     const minDate = new Date('2023-12-01')
     const maxDate = new Date('2024-12-01')
-    
+
     if (new Date(newStart) < minDate || new Date(newEnd) > maxDate) {
       setNotification({
         type: 'error',
@@ -104,39 +105,36 @@ export default function Dashboard({ filters, setFilters }) {
     fontSize: daysDifference > 50 ? 10 : 12,
     tickFormatter: (date) => {
       const d = new Date(date)
-      return daysDifference > 50 ? 
-        `${d.getDate()}/${d.getMonth() + 1}` : 
+      return daysDifference > 50 ?
+        `${d.getDate()}/${d.getMonth() + 1}` :
         d.toLocaleDateString('fr-FR')
     }
   }
 
   const renderVariationBadge = (value, trend) => {
     const isPositive = trend === 'up'
-    const arrowClass = isPositive 
-      ? 'fas fa-arrow-up rotate-45' 
+    const arrowClass = isPositive
+      ? 'fas fa-arrow-up rotate-45'
       : 'fas fa-arrow-down rotate-[-35deg]'
 
     return (
       <div className={`
         px-2 py-1 rounded-full
-        border ${
-          isPositive 
-            ? 'border-green-500/50' 
-            : 'border-red-500/50'
+        border ${isPositive
+          ? 'border-green-500/50'
+          : 'border-red-500/50'
         }
-        bg-${
-          isPositive 
-            ? 'green-500/10' 
-            : 'red-500/10'
+        bg-${isPositive
+          ? 'green-500/10'
+          : 'red-500/10'
         }
         backdrop-blur-sm
         shadow-sm
         flex items-center gap-1
         text-xs font-medium
-        ${
-          isPositive 
-            ? 'text-green-500' 
-            : 'text-red-500'
+        ${isPositive
+          ? 'text-green-500'
+          : 'text-red-500'
         }
       `}>
         <span>{value}%</span>
@@ -148,7 +146,7 @@ export default function Dashboard({ filters, setFilters }) {
   return (
     <main className="p-6">
       {notification && (
-        <NotificationPopup 
+        <NotificationPopup
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
@@ -156,30 +154,30 @@ export default function Dashboard({ filters, setFilters }) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 relative" style={{ gridAutoRows: '1fr' }}>
-        <KPI 
-          title="Paiements" 
-          value="12.52B" 
+        <KPI
+          title="Paiements"
+          value="12.52B"
           isActive={activeKPI === 'Paiements'}
           onClick={() => setActiveKPI(activeKPI === 'Paiements' ? null : 'Paiements')}
           style={{ gridRow: 'span 2' }}
         />
-        <KPI 
-          title="Bureaux" 
-          value="1.2K" 
+        <KPI
+          title="Bureaux"
+          value="1.2K"
           isActive={activeKPI === 'Bureaux'}
           onClick={() => setActiveKPI(activeKPI === 'Bureaux' ? null : 'Bureaux')}
           style={{ gridRow: 'span 2' }}
         />
-        <KPI 
-          title="Recettes Prévues" 
-          value="8.2M" 
+        <KPI
+          title="Recettes Prévues"
+          value="8.2M"
           isActive={activeKPI === 'Recettes Prévues'}
           onClick={() => setActiveKPI(activeKPI === 'Recettes Prévues' ? null : 'Recettes Prévues')}
           style={{ gridRow: 'span 2' }}
         />
-        <KPI 
-          title="Recettes Totales" 
-          value="20.7M" 
+        <KPI
+          title="Recettes Totales"
+          value="20.7M"
           isActive={activeKPI === 'Recettes Totales'}
           onClick={() => setActiveKPI(activeKPI === 'Recettes Totales' ? null : 'Recettes Totales')}
           style={{ gridRow: 'span 2' }}
@@ -189,14 +187,14 @@ export default function Dashboard({ filters, setFilters }) {
       <div className="flex gap-5 mb-6">
         <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] relative">
           <div className="absolute inset-0 rounded-lg pointer-events-none"
-               style={{
-                 background: `radial-gradient(circle at 17% -25%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
-                 mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-                 WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-                 maskComposite: 'exclude',
-                 WebkitMaskComposite: 'xor',
-                 padding: '1px'
-               }}>
+            style={{
+              background: `radial-gradient(circle at 17% -25%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+              mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+              WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+              maskComposite: 'exclude',
+              WebkitMaskComposite: 'xor',
+              padding: '1px'
+            }}>
             <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
           </div>
 
@@ -219,14 +217,14 @@ export default function Dashboard({ filters, setFilters }) {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-card-text">Du :</span>
-                <CustomDatePicker 
+                <CustomDatePicker
                   value={startDate}
                   onChange={(date) => handleDateChange('start', date)}
                 />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-card-text">Au :</span>
-                <CustomDatePicker 
+                <CustomDatePicker
                   value={endDate}
                   onChange={(date) => handleDateChange('end', date)}
                 />
@@ -234,60 +232,11 @@ export default function Dashboard({ filters, setFilters }) {
             </div>
           </div>
 
-          <div className="h-96 -mx-4 translate-x-[-8px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={filteredData}
-                margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
-              >
-                <defs>
-                  <linearGradient id="prevuesGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00c2ff" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#00c2ff" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="effectivesGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#cb3cff" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#cb3cff" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis 
-                  dataKey="date"
-                  tickFormatter={xAxisConfig.tickFormatter}
-                  tick={{ 
-                    fill: '#aeb9e1', 
-                    fontSize: xAxisConfig.fontSize
-                  }}
-                  axisLine={false}
-                  tickLine={false}
-                  interval={xAxisConfig.interval}
-                  angle={xAxisConfig.angle}
-                  textAnchor={xAxisConfig.angle === 0 ? 'middle' : 'end'}
-                  height={xAxisConfig.angle === 0 ? 40 : 60}
-                />
-                <YAxis 
-                  tick={{ fill: '#aeb9e1', fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip content={<CustomTooltip />} cursor={false} />
-                <Area 
-                  type="monotone" 
-                  dataKey="prevues" 
-                  stroke="#00c2ff" 
-                  fillOpacity={1} 
-                  fill="url(#prevuesGradient)" 
-                  activeDot={{ r: 6, stroke: '#00c2ff', strokeWidth: 2, fill: '#fff' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="effectives" 
-                  stroke="#cb3cff" 
-                  fillOpacity={1} 
-                  fill="url(#effectivesGradient)" 
-                  activeDot={{ r: 6, stroke: '#cb3cff', strokeWidth: 2, fill: '#fff' }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-96">
+            <EvolutionAreaChart
+              data={filteredData}
+              xAxisConfig={xAxisConfig}
+            />
           </div>
         </div>
 
