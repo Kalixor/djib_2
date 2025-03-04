@@ -202,7 +202,7 @@ export default function BarChart() {
 
             {/* Period Selector */}
             <div className="absolute top-4 right-4 z-20 bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#00c2ff]/50">
-                <div className="flex gap-1">
+                <div className="flex gap-6">
                     {['Jour', 'Sem', 'Mois', 'Année'].map((p) => (
                         <button
                             key={p}
@@ -211,7 +211,7 @@ export default function BarChart() {
                             className={`
                 relative
                 px-2 py-1 rounded-md
-                text-xs font-medium
+                text-[12px] font-medium
                 transition-colors duration-100
                 ${period === p
                                     ? 'bg-[#00c2ff]/10 text-[#00c2ff]'
@@ -234,7 +234,7 @@ export default function BarChart() {
                 </div>
 
                 {/* Combo Lists */}
-                <div className="flex gap-2 mt-2 justify-end">
+                <div className="flex gap-2 mt-2 justify-end text-[12px]">
                   <div className="w-32">
                     <Select
                       options={bureaux}
@@ -260,16 +260,16 @@ export default function BarChart() {
                 </div>
             </div>
 
-           <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className="flex flex-col gap-2">
+           <div className="flex items-start justify-between mb-2 relative z-10">
+                <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+                        <i className="fas fa-chart-line text-sm text-gray-300 dark:text-card-text" />
+                        <h3 className="text-xs font-medium text-gray-500 dark:text-card-text">
                             Évolution des recettes
                         </h3>
                     </div>
                     <div className="flex items-center gap-2">
-                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                        <p className="text-xl font-semibold text-gray-900 dark:text-white">
                             20.7M
                         </p>
                         {renderVariationBadge(4.2, 'up')}
@@ -278,11 +278,11 @@ export default function BarChart() {
             </div>
 
             {/* Chart */}
-            <div className="h-48 relative z-10 mb-6">
+            <div className="h-52 relative z-10 mb-4">
                 <ResponsiveContainer width="100%" height="100%">
                     <ReBarChart
                         data={data}
-                        margin={{ top: 5, right: 20, left: 0, bottom: 20 }}
+                        margin={{ top: 5, right: 20, left: 0, bottom: 30 }}
                     >
                         <XAxis
                             dataKey="name"
@@ -298,7 +298,7 @@ export default function BarChart() {
                             height={40}
                         />
                         <YAxis
-                            tick={{ fill: '#aeb9e1', fontSize: 12 }}
+                            tick={{ fill: '#aeb9e1', fontSize: 10 }}
                             axisLine={false}
                             tickLine={false}
                         />
@@ -320,16 +320,16 @@ export default function BarChart() {
 
             {/* LineChart pour la tendance hebdomadaire */}
             <div className="relative">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="flex flex-col gap-2">
+                <div className="flex items-start justify-between mb-2">
+                    <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                            <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
+                            <i className="fas fa-chart-line text-sm text-gray-300 dark:text-card-text" />
+                            <h3 className="text-xs font-medium text-gray-500 dark:text-card-text">
                                 Paiements
                             </h3>
                         </div>
                         <div className="flex items-center gap-2">
-                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
                                 15.3M
                             </p>
                             {renderVariationBadge(2.1, 'up')}
@@ -345,7 +345,7 @@ export default function BarChart() {
                                     className={`
                     relative
                     px-2 py-1 rounded-md
-                    text-xs font-medium
+                    text-[12px] font-medium
                     transition-colors duration-100
                     ${lineChartPeriod === p
                                             ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
