@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import LineChart from './LineChart'
+import Select from 'react-select'
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -55,6 +56,66 @@ const generateData = (period, bureauFilter = null, taxeFilter = null) => {
     }
 }
 
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: 'rgba(8, 16, 40, 0.5)',
+    backdropFilter: 'blur(12px)',
+    borderColor: 'rgba(0, 194, 255, 0.5)',
+    minHeight: '32px',
+    boxShadow: 'none',
+    '&:hover': {
+      borderColor: '#00c2ff'
+    }
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: '#0b1739',
+    border: '1px solid rgba(0, 194, 255, 0.5)',
+    backdropFilter: 'blur(12px)'
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? '#00c2ff' : 'transparent',
+    color: state.isSelected ? '#0b1739' : '#aeb9e1',
+    '&:hover': {
+      backgroundColor: '#00c2ff',
+      color: '#0b1739'
+    }
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#aeb9e1'
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: '#aeb9e1'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#aeb9e1'
+  }),
+  indicatorSeparator: () => ({
+    display: 'none'
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: '#aeb9e1',
+    padding: '4px',
+    '&:hover': {
+      color: '#00c2ff'
+    }
+  }),
+  clearIndicator: (provided) => ({
+    ...provided,
+    color: '#aeb9e1',
+    padding: '4px',
+    '&:hover': {
+      color: '#00c2ff'
+    }
+  })
+}
+
 export default function BarChart() {
     const [period, setPeriod] = useState('Mois')
     const [bureauFilter, setBureauFilter] = useState(null)
@@ -63,13 +124,24 @@ export default function BarChart() {
     const [lineChartPeriod, setLineChartPeriod] = useState('Sem')
     const [lineChartData, setLineChartData] = useState(generateData('Sem'))
 
-    const bureaux = useMemo(() => ['Bureau A', 'Bureau B', 'Bureau C', 'Bureau D'], [])
-    const taxes = useMemo(() => ['Taxe Import', 'Taxe Export', 'Taxe Transit', 'Droit Douane'], [])
+    const bureaux = useMemo(() => [
+      { value: 'Bureau A', label: 'Bureau A' },
+      { value: 'Bureau B', label: 'Bureau B' },
+      { value: 'Bureau C', label: 'Bureau C' },
+      { value: 'Bureau D', label: 'Bureau D' }
+    ], [])
+
+    const taxes = useMemo(() => [
+      { value: 'Taxe Import', label: 'Taxe Import' },
+      { value: 'Taxe Export', label: 'Taxe Export' },
+      { value: 'Taxe Transit', label: 'Taxe Transit' },
+      { value: 'Droit Douane', label: 'Droit Douane' }
+    ], [])
 
     const handlePeriodChange = (newPeriod) => {
         if (newPeriod !== period) {
             setPeriod(newPeriod)
-            setData(generateData(newPeriod, bureauFilter, taxeFilter))
+            setData(generateData(newPeriod, bureauFilter?.value, taxeFilter?.value))
         }
     }
 
@@ -80,9 +152,9 @@ export default function BarChart() {
         }
     }
 
-    const handleBureauChange = (bureau) => {
-        setBureauFilter(bureau)
-        setData(generateData(period, bureau, taxeFilter))
+    const handleBureauChange = (selectedOption) => {
+        setBureauFilter(selectedOption)
+        setData(generateData(period, selectedOption?.value, taxeFilter?.value))
     }
 
     const renderVariationBadge = (value, trend) => {
@@ -108,9 +180,9 @@ export default function BarChart() {
         )
     }
 
-    const handleTaxeChange = (taxe) => {
-        setTaxeFilter(taxe)
-        setData(generateData(period, bureauFilter, taxe))
+    const handleTaxeChange = (selectedOption) => {
+        setTaxeFilter(selectedOption)
+        setData(generateData(period, bureauFilter?.value, selectedOption?.value))
     }
 
     return (
@@ -163,55 +235,32 @@ export default function BarChart() {
 
                 {/* Combo Lists */}
                 <div className="flex gap-2 mt-2 justify-end">
-                    <div className="relative">
-                        <select
-                            value={bureauFilter || ''}
-                            onChange={(e) => handleBureauChange(e.target.value || null)}
-                            className="appearance-none bg-brand-800/50 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-card-text border border-[#00c2ff]/50 focus:border-[#00c2ff] focus:ring-0 focus:outline-none w-24"
-                        >
-                            <option value="">Bureau</option>
-                            {bureaux.map((bureau) => (
-                                <option key={bureau} value={bureau}>
-                                    {bureau}
-                                </option>
-                            ))}
-                        </select>
-                        {bureauFilter && (
-                            <button
-                                onClick={() => handleBureauChange(null)}
-                                className="absolute right-1 top-1/2 -translate-y-1/2 text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
-                            >
-                                <i className="fas fa-times text-xs" />
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="relative">
-                        <select
-                            value={taxeFilter || ''}
-                            onChange={(e) => handleTaxeChange(e.target.value || null)}
-                            className="appearance-none bg-brand-800/50 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-card-text border border-[#00c2ff]/50 focus:border-[#00c2ff] focus:ring-0 focus:outline-none w-24"
-                        >
-                            <option value="">Taxe</option>
-                            {taxes.map((taxe) => (
-                                <option key={taxe} value={taxe}>
-                                    {taxe}
-                                </option>
-                            ))}
-                        </select>
-                        {taxeFilter && (
-                            <button
-                                onClick={() => handleTaxeChange(null)}
-                                className="absolute right-1 top-1/2 -translate-y-1/2 text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
-                            >
-                                <i className="fas fa-times text-xs" />
-                            </button>
-                        )}
-                    </div>
+                  <div className="w-32">
+                    <Select
+                      options={bureaux}
+                      value={bureauFilter}
+                      onChange={handleBureauChange}
+                      placeholder="Bureau"
+                      isClearable
+                      styles={customStyles}
+                      classNamePrefix="react-select"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <Select
+                      options={taxes}
+                      value={taxeFilter}
+                      onChange={handleTaxeChange}
+                      placeholder="Taxe"
+                      isClearable
+                      styles={customStyles}
+                      classNamePrefix="react-select"
+                    />
+                  </div>
                 </div>
             </div>
 
-            <div className="flex items-start justify-between mb-4 relative z-10">
+           <div className="flex items-start justify-between mb-4 relative z-10">
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                         <i className="fas fa-chart-line text-lg text-gray-300 dark:text-card-text" />
@@ -322,7 +371,6 @@ export default function BarChart() {
 
                 <LineChart data={lineChartData} />
             </div>
-
         </div>
     )
 }
