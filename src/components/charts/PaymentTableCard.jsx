@@ -14,7 +14,7 @@ const generateInitialData = () => {
   const bureaux = ['Bureau A', 'Bureau B', 'Bureau C', 'Bureau D']
   const taxes = ['Taxe Import', 'Taxe Export', 'Taxe Transit', 'Droit Douane']
   const data = []
-  
+
   for (let i = 0; i < 100; i++) {
     const bureau = bureaux[Math.floor(Math.random() * bureaux.length)]
     const taxe = taxes[Math.floor(Math.random() * taxes.length)]
@@ -22,7 +22,7 @@ const generateInitialData = () => {
     const cheque = Math.floor(Math.random() * (3000 - 500 + 1)) + 500
     const certifie = Math.floor(Math.random() * (2000 - 300 + 1)) + 300
     const total = espece + cheque + certifie
-    
+
     data.push({
       date: randomDate(new Date(2023, 0, 1), new Date()),
       bureau,
@@ -33,7 +33,7 @@ const generateInitialData = () => {
       total
     })
   }
-  
+
   return data
 }
 
@@ -68,26 +68,26 @@ export default function PaymentTableCard() {
   // Filtrage et tri des données
   const filteredData = useMemo(() => {
     let data = [...initialData]
-    
+
     if (bureauFilter) {
       data = data.filter(item => item.bureau === bureauFilter)
     }
-    
+
     if (taxeFilter) {
       data = data.filter(item => item.taxe === taxeFilter)
     }
-    
+
     if (dateFilter) {
       data = data.filter(item => item.date === dateFilter)
     }
-    
+
     // Tri des données
     data.sort((a, b) => {
       const dateA = new Date(a.date)
       const dateB = new Date(b.date)
       return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
     })
-    
+
     return data
   }, [bureauFilter, taxeFilter, dateFilter, sortOrder])
 
@@ -121,26 +121,32 @@ export default function PaymentTableCard() {
       <div className="bg-white w-full dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative overflow-hidden">
         {/* Border gradient */}
         <div className="absolute inset-0 rounded-lg pointer-events-none"
-             style={{
-               background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
-               mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-               WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-               maskComposite: 'exclude',
-               WebkitMaskComposite: 'xor',
-               padding: '1px'
-             }}>
+          style={{
+            background: `radial-gradient(circle at 17% -3%, #00c2ff 0%, #00c2ff 10%, transparent 30%)`,
+            mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+            WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+            maskComposite: 'exclude',
+            WebkitMaskComposite: 'xor',
+            padding: '1px'
+          }}>
           <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
         </div>
 
         {/* Header avec logo */}
         <div className="flex justify-between items-start mb-4">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">  <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <i className="fas fa-money-bill-wave text-lg text-gray-300 dark:text-card-text" />
               <h3 className="text-sm font-semibold text-gray-900 dark:text-card-text">
-                Recettes / Bureaux / Taxes / Mode
+                Recettes (Fil de l'eau)
               </h3>
+              <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-md">
+                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse" />
+                <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">Live</span>
+              </div>
+              <span className="text-[0.65rem] text-yellow-600/80 dark:text-yellow-400/80">Depuis 12 semaines</span>
             </div>
+          </div>
           </div>
           <button
             onClick={handleResetFilters}
@@ -158,7 +164,7 @@ export default function PaymentTableCard() {
                 <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
                   <div className="flex items-center gap-1">
                     Date
-                    <button 
+                    <button
                       onClick={() => handleFilterClick('date', setDateFilter, setShowDateFilter, dateFilter)}
                       className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                     >
@@ -193,7 +199,7 @@ export default function PaymentTableCard() {
                 <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
                   <div className="flex items-center gap-1">
                     Bureau
-                    <button 
+                    <button
                       onClick={() => handleFilterClick('bureau', setBureauFilter, setShowBureauFilter, bureauFilter)}
                       className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                     >
@@ -222,7 +228,7 @@ export default function PaymentTableCard() {
                 <th scope="col" className="px-3 py-1.5 text-[#00c2ff] relative">
                   <div className="flex items-center gap-1">
                     Taxe
-                    <button 
+                    <button
                       onClick={() => handleFilterClick('taxe', setTaxeFilter, setShowTaxeFilter, taxeFilter)}
                       className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                     >
@@ -256,8 +262,8 @@ export default function PaymentTableCard() {
             </thead>
             <tbody>
               {filteredData.map((item, index) => (
-                <tr 
-                  key={index} 
+                <tr
+                  key={index}
                   className="border-b border-[#343b4f] hover:bg-[#ce68fd]/10 transition-colors"
                 >
                   <td className="px-3 py-1.5">{item.date}</td>
@@ -299,7 +305,7 @@ export default function PaymentTableCard() {
       {/* Pie Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <PaymentTypePieChart 
+          <PaymentTypePieChart
             data={[
               { name: 'Espèce', value: totals.espece },
               { name: 'Chèque', value: totals.cheque },
@@ -308,7 +314,7 @@ export default function PaymentTableCard() {
             bureauFilter={bureauFilter}
           />
         </div>
-        
+
         <TaxPieChart data={useMemo(() => {
           const taxes = {}
           filteredData.forEach(item => {
