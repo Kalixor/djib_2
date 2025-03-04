@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import LineChart from './LineChart'
+import CustomMultiSelect from '../CustomMultiSelect'
+import SelectionDisplay from '../SelectionDisplay'
 import Select from 'react-select'
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -121,8 +122,7 @@ export default function BarChart() {
     const [bureauFilter, setBureauFilter] = useState(null)
     const [taxeFilter, setTaxeFilter] = useState(null)
     const [data, setData] = useState(generateData('Mois'))
-    const [lineChartPeriod, setLineChartPeriod] = useState('Sem')
-    const [lineChartData, setLineChartData] = useState(generateData('Sem'))
+
 
     const bureaux = useMemo(() => [
       { value: 'Bureau A', label: 'Bureau A' },
@@ -138,6 +138,12 @@ export default function BarChart() {
       { value: 'Droit Douane', label: 'Droit Douane' }
     ], [])
 
+    const defaultTaxes = useMemo(() =>Array.from({ length: 100 }, (_, i) => ({
+        value: `TAX_${i + 1}`,
+        label: `Taxe ${i + 1}`,
+        }))
+        , [])
+
     const handlePeriodChange = (newPeriod) => {
         if (newPeriod !== period) {
             setPeriod(newPeriod)
@@ -145,12 +151,7 @@ export default function BarChart() {
         }
     }
 
-    const handleLineChartPeriodChange = (newPeriod) => {
-        if (newPeriod !== lineChartPeriod) {
-            setLineChartPeriod(newPeriod)
-            setLineChartData(generateData(newPeriod))
-        }
-    }
+
 
     const handleBureauChange = (selectedOption) => {
         setBureauFilter(selectedOption)
@@ -185,8 +186,14 @@ export default function BarChart() {
         setData(generateData(period, bureauFilter?.value, selectedOption?.value))
     }
 
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const removeSelection = (option) => {
+        setSelectedOptions(selectedOptions.filter(item => item.value !== option.value));
+    };
+
     return (
-        <div className="group bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
+        <div className="group h-full bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
             {/* Border gradient */}
             <div className="absolute inset-0 rounded-lg pointer-events-none"
                 style={{
@@ -200,33 +207,33 @@ export default function BarChart() {
                 <div className="bg-white dark:bg-card w-full h-full rounded-lg" />
             </div>
 
-            {/* Period Selector */}
-            <div className="absolute top-4 right-4 z-20 bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#00c2ff]/50">
-                <div className="flex gap-6">
+            {/* Period Selector & Filter Combo */}
+            <div className="absolute w-80 top-4 right-4 z-20 bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#00c2ff]/50">
+                <div className="flex gap-10">
                     {['Jour', 'Sem', 'Mois', 'Année'].map((p) => (
                         <button
                             key={p}
                             type="button"
                             onClick={() => handlePeriodChange(p)}
                             className={`
-                relative
-                px-2 py-1 rounded-md
-                text-[12px] font-medium
-                transition-colors duration-100
-                ${period === p
-                                    ? 'bg-[#00c2ff]/10 text-[#00c2ff]'
-                                    : 'text-card-text'
-                                }
-                after:absolute
-                after:inset-0
-                after:rounded-md
-                after:border
-                after:border-transparent
-                focus:after:border-[#00c2ff]/50
-                hover:after:border-[#00c2ff]/50
-                after:pointer-events-none
-                hover:text-[#00c2ff]
-              `}
+                                    relative
+                                    px-2 py-1 rounded-md
+                                    text-[12px] font-medium
+                                    transition-colors duration-100
+                                    ${period === p
+                                                        ? 'bg-[#00c2ff]/10 text-[#00c2ff]'
+                                                        : 'text-card-text'
+                                                    }
+                                    after:absolute
+                                    after:inset-0
+                                    after:rounded-md
+                                    after:border
+                                    after:border-transparent
+                                    focus:after:border-[#00c2ff]/50
+                                    hover:after:border-[#00c2ff]/50
+                                    after:pointer-events-none
+                                    hover:text-[#00c2ff]
+                            `}
                         >
                             {p}
                         </button>
@@ -234,8 +241,8 @@ export default function BarChart() {
                 </div>
 
                 {/* Combo Lists */}
-                <div className="flex gap-2 mt-2 justify-end text-[12px]">
-                  <div className="w-32">
+                <div className="flex flex-col gap-2 mt-3 justify-end text-[12px]">
+                  <div className="w-76">
                     <Select
                       options={bureaux}
                       value={bureauFilter}
@@ -246,20 +253,20 @@ export default function BarChart() {
                       classNamePrefix="react-select"
                     />
                   </div>
-                  <div className="w-32">
-                    <Select
-                      options={taxes}
+                  <div className="w-76">
+                    <CustomMultiSelect
+                      options={defaultTaxes}
                       value={taxeFilter}
                       onChange={handleTaxeChange}
                       placeholder="Taxe"
-                      isClearable
-                      styles={customStyles}
                       classNamePrefix="react-select"
+                      selectedOptions={selectedOptions}
+                      setSelectedOptions={setSelectedOptions}
                     />
                   </div>
                 </div>
             </div>
-
+            {/*Header Title  */}                                        
            <div className="flex items-start justify-between mb-2 relative z-10">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -278,7 +285,7 @@ export default function BarChart() {
             </div>
 
             {/* Chart */}
-            <div className="h-56 relative z-10 mt-16 mb-2">
+            <div className="h-56 relative z-10 mt-28 mb-2">
                 <ResponsiveContainer width="100%" height="100%">
                     <ReBarChart
                         data={data}
@@ -317,60 +324,12 @@ export default function BarChart() {
                     </ReBarChart>
                 </ResponsiveContainer>
             </div>
-
-            {/* LineChart pour la tendance hebdomadaire */}
-            <div className="relative">
-                <div className="flex items-start justify-between mb-2">
-                    <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                            <i className="fas fa-chart-line text-sm text-gray-300 dark:text-card-text" />
-                            <h3 className="text-xs font-medium text-gray-500 dark:text-card-text">
-                                Paiements
-                            </h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                15.3M
-                            </p>
-                            {renderVariationBadge(2.1, 'up')}
-                        </div>
-                    </div>
-                    <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50">
-                        <div className="flex gap-1">
-                            {['Sem', 'Mois', 'Année'].map((p) => (
-                                <button
-                                    key={p}
-                                    type="button"
-                                    onClick={() => handleLineChartPeriodChange(p)}
-                                    className={`
-                    relative
-                    px-2 py-1 rounded-md
-                    text-[12px] font-medium
-                    transition-colors duration-100
-                    ${lineChartPeriod === p
-                                            ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
-                                            : 'text-card-text'
-                                        }
-                    after:absolute
-                    after:inset-0
-                    after:rounded-md
-                    after:border
-                    after:border-transparent
-                    focus:after:border-[#cb3cff]/50
-                    hover:after:border-[#cb3cff]/50
-                    after:pointer-events-none
-                    hover:text-[#cb3cff]
-                  `}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <LineChart data={lineChartData} />
+            {/* Filter display */}
+            <div className="flex w-full gap-4 items-start mb-40">
+                <SelectionDisplay label={'Bureaux'} selectedOptions={selectedOptions} removeSelection={removeSelection} />
             </div>
+
+           
         </div>
     )
 }
