@@ -91,6 +91,22 @@ export default function PaymentTableCard() {
     return data
   }, [bureauFilter, taxeFilter, dateFilter, sortOrder])
 
+  // Calcul de la période après le filtrage
+  const period = useMemo(() => {
+    if (filteredData.length > 0) {
+      const timestamps = filteredData
+        .map(item => new Date(item.date).getTime())
+        .filter(ts => !isNaN(ts))
+      
+      if (timestamps.length > 0) {
+        const minDate = new Date(Math.min(...timestamps))
+        const maxDate = new Date(Math.max(...timestamps))
+        return `Du ${minDate.toLocaleDateString('fr-FR')} au ${maxDate.toLocaleDateString('fr-FR')}`
+      }
+    }
+    return 'Depuis 12 semaines' // Valeur par défaut
+  }, [filteredData])
+	
   // Calcul des totaux
   const totals = useMemo(() => {
     return filteredData.reduce(
@@ -104,6 +120,7 @@ export default function PaymentTableCard() {
       { espece: 0, cheque: 0, certifie: 0, total: 0 }
     )
   }, [filteredData])
+
 
   const handleResetFilters = () => {
     setBureauFilter(null)
@@ -303,17 +320,18 @@ export default function PaymentTableCard() {
       </div>
 
       {/* Pie Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <PaymentTypePieChart
-            data={[
-              { name: 'Espèce', value: totals.espece },
-              { name: 'Chèque', value: totals.cheque },
-              { name: 'Certifié', value: totals.certifie }
-            ]}
-            bureauFilter={bureauFilter}
-          />
-        </div>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <PaymentTypePieChart
+          data={[
+            { name: 'Espèce', value: totals.espece },
+            { name: 'Chèque', value: totals.cheque },
+            { name: 'Certifié', value: totals.certifie }
+          ]}
+          bureauFilter={bureauFilter}
+          period={period}
+        />
+      </div>
 
         <TaxPieChart data={useMemo(() => {
           const taxes = {}

@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 const COLORS = ['#00c2ff', '#0038ff', '#cb3cff']
 
-export default function PaymentTypePieChart({ data, bureauFilter }) {
+export default function PaymentTypePieChart({ data, bureauFilter, period }) {
   const [activeIndex, setActiveIndex] = useState(null)
   const total = data.reduce((sum, item) => sum + item.value, 0)
 
@@ -122,6 +122,11 @@ export default function PaymentTypePieChart({ data, bureauFilter }) {
           <h2 className="text-2xl font-bold text-white">
             {bureauFilter}
           </h2>
+          {period && (
+            <div className="text-xs text-yellow-400/80 mt-1">
+              {period}
+            </div>
+          )}
         </div>
       )}
     </div>
