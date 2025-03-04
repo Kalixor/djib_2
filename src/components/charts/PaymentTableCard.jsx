@@ -46,6 +46,7 @@ export default function PaymentTableCard() {
   const [showBureauFilter, setShowBureauFilter] = useState(false)
   const [showTaxeFilter, setShowTaxeFilter] = useState(false)
   const [showDateFilter, setShowDateFilter] = useState(false)
+  const [sortOrder, setSortOrder] = useState('asc') // 'asc' ou 'desc'
 
   const getUniqueValues = (column) => {
     const values = new Set(initialData.map(item => item[column]))
@@ -60,7 +61,11 @@ export default function PaymentTableCard() {
     }
   }
 
-  // Filtrage des données
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')
+  }
+
+  // Filtrage et tri des données
   const filteredData = useMemo(() => {
     let data = [...initialData]
     
@@ -76,8 +81,15 @@ export default function PaymentTableCard() {
       data = data.filter(item => item.date === dateFilter)
     }
     
+    // Tri des données
+    data.sort((a, b) => {
+      const dateA = new Date(a.date)
+      const dateB = new Date(b.date)
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
+    })
+    
     return data
-  }, [bureauFilter, taxeFilter, dateFilter])
+  }, [bureauFilter, taxeFilter, dateFilter, sortOrder])
 
   // Calcul des totaux
   const totals = useMemo(() => {
@@ -100,6 +112,7 @@ export default function PaymentTableCard() {
     setShowBureauFilter(false)
     setShowTaxeFilter(false)
     setShowDateFilter(false)
+    setSortOrder('asc')
   }
 
   return (
@@ -150,6 +163,12 @@ export default function PaymentTableCard() {
                       className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
                     >
                       <i className={`fas ${dateFilter ? 'fa-filter-circle-xmark text-[#ce68fd]' : 'fa-filter'} text-xs`} />
+                    </button>
+                    <button
+                      onClick={toggleSortOrder}
+                      className="text-[#00c2ff] hover:text-[#cb3cff] transition-colors"
+                    >
+                      <i className={`fas ${sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'} text-xs`} />
                     </button>
                     {showDateFilter && (
                       <div className="absolute top-full left-0 mt-1 bg-brand-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-[#cb3cff]/50 z-10">
