@@ -8,6 +8,7 @@ import EvolutionAreaChart from './charts/EvolutionAreaChart'
 import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
 import NotificationPopup from './NotificationPopup'
+import { usePeriod } from '../context/PeriodContext'
 
 const generateData = (period, bureauFilter = null, taxeFilter = null) => {
   const bureaux = ['Bureau A', 'Bureau B', 'Bureau C', 'Bureau D']
@@ -69,6 +70,7 @@ export default function Dashboard({ filters, setFilters }) {
   const [lineChartPeriod, setLineChartPeriod] = useState('Sem')
   const [lineChartData, setLineChartData] = useState(generateData('Sem'))
 
+
   const handleDateChange = (type, date) => {
     const newStart = type === 'start' ? date : startDate
     const newEnd = type === 'end' ? date : endDate
@@ -99,8 +101,6 @@ export default function Dashboard({ filters, setFilters }) {
       setEndDate(date)
     }
   }
-
- 
 
   // Filtrage des données selon la période sélectionnée
   const filteredData = allData.filter(d => {
@@ -203,7 +203,8 @@ export default function Dashboard({ filters, setFilters }) {
           style={{ gridRow: 'span 2' }}
         />
       </div>
-
+      
+      {/* Evolution card */}
       <div className="flex gap-5 mb-6">
         <div className="w-[60%] bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] relative">
           <div className="absolute inset-0 rounded-lg pointer-events-none"

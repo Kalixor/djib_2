@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Select, { components } from "react-select";
 
-const CustomMultiSelect = ({selectedOptions, setSelectedOptions, placeHolder = "", taxeFilter = [], options = [] }) => {
+const CustomMultiSelect = ({selectedOptions, setSelectedOptions, placeHolder = "", fowardChange, taxeFilter = [], options = [] }) => {
     // const [selectedOptions, setSelectedOptions] = useState(taxeFilter);
     const [menuIsOpen, setMenuIsOpen] = useState(false);
 
@@ -237,6 +237,7 @@ const CustomMultiSelect = ({selectedOptions, setSelectedOptions, placeHolder = "
     const handleChange = (selected) => {
         setSelectedOptions(selected || []);
         setMenuIsOpen(true);
+        fowardChange(selected)
     };
 
     return (

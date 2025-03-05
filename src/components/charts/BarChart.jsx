@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import CustomMultiSelect from '../CustomMultiSelect'
 import SelectionDisplay from '../SelectionDisplay'
-import Select from 'react-select'
+
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -57,85 +57,24 @@ const generateData = (period, bureauFilter = null, taxeFilter = null) => {
     }
 }
 
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    backgroundColor: 'rgba(8, 16, 40, 0.5)',
-    backdropFilter: 'blur(12px)',
-    borderColor: 'rgba(0, 194, 255, 0.5)',
-    minHeight: '32px',
-    boxShadow: 'none',
-    '&:hover': {
-      borderColor: '#00c2ff'
-    }
-  }),
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: '#0b1739',
-    border: '1px solid rgba(0, 194, 255, 0.5)',
-    backdropFilter: 'blur(12px)'
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected ? '#00c2ff' : 'transparent',
-    color: state.isSelected ? '#0b1739' : '#aeb9e1',
-    '&:hover': {
-      backgroundColor: '#00c2ff',
-      color: '#0b1739'
-    }
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: '#aeb9e1'
-  }),
-  input: (provided) => ({
-    ...provided,
-    color: '#aeb9e1'
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#aeb9e1'
-  }),
-  indicatorSeparator: () => ({
-    display: 'none'
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: '#aeb9e1',
-    padding: '4px',
-    '&:hover': {
-      color: '#00c2ff'
-    }
-  }),
-  clearIndicator: (provided) => ({
-    ...provided,
-    color: '#aeb9e1',
-    padding: '4px',
-    '&:hover': {
-      color: '#00c2ff'
-    }
-  })
-}
-
 export default function BarChart() {
     const [period, setPeriod] = useState('Mois')
     const [bureauFilter, setBureauFilter] = useState(null)
     const [taxeFilter, setTaxeFilter] = useState(null)
     const [data, setData] = useState(generateData('Mois'))
 
-    const bureaux = useMemo(() => [
-      { value: 'Bureau A', label: 'Bureau A' },
-      { value: 'Bureau B', label: 'Bureau B' },
-      { value: 'Bureau C', label: 'Bureau C' },
-      { value: 'Bureau D', label: 'Bureau D' }
-    ], [])
+    const [displayValue, setDisplayValue] = useState('0')
+    const [variationValue, setVariationValue] = useState(0)
+    const [variationAmount, setVariationAmount] = useState(0)
+    const targetValue = useRef(0)
+    const animationRef = useRef(null)
+    const startTimeRef = useRef(null)
 
-    const taxes = useMemo(() => [
-      { value: 'Taxe Import', label: 'Taxe Import' },
-      { value: 'Taxe Export', label: 'Taxe Export' },
-      { value: 'Taxe Transit', label: 'Taxe Transit' },
-      { value: 'Droit Douane', label: 'Droit Douane' }
-    ], [])
+    const [bureauOptions, setBureauOptions] = useState([]);
+    const [bureauLabel, setbureauLabel] = useState("Tous les Bureaux");
+    const [selectedTaxOptions, setSelectedTaxOptions] = useState([]);
+    const [taxLabel, setTaxLabel] = useState("Toutes Taxes");
+    // const { period, togglePeriod } = usePeriod()
 
     const defaultTaxes = useMemo(() =>Array.from({ length: 100 }, (_, i) => ({
         value: `TAX_${i + 1}`,
@@ -149,7 +88,6 @@ export default function BarChart() {
         }))
         , [])
 
-
     const handlePeriodChange = (newPeriod) => {
         if (newPeriod !== period) {
             setPeriod(newPeriod)
@@ -162,51 +100,115 @@ export default function BarChart() {
         setData(generateData(period, selectedOption?.value, taxeFilter?.value))
     }
 
-    const renderVariationBadge = (value, trend) => {
-        const isPositive = trend === 'up'
-        const arrowClass = isPositive
-            ? 'fas fa-arrow-up rotate-45'
-            : 'fas fa-arrow-down rotate-[-35deg]'
-
-        return (
-            <div className={`
-        px-2 py-1 rounded-full
-        border ${isPositive ? 'border-green-500/50' : 'border-red-500/50'}
-        bg-${isPositive ? 'green-500/10' : 'red-500/10'}
-        backdrop-blur-sm
-        shadow-sm
-        flex items-center gap-1
-        text-xs font-medium
-        ${isPositive ? 'text-green-500' : 'text-red-500'}
-      `}>
-                <span>{value}%</span>
-                <i className={`${arrowClass} text-[0.6rem]`} />
-            </div>
-        )
+    const getBarChartData = useCallback(() => {
+        const baseValues = {
+          'totaux': { value: 12520000000, suffix: '', trend: 'up' },
+          
+        }
+    
+        const periodFactors = {
+          'Journalières': 1,
+          'Hebdomadaires': 7,
+          'Mensuelles': 30,
+          'Annuelles': 365
+        }
+    
+        const factor = periodFactors[period] || 1
+        const variation = Math.random() * 0.05
+        const baseValue = baseValues['totaux'].value * factor
+        const variationAmount = baseValue * variation
+    
+        return {
+          ...baseValues['totaux'],
+          value: Math.round(baseValue * (1 + variation)),
+          variationAmount: Math.round(variationAmount)
+        }
+      }, [period, bureauOptions, selectedTaxOptions])
+    
+    useEffect(() => {
+    const { value, variationAmount } = getBarChartData()
+    targetValue.current = value
+    setVariationAmount(variationAmount)
+    setVariationValue(Math.round((variationAmount / (value - variationAmount)) * 100))
+    startTimeRef.current = null
+    setDisplayValue('0')
+    animationRef.current = requestAnimationFrame(animateValue)
+    
+    return () => {
+        if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        }
     }
+    }, [getBarChartData])
+    
+    const animateValue = useCallback((timestamp) => {
+        if (!startTimeRef.current) startTimeRef.current = timestamp
+        const progress = timestamp - startTimeRef.current
+        const duration = 800
+        
+        if (progress < duration) {
+          const easedProgress = easeOutQuad(progress / duration)
+          const currentDisplay = Math.floor(easedProgress * targetValue.current)
+          setDisplayValue(currentDisplay.toLocaleString())
+          animationRef.current = requestAnimationFrame(animateValue)
+        } else {
+          setDisplayValue(targetValue.current.toLocaleString())
+        }
+      }, [])
+    
+    const easeOutQuad = useCallback((t) => t * (2 - t), [])
+
+    const renderVariationBadge = useCallback(() => {
+        const { trend } = getBarChartData()
+        const isPositive = trend === 'up'
+        const arrowClass = isPositive 
+          ? 'fas fa-arrow-up rotate-45' 
+          : 'fas fa-arrow-down rotate-[-35deg]'
+    
+        return (
+          <div className="flex flex-col items-end">
+            <div className={`
+              px-2 py-1 rounded-full
+              border ${isPositive ? 'border-green-500/50' : 'border-red-500/50'}
+              bg-${isPositive ? 'green-500/10' : 'red-500/10'}
+              backdrop-blur-sm
+              shadow-sm
+              flex items-center gap-1
+              text-xs font-medium
+              ${isPositive ? 'text-green-500' : 'text-red-500'}
+            `}>
+              <span>{variationValue}%</span>
+              <i className={`${arrowClass} text-[0.6rem]`} />
+            </div>
+            <div className={`text-[0.6rem] mt-1 ${
+              isPositive ? 'text-green-500' : 'text-red-500'
+            }`}>
+              {isPositive ? '+' : '-'}{Math.abs(variationAmount).toLocaleString()}
+            </div>
+          </div>
+        )
+      }, [getBarChartData, variationValue, variationAmount])
 
     const handleTaxeChange = (selectedOption) => {
         setTaxeFilter(selectedOption)
         setData(generateData(period, bureauFilter?.value, selectedOption?.value))
     }
 
-    const [bureauOptions, setBureauOptions] = useState([]);
-    const [bureauLabel, setbureauLabel] = useState("Tous les Bureaux");
-    const [selectedTaxOptions, setSelectedTaxOptions] = useState([]);
-    const [taxLabel, setTaxLabel] = useState("Toutes Taxes");
-
-    useEffect(() => {
-        (bureauOptions.length ? setbureauLabel("Bureaux") : setbureauLabel("Tous les Bureaux"));
-        (selectedTaxOptions.length ? setTaxLabel("Taxes") : setTaxLabel("Toutes Taxes"));
-    }, [bureauOptions, selectedTaxOptions]);
-
     const removeBureauSelection = (option) => {
         setBureauOptions(bureauOptions.filter(item => item.value !== option.value));
+        handleBureauChange([option])
     };
     
     const removeTaxSelection = (option) => {
         setSelectedTaxOptions(selectedTaxOptions.filter(item => item.value !== option.value));
+        handleTaxeChange([option])
     };
+
+    useEffect(() => {
+        (bureauOptions.length ? setbureauLabel("Bureaux") : setbureauLabel("Tous les Bureaux"));
+        (selectedTaxOptions.length ? setTaxLabel("Taxes") : setTaxLabel("Toutes Taxes"));
+
+    }, [bureauOptions, selectedTaxOptions]);
 
     return (
         <div className="group h-full bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f] transition-all duration-300 relative">
@@ -264,7 +266,7 @@ export default function BarChart() {
                       options={defaultBureaux}
                       value={bureauFilter}
                       label={bureauLabel}
-                      onChange={handleBureauChange}
+                      fowardChange = {handleBureauChange}
                       placeHolder="Bureaux"
                       classNamePrefix="react-select"
                       selectedOptions={bureauOptions}
@@ -277,7 +279,7 @@ export default function BarChart() {
                       options={defaultTaxes}
                       value={taxeFilter}
                       label={taxLabel}
-                      onChange={handleTaxeChange}
+                      fowardChange={handleTaxeChange}
                       placeHolder="Taxes"
                       classNamePrefix="react-select"
                       selectedOptions={selectedTaxOptions}
@@ -297,7 +299,7 @@ export default function BarChart() {
                     </div>
                     <div className="flex items-center gap-2">
                         <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                            20.7M
+                            {displayValue}
                         </p>
                         {renderVariationBadge(4.2, 'up')}
                     </div>
