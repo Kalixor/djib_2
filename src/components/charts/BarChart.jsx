@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import CustomMultiSelect from '../CustomMultiSelect'
 import SelectionDisplay from '../SelectionDisplay'
@@ -191,7 +191,14 @@ export default function BarChart() {
     }
 
     const [bureauOptions, setBureauOptions] = useState([]);
+    const [bureauLabel, setbureauLabel] = useState("Tous les Bureaux");
     const [selectedTaxOptions, setSelectedTaxOptions] = useState([]);
+    const [taxLabel, setTaxLabel] = useState("Toutes Taxes");
+
+    useEffect(() => {
+        (bureauOptions.length ? setbureauLabel("Bureaux") : setbureauLabel("Tous les Bureaux"));
+        (selectedTaxOptions.length ? setTaxLabel("Taxes") : setTaxLabel("Toutes Taxes"));
+    }, [bureauOptions, selectedTaxOptions]);
 
     const removeBureauSelection = (option) => {
         setBureauOptions(bureauOptions.filter(item => item.value !== option.value));
@@ -256,6 +263,7 @@ export default function BarChart() {
                     <CustomMultiSelect
                       options={defaultBureaux}
                       value={bureauFilter}
+                      label={bureauLabel}
                       onChange={handleBureauChange}
                       placeHolder="Bureaux"
                       classNamePrefix="react-select"
@@ -268,6 +276,7 @@ export default function BarChart() {
                     <CustomMultiSelect
                       options={defaultTaxes}
                       value={taxeFilter}
+                      label={taxLabel}
                       onChange={handleTaxeChange}
                       placeHolder="Taxes"
                       classNamePrefix="react-select"
@@ -337,9 +346,9 @@ export default function BarChart() {
             </div>
             {/* Bureau Filter display */}
             <div className="flex w-full gap-4 items-start">
-                <SelectionDisplay label={'Tous les Bureaux'} selectedOptions={bureauOptions} removeSelection={removeBureauSelection} />
+                <SelectionDisplay label={bureauLabel} selectedOptions={bureauOptions} removeSelection={removeBureauSelection} />
                 <div className="w-1/2 bg-back rounded-lg self-start">
-                    <SelectionDisplay label={'Toutes Taxes'} selectedOptions={selectedTaxOptions} removeSelection={removeTaxSelection} />
+                    <SelectionDisplay label={taxLabel} selectedOptions={selectedTaxOptions} removeSelection={removeTaxSelection} />
                 </div>
             </div>
         </div>
