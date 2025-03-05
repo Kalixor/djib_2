@@ -9,6 +9,9 @@ module.exports = {
         sans: ['Mona Sans', 'sans-serif'],
       },
       colors: {
+        back: {
+          DEFAULT: '#081028'
+        },
         brand: {
           50: '#f0f4ff',
           100: '#e0e9ff',

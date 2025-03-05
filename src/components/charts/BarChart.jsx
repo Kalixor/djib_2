@@ -123,7 +123,6 @@ export default function BarChart() {
     const [taxeFilter, setTaxeFilter] = useState(null)
     const [data, setData] = useState(generateData('Mois'))
 
-
     const bureaux = useMemo(() => [
       { value: 'Bureau A', label: 'Bureau A' },
       { value: 'Bureau B', label: 'Bureau B' },
@@ -143,6 +142,13 @@ export default function BarChart() {
         label: `Taxe ${i + 1}`,
         }))
         , [])
+        
+    const defaultBureaux = useMemo(() =>Array.from({ length: 17 }, (_, i) => ({
+        value: `BUR_${i + 1}`,
+        label: `Bureau ${i + 1}`,
+        }))
+        , [])
+
 
     const handlePeriodChange = (newPeriod) => {
         if (newPeriod !== period) {
@@ -150,8 +156,6 @@ export default function BarChart() {
             setData(generateData(newPeriod, bureauFilter?.value, taxeFilter?.value))
         }
     }
-
-
 
     const handleBureauChange = (selectedOption) => {
         setBureauFilter(selectedOption)
@@ -186,10 +190,15 @@ export default function BarChart() {
         setData(generateData(period, bureauFilter?.value, selectedOption?.value))
     }
 
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [bureauOptions, setBureauOptions] = useState([]);
+    const [selectedTaxOptions, setSelectedTaxOptions] = useState([]);
 
-    const removeSelection = (option) => {
-        setSelectedOptions(selectedOptions.filter(item => item.value !== option.value));
+    const removeBureauSelection = (option) => {
+        setBureauOptions(bureauOptions.filter(item => item.value !== option.value));
+    };
+    
+    const removeTaxSelection = (option) => {
+        setSelectedTaxOptions(selectedTaxOptions.filter(item => item.value !== option.value));
     };
 
     return (
@@ -242,26 +251,28 @@ export default function BarChart() {
 
                 {/* Combo Lists */}
                 <div className="flex flex-col gap-2 mt-3 justify-end text-[12px]">
+                    {/* Bureaux Lists */}
                   <div className="w-76">
-                    <Select
-                      options={bureaux}
+                    <CustomMultiSelect
+                      options={defaultBureaux}
                       value={bureauFilter}
                       onChange={handleBureauChange}
-                      placeholder="Bureau"
-                      isClearable
-                      styles={customStyles}
+                      placeHolder="Bureaux"
                       classNamePrefix="react-select"
+                      selectedOptions={bureauOptions}
+                      setSelectedOptions={setBureauOptions}
                     />
                   </div>
+                  {/* Taxes Lists */}
                   <div className="w-76">
                     <CustomMultiSelect
                       options={defaultTaxes}
                       value={taxeFilter}
                       onChange={handleTaxeChange}
-                      placeholder="Taxe"
+                      placeHolder="Taxes"
                       classNamePrefix="react-select"
-                      selectedOptions={selectedOptions}
-                      setSelectedOptions={setSelectedOptions}
+                      selectedOptions={selectedTaxOptions}
+                      setSelectedOptions={setSelectedTaxOptions}
                     />
                   </div>
                 </div>
@@ -271,12 +282,12 @@ export default function BarChart() {
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                         <i className="fas fa-chart-line text-sm text-gray-300 dark:text-card-text" />
-                        <h3 className="text-xs font-medium text-gray-500 dark:text-card-text">
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-card-text">
                             Évolution des recettes
                         </h3>
                     </div>
                     <div className="flex items-center gap-2">
-                        <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                             20.7M
                         </p>
                         {renderVariationBadge(4.2, 'up')}
@@ -324,12 +335,13 @@ export default function BarChart() {
                     </ReBarChart>
                 </ResponsiveContainer>
             </div>
-            {/* Filter display */}
-            <div className="flex w-full gap-4 items-start mb-40">
-                <SelectionDisplay label={'Bureaux'} selectedOptions={selectedOptions} removeSelection={removeSelection} />
+            {/* Bureau Filter display */}
+            <div className="flex w-full gap-4 items-start">
+                <SelectionDisplay label={'Tous les Bureaux'} selectedOptions={bureauOptions} removeSelection={removeBureauSelection} />
+                <div className="w-1/2 bg-back rounded-lg self-start">
+                    <SelectionDisplay label={'Toutes Taxes'} selectedOptions={selectedTaxOptions} removeSelection={removeTaxSelection} />
+                </div>
             </div>
-
-           
         </div>
     )
 }
