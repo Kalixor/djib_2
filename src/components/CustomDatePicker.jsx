@@ -100,7 +100,7 @@ export default function CustomDatePicker({ value, onChange, disabled = false }) 
             className={`text-card-text hover:text-[#cb3cff] transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={disabled}
           >
-            >
+            
           </button>
         </div>
         

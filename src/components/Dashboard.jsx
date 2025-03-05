@@ -285,24 +285,24 @@ export default function Dashboard({ filters, setFilters }) {
                                     type="button"
                                     onClick={() => handleLineChartPeriodChange(p)}
                                     className={`
-                    relative
-                    px-2 py-1 rounded-md
-                    text-[12px] font-medium
-                    transition-colors duration-100
-                    ${lineChartPeriod === p
-                                            ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
-                                            : 'text-card-text'
-                                        }
-                    after:absolute
-                    after:inset-0
-                    after:rounded-md
-                    after:border
-                    after:border-transparent
-                    focus:after:border-[#cb3cff]/50
-                    hover:after:border-[#cb3cff]/50
-                    after:pointer-events-none
-                    hover:text-[#cb3cff]
-                  `}
+                                        relative
+                                        px-2 py-1 rounded-md
+                                        text-[12px] font-medium
+                                        transition-colors duration-100
+                                        ${lineChartPeriod === p
+                                                                ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                                                                : 'text-card-text'
+                                                            }
+                                        after:absolute
+                                        after:inset-0
+                                        after:rounded-md
+                                        after:border
+                                        after:border-transparent
+                                        focus:after:border-[#cb3cff]/50
+                                        hover:after:border-[#cb3cff]/50
+                                        after:pointer-events-none
+                                        hover:text-[#cb3cff]
+                                      `}
                                 >
                                     {p}
                                 </button>

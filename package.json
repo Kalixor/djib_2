@@ -15,6 +15,7 @@
             "react-select": "^5.10.1",
             "recharts": "^2.8.0",
             "shadcn-ui": "^0.1.0",
+            "tableau-de-bord-douanes": "file:",
             "tailwindcss": "^3.3.2"
       },
       "devDependencies": {

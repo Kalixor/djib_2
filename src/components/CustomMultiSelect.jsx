@@ -236,7 +236,7 @@ const CustomMultiSelect = ({selectedOptions, setSelectedOptions, placeHolder = "
     
     const handleChange = (selected) => {
         setSelectedOptions(selected || []);
-        setMenuIsOpen(true);
+        setMenuIsOpen(false);
         fowardChange(selected)
     };
 
@@ -245,7 +245,7 @@ const CustomMultiSelect = ({selectedOptions, setSelectedOptions, placeHolder = "
             options={options}
             isMulti
             hideSelectedOptions={false}
-            closeMenuOnSelect={false}
+            closeMenuOnSelect={true}
             value={selectedOptions}
             onChange={handleChange}
             onMenuOpen={() => setMenuIsOpen(true)}

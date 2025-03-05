@@ -78,8 +78,7 @@ export default function Navbar() {
                     hover:after:border-[#cb3cff]/50
                     after:pointer-events-none
                     hover:text-[#cb3cff]
-                  `}
-                >
+                  `}>
                   {p}
                 </button>
               ))}
