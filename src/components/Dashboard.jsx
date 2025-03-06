@@ -7,6 +7,7 @@ import PaymentTableCard from './charts/PaymentTableCard'
 import EvolutionAreaChart from './charts/EvolutionAreaChart'
 import KPI from './KPI'
 import CustomDatePicker from './CustomDatePicker'
+import DataComponentApi from './DataComponentApi'
 import NotificationPopup from './NotificationPopup'
 import { usePeriod } from '../context/PeriodContext'
 
@@ -162,6 +163,25 @@ export default function Dashboard({ filters, setFilters }) {
         setLineChartData(generateData(newPeriod))
     }
   }
+
+  // Définition des paramètres SQL dynamiques
+  const table = "df_offices_taxes"; // Table à utiliser
+  const column1 = "TotalPaidValue"; // Première colonne obligatoire
+  const column2 = "TotalAssessedValue"; // Seconde colonne optionnelle (null si non utilisée)
+  const period = "Period"; // Nom du champ période (ex: Year, Month, Week...)
+  const periodFormat = "%Y"; // Format de la période (ex: %Y, %Y-%m, %Y-%W...)
+
+  // Construction de la requête SQL dynamique
+  const sqlQuery = `
+    SELECT 
+      STRFTIME('${periodFormat}', CAST(Date AS DATE)) AS ${period},
+      SUM(${column1}) AS ${column1}
+      ${column2 ? `, SUM(${column2}) AS ${column2}` : ''} 
+    FROM ${table}
+    GROUP BY ${period}
+    ORDER BY ${period}
+  `;
+
 
   return (
     <main className="p-6">
@@ -324,6 +344,12 @@ export default function Dashboard({ filters, setFilters }) {
         <PieChartOffice filters={filters} setFilters={setFilters} />
         <PaymentTableCard />
       </div>
+
+      {/* <div>
+      <h1>Affichage des résultats SQL</h1>
+      <DataComponentApi query="query" params={{ sql: sqlQuery }} />
+    </div> */}
+
     </main>
   )
 }
