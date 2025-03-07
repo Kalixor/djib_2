@@ -10,7 +10,9 @@ module.exports = {
       },
       colors: {
         back: {
-          DEFAULT: '#081028'
+          DEFAULT: '#081028',
+          100 : '#0b1739',
+          200 : '#00c2ff'
         },
         brand: {
           50: '#f0f4ff',
