@@ -56,8 +56,8 @@ export default function Navbar({ onPageChange }) {
           <div className="flex items-center gap-2">
             <span className="text-sm text-card-text">Au :</span>
             <CustomDatePicker 
-              value={selectedDate}
-              onChange={setSelectedDate}
+              value={period.currentDate}
+              onChange={(newValue) => togglePeriod({ currentDate: newValue })}
             />
           </div>
           
@@ -67,14 +67,14 @@ export default function Navbar({ onPageChange }) {
                 <button
                   key={p}
                   type="button"
-                  onClick={() => togglePeriod(p)}
+                  onClick={() => togglePeriod({ grain: p })}
                   className={`
                     relative
                     px-2 py-1 rounded-md
                     text-xs font-medium
                     transition-colors duration-100
                     ${
-                      period === p
+                      period.grain === p
                         ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
                         : 'text-card-text'
                     }

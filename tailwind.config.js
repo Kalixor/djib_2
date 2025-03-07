@@ -12,7 +12,8 @@ module.exports = {
         back: {
           DEFAULT: '#081028',
           100 : '#0b1739',
-          200 : '#00c2ff'
+          200 : '#00c2ff',
+          300 : '#cb3cff'
         },
         brand: {
           50: '#f0f4ff',
