@@ -7,7 +7,10 @@
 .p-datatable td,
 .p-datatable th {
   border: 1px solid #4a4a4a; /* Couleur de la bordure */
- */
+*/
+
+
+ 
 
 /* Style général du fond de la table */
 .custom-datatable {
@@ -18,7 +21,7 @@
   background-color: #0b1739;
   color: #00c2ff;
   border: 1px solid #4a4a4a; /* Gris foncé */
-  text-align: center;
+  text-align: left;
 }
 
 /* Style pour les sous-en-têtes */

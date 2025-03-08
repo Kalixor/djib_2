@@ -275,7 +275,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
         {loading && (
           <div className="absolute -right-2 top-[70%] spinner-container">
-            <BeatLoader color="#00c2ff" size={10} />
+            <BeatLoader color="#00c2ff" size={20} />
           </div>
         )}
       </div>

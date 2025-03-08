@@ -56,6 +56,14 @@ export const PreloadedDataProvider = ({ children }) => {
                         periodFormat :'%Y-%m-%d'}),
     burByName:  `SELECT DISTINCT CodeOffice, OfficeName, FROM df_offices_taxes`,
     taxByName:  `SELECT DISTINCT CodeTaxe, TaxeDescription, FROM df_taxes WHERE TaxeDescription IS NOT NULL`,
+    totTaxByBurByMonth : `SELECT CodeOffice,
+                            CodeTaxe,
+                            STRFTIME('%Y-%m',
+                            CAST(Date AS DATE)) AS Month,
+                            SUM(AmountPaid) AS TotalAmountPaid
+                           FROM df_taxes
+                           GROUP BY CodeOffice, CodeTaxe, Month
+                           ORDER BY CodeOffice, Month, CodeTaxe`
     
   };
 
