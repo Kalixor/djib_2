@@ -151,7 +151,7 @@ export default function TableauTabs() {
     setColumns(cols);
     setHeaderGroup(headerGrp);
 
-  },[loading])
+  },[loading, month])
   
   // Définition du groupe de colonnes pour l'en-tête
   const heaerGroup = (
@@ -243,7 +243,7 @@ export default function TableauTabs() {
   const renderTable1 = () => (
     <div>
       <h2 className="text-xl text-center font-bold text-white mb-4 p-6">RECETTE  MENSUELLE  PAR  BUREAUX POUR LE MOIS : <span className='text-back-200'>{month}</span>  </h2>
-      <div className="flex w-48">
+      <div className="absolute top-16 ml-10 w-48">
                     <select
                       value={month}
                       // label={bureauLabel}
@@ -276,7 +276,7 @@ export default function TableauTabs() {
             headerColumnGroup={headerGroup}
             scrollable
             // showGridlines
-            scrollHeight="500px"
+            scrollHeight="700px"
             // style={{ width: '800px' }}
             className="custom-datatable"
           >
@@ -348,7 +348,7 @@ export default function TableauTabs() {
   return (
     <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50 mt-2">
       <div className="flex gap-1">
-        {['Recettes', 'Tableau 2', 'Tableau 3'].map((tab, index) => (
+        {['Recettes Mensuelles', 'Tableau 2', 'Tableau 3'].map((tab, index) => (
           <button
             key={tab}
             className={`
