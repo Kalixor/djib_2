@@ -12,7 +12,9 @@ import 'primereact/resources/primereact.min.css';          // Styles de base
 import 'primeicons/primeicons.css';
 import '../tabs_styles.css';
 import { PreloadedDataContext } from '../context/preLoadContext';
-import CustomMultiSelect from './CustomMultiSelect'
+import CustomSelect from './CustomSelect'
+import StyledInputText from './StyledInputText'
+
 
 export default function TableauTabs() {
   const [activeTab, setActiveTab] = useState('tableau1')
@@ -22,11 +24,16 @@ export default function TableauTabs() {
   const [columns, setColumns] = useState([]);
   const [headerGroup, setHeaderGroup] = useState(null);
   const [month, setMonth] = useState("2022-01");
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const [selectedMonth, setselectedMonth] = useState([]);
+
   const { preloadedData, loading, error } = useContext(PreloadedDataContext);
 
-  const handleDateChange = (e) => {
-    const selectedValue = e.target.value;
-    setMonth(selectedValue);
+  const handleDateChange = (s) => {
+    console.log(s)
+    setselectedMonth(s);
+    setMonth(s.value);
   }
 
   // Convert `data` from an object into an array
@@ -41,23 +48,20 @@ export default function TableauTabs() {
   // Custom header with search input
   const headerWithSearch = () => (
     <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-        <span>Code Taxe:</span>
-        <InputText
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search..."
-            style={{ width: "100px" }}
-        />
+      <span>Code Taxe:</span>
+      <InputText
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search..."
+        style={{ width: "100px" }}
+      />
     </div>
-);
+  );
   // Données de transaction 
   const transactions = preloadedData.recettesBureau
 
   const dates = useMemo(() => Array.from(new Set(transactions.map(t => t.Month)))
     , [])
-
-
-  
 
   // Table de liaison CodeTaxe -> TaxeDescription
   const taxeDescriptions = preloadedData.taxes
@@ -188,7 +192,7 @@ export default function TableauTabs() {
     return [
       { field: "CodeTaxe", header: "Code Taxe", frozen: true },
       { field: "TaxeDescription", header: "Description", bodyStyle: { backgroundColor: "#081028" } },
-      ...groupedData.map(office => ( ({ field: office, header: office })) ),
+      ...groupedData.map(office => (({ field: office, header: office }))),
       { field: "total", header: "TOTAL", bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "right" },
       // ...[...uniqueOffices].reverse().map(office => ({ field: office, header: office }))
     ];
@@ -294,7 +298,6 @@ export default function TableauTabs() {
     );
   });
 
-
   useEffect(() => {
 
     setMonth(month);
@@ -399,39 +402,43 @@ export default function TableauTabs() {
   //   );
   // };
 
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day ? day + '/' : ''}${month}/${year}`;
+  }
 
+  const currentDates = useMemo(() =>
+    dates.map(date => ({
+      value: date,
+      label: `${date}` // Tu peux adapter le format ici
+    })),
+    [dates]
+  );
 
   const renderTable1 = () => (
     <div>
-      <h2 className="text-xl text-center font-bold text-white mb-4 p-6">RECETTE  MENSUELLE  PAR  BUREAUX POUR LE MOIS : <span className='text-back-200'>{month}</span>  </h2>
-      <div className="flex flex-row absolute top-14 ml-10 w-48 gap-8">
-        <select
+      <h2 className="text-xl text-center font-bold text-white mb-4 p-6">RECETTE  MENSUELLE  PAR  TAXES-BUREAUX POUR LE MOIS : <span className='text-back-300'>{formatDate(month)}</span>  </h2>
+      <div className="flex flex-row -mt-16 top-10 ml-10 w-68 gap-8 ">
+        <CustomSelect
+          options={currentDates}
           value={month}
-          // label={bureauLabel}
-          onChange={handleDateChange}
-          placeholder="Dates"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-
-        // selectedOptions={bureauOptions}
-        // setSelectedOptions={setBureauOptions}
-        >
-          {dates.map((date, index) => (
-            <option key={index} value={date}>
-              {date}
-            </option>
-          ))}
-        </select>
+          label={''}
+          fowardChange={(selected) => handleDateChange(selected)}
+          placeHolder="Selectionner date..."
+          classNamePrefix="react-select"
+          selectedOptions={month}
+          setSelectedOptions={(s) => setMonth(s)}
+        />
 
         <div style={{ marginBottom: "1px" }}>
-                <span className='text-sm text-card-text'>Taxe: </span>
-                <InputText
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Chercher..."
-                    style={{ width: "150px" }}
-                />
-            </div>
-
+          <span className='text-sm text-card-text'>Taxe: </span>
+          <StyledInputText
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Chercher..."
+            width="150px"
+          />
+        </div>
       </div>
 
       <div className="mt-4 bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
@@ -458,8 +465,8 @@ export default function TableauTabs() {
             {Object.keys(filteredData[0] || {}).filter(key => key !== "CodeTaxe" && key !== "TaxeDescription").map(colKey => (
                 <Column key={colKey} field={colKey} header={colKey} />
             ))} */}
-            
-            
+
+
             {columns.map(col => (
               <Column key={col.field}
                 field={col.field}
@@ -534,7 +541,7 @@ export default function TableauTabs() {
   return (
     <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50 mt-2">
       <div className="flex gap-1">
-        {['Recettes Mensuelles', 'Tableau 2', 'Tableau 3'].map((tab, index) => (
+        {['RECETTES MENSUELLES TAXES-BUREAUX', 'Tableau 2', 'Tableau 3'].map((tab, index) => (
           <button
             key={tab}
             className={`

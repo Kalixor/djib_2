@@ -56,7 +56,7 @@ export default function Navbar({ onPageChange }) {
       {loading && (
         <NotificationPopup
           type={'info'}
-          message={'Extraction des donnée en cour...'}
+          message={'Extraction des données en cour...'}
           duration={20000}
           // onClose={() => setNotification(null)}
         />

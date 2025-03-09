@@ -9,7 +9,7 @@ const NotificationPopup = ({ type, message, duration = 3000, onClose }) => {
       icon: 'fas fa-exclamation-circle',
     },
     info: {
-      bg: 'bg-blue-500/90',
+      bg: 'bg-back-200/90',
       icon: 'fas fa-info-circle',
     },
     system: {
