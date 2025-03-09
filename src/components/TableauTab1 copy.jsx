@@ -16,7 +16,7 @@ import CustomSelect from './CustomSelect'
 import StyledInputText from './StyledInputText'
 
 
-export default function TableauTab1() {
+export default function TableauTabs() {
   const [activeTab, setActiveTab] = useState('tableau1')
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -31,6 +31,7 @@ export default function TableauTab1() {
   const { preloadedData, loading, error } = useContext(PreloadedDataContext);
 
   const handleDateChange = (s) => {
+    console.log(s)
     setselectedMonth(s);
     setMonth(s.value);
   }
