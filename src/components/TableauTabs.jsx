@@ -74,64 +74,97 @@ export default function TableauTabs() {
   // Transform transactions into pivoted table data
   const transformData = useCallback((filteredTransactions, uniqueOffices) => {
 
-      const sumRows = (data) => {
-        // Iterate through each parent object
-        for (const parentKey in data) {
-          const details = data[parentKey];
-          let total = 0;
+    const sumRows = (data) => {
+      // Iterate through each parent object
+      for (const parentKey in data) {
+        const details = data[parentKey];
+        let total = 0;
 
-          // Iterate over each key in the inner object
-          for (const key in details) {
-            if (key.startsWith("D")) {
-              const value = details[key];
-              // If the value is a number, add it directly
-              if (typeof value === "number") {
-                total += value;
-              }
-              // If it's a non-empty string, try to convert it to a number
-              else if (typeof value === "string" && value !== "") {
-                const numberVal = parseFloat(value);
-                if (!isNaN(numberVal)) {
-                  total += numberVal;
-                }
+        // Iterate over each key in the inner object
+        for (const key in details) {
+          if (key.startsWith("D")) {
+            const value = details[key];
+            // If the value is a number, add it directly
+            if (typeof value === "number") {
+              total += value;
+            }
+            // If it's a non-empty string, try to convert it to a number
+            else if (typeof value === "string" && value !== "") {
+              const numberVal = parseFloat(value);
+              if (!isNaN(numberVal)) {
+                total += numberVal;
               }
             }
           }
-          // Add a new key with the total (e.g., "TOT-AIB")
-          details[`total`] = total;
+        }
+        // Add a new key with the total (e.g., "TOT-AIB")
+        details[`total`] = total;
+      }
+    }
+
+
+    const sunColumns = (data) => {
+      // Création d'un objet résumé pour accumuler les sommes verticales
+      const summary = {};
+
+      // Parcourir chaque objet parent de la structure
+      for (const parentKey in data) {
+        const details = data[parentKey];
+        // Parcourir chaque clé de l'objet courant
+        for (const key in details) {
+          // On ne considère que les champs qui commencent par "D" et qui ne sont pas déjà un total
+          if (key.startsWith("D") && !key.startsWith("tot")) {
+            let value = details[key];
+            // Convertir la valeur en nombre si nécessaire (les chaînes vides seront considérées comme 0)
+            let numberVal = typeof value === "number" ? value : parseFloat(value) || 0;
+            // Nommer le champ dans le résumé en ajoutant "TOT-" devant le nom original
+            const summaryKey =  key;
+            summary[summaryKey] = (summary[summaryKey] || 0) + numberVal;
+          }
         }
       }
 
-      const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
+      data["TOTAL"] = summary;
+      data["TOTAL"]["CodeTaxe"] = "";
+      data["TOTAL"]["TaxeDescription"] = "TOTAUX :";
+    }
 
-      const transformedData = {};
+    const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
 
-      filteredTransactions.forEach(({ CodeOffice, CodeTaxe, TotalAmountPaid }) => {
-        if (!transformedData[CodeTaxe]) {
-          transformedData[CodeTaxe] = { CodeTaxe, TaxeDescription: taxeMap[CodeTaxe] || CodeTaxe };
+    const transformedData = {};
 
-          // Initialize all CodeOffice fields to prevent missing columns
-          uniqueOffices.forEach(office => {
-            transformedData[CodeTaxe][office] = '';
-          });
-        }
-        transformedData[CodeTaxe][CodeOffice] = TotalAmountPaid;
-      });
+    filteredTransactions.forEach(({ CodeOffice, CodeTaxe, TotalAmountPaid }) => {
+      if (!transformedData[CodeTaxe]) {
+        transformedData[CodeTaxe] = { CodeTaxe, TaxeDescription: taxeMap[CodeTaxe] || CodeTaxe };
 
-
-      sumRows(transformedData)
-
-      return Object.values(transformedData);
+        // Initialize all CodeOffice fields to prevent missing columns
+        uniqueOffices.forEach(office => {
+          transformedData[CodeTaxe][office] = '';
+        });
+      }
+      transformedData[CodeTaxe][CodeOffice] = TotalAmountPaid;
     });
+
+    sumRows(transformedData)
+    sunColumns(transformedData)
+
+    console.log('transformedData is :', transformedData)
+
+    return Object.values(transformedData);
+  });
 
   // Generate PrimeReact table columns
   const generateColumns = useCallback((groupedData) => {
 
+    console.log('groupedData is :', groupedData)
+
+
     return [
       { field: "CodeTaxe", header: "Code Taxe", frozen: true },
-      { field: "TaxeDescription", header: "Description" , bodyStyle : {backgroundColor: "#081028"}},
-      ...groupedData.map(office => ({ field: office, header: office })),
-      { field: "total", header: "TOTAL", bodyStyle : { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" } , frozen: true, alignFrozen: "right" },
+      { field: "TaxeDescription", header: "Description", bodyStyle: { backgroundColor: "#081028" } },
+      ...groupedData.map(office => (office != 'TOTAUX :' ? ({ field: office, header: office }) : 
+        ({ field: office, header: office, bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "bottom" })) ),
+      { field: "total", header: "TOTAL", bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "right" },
       // ...[...uniqueOffices].reverse().map(office => ({ field: office, header: office }))
     ];
   });
@@ -141,19 +174,6 @@ export default function TableauTabs() {
     const headerRows = [];
     const subHeaderRows = [<Column header="" key="empty" />];
     const freeGroup = [];
-
-    // Extract office fields from primeColumns (skip first two: CodeTaxe & TaxeDescription)
-    // const orderedOffices = primeColumns.slice(2).map(col => col.field);
-
-    const calculateColSpan = (labelLength, min = 1, max = 1.5) => {
-      return Math.min(max, Math.max(min, Math.ceil(labelLength / 10))); // Ajuster sur un facteur de 10
-    };
-
-    const decodeHtmlEntities = (str) => {
-      const txt = document.createElement("textarea");
-      txt.innerHTML = str;
-      return txt.value;
-    };
 
     // Map CodeOffice to OfficeDescription
     const officeCodeToName = Object.fromEntries(codeOfficeByName.map(t => [t.CodeOffice, t.OfficeName]));
@@ -206,6 +226,9 @@ export default function TableauTabs() {
 
     const cols = generateColumns(keySubHeader)
 
+    console.log('cols is :', cols)
+
+
     setColumns(cols)
 
     // Ajouter la colonne "Total" si nécessaire
@@ -217,16 +240,16 @@ export default function TableauTabs() {
           alignHeader="left"
           headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }}
           key="TOTAL"
-          frozen 
+          frozen
           alignFrozen="right"
         />
       );
       subHeaderRows.push(
         <Column
           header="Total"
-          headerStyle={{ color: '#f5e58c', fontWeight: 'bold'}}
+          headerStyle={{ color: '#f5e58c', fontWeight: 'bold' }}
           key="Total"
-          frozen 
+          frozen
           alignFrozen="right"
         />
       );
@@ -236,7 +259,7 @@ export default function TableauTabs() {
       <ColumnGroup>
         <Row >
           <Column header="Taxes et Surtaxes" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold' }} frozen />
-          <Column header="Description" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold', zIndex: 1}}  />
+          <Column header="Description" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold', zIndex: 1 }} />
           {headerRows}
         </Row>
         <Row >
@@ -392,15 +415,16 @@ export default function TableauTabs() {
             scrollHeight="700px"
             // style={{ width: '800px' }}
             className="custom-datatable"
+            rowClassName={rowData => rowData.TaxeDescription == "TOTAUX :" ? "summary-row" : ""}
           >
             {columns.map(col => (
               <Column key={col.field}
-                      field={col.field}
-                      header={col.header}
-                      bodyStyle={col.bodyStyle}
-                      frozen={col.frozen || false}
-                      alignFrozen={col.alignFrozen}
-                     />
+                field={col.field}
+                header={col.header}
+                bodyStyle={col.bodyStyle}
+                frozen={col.frozen || false}
+                alignFrozen={col.alignFrozen}
+              />
             ))}
 
           </DataTable>

@@ -8,6 +8,14 @@
 .p-datatable th {
   border: 1px solid #4a4a4a; /* Couleur de la bordure */
  
+  .summary-row {
+    font-weight: bold;
+    background-color: #f8f9fa; /* Light gray background */
+    color: #f5e58c;
+    position: sticky;
+    bottom: 0;
+    z-index: 10; /* Ensures it stays on top */
+}
 
 /* Style général du fond de la table */
 .custom-datatable {
