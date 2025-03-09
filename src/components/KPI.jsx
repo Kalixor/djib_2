@@ -40,10 +40,10 @@ const KPI = ({ title, isActive, onClick, style }) => {
   const { preloadedData, loading, error } = useContext(PreloadedDataContext);
 
   const querriesPeriod = {
-    'Journalières': 'totPerDay',
-    'Hebdomadaires': 'totPerWeek',
-    'Mensuelles': 'totPerMonth',
-    'Annuelles': 'totPerYear'
+    'Journalières': 'recetteJour',
+    'Hebdomadaires': 'recetteHebdo',
+    'Mensuelles': 'recetteMensuelle',
+    'Annuelles': 'recetteAnnuel'
   }
 
   const titleField = {
@@ -84,7 +84,6 @@ const KPI = ({ title, isActive, onClick, style }) => {
   }
 
   const currentYearWeek = getCurrentYearWeek();
-
   const currentDay = new Date().toISOString().split('T')[0];
   // Output : "2024-03-02"
   
@@ -111,6 +110,8 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
     let val, prevVal, varAmount;
 
+    console.log('prevYear is ', prevYear)
+
     setDisplayLastDate(formatDate(period.currentDate))
 
     // Définition dynamique de la condition
@@ -132,9 +133,9 @@ const KPI = ({ title, isActive, onClick, style }) => {
     switch (title) {
       case 'Recettes Totales':
 
-        val = prevVal = preloadedData[querriesPeriod['Journalières']]
+        val =  preloadedData[querriesPeriod['Journalières']]
           .filter(item => item.Day >= `${currentYear}-01-01` && item.Day <= period.currentDate)
-          .map(item => item.TotalPaidValue)
+          .map(item => item.TotalAmountPaid)
           .reduce((acc, value) => acc + value, 0);
 
         // Résolution à l'année
@@ -144,7 +145,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
 
         prevVal = preloadedData[querriesPeriod['Journalières']]
           .filter(item => item.Day >= `${prevYear}-01-01` && item.Day <= lastYearDate)
-          .map(item => item.TotalPaidValue)
+          .map(item => item.TotalAmountPaid)
           .reduce((acc, value) => acc + value, 0);
         break;
 
@@ -161,7 +162,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
       prevValue: formatNumber(prevVal),
       variationAmount: varAmount
     }
-  }, [loading, preloadedData, period])
+  }, [loading, period])
 
   useEffect(() => {
 
@@ -182,7 +183,7 @@ const KPI = ({ title, isActive, onClick, style }) => {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [loading, preloadedData, period])
+  }, [loading, period])
 
   const animateValue = useCallback((timestamp) => {
     if (!startTimeRef.current) startTimeRef.current = timestamp

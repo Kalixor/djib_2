@@ -1,12 +1,13 @@
 // utils/apiUtils.js
 
-export function buildUrl(baseUrl, query, params = {}) {
+export function buildUrl(baseUrl, query ='', params = {}) {
+    // const url = new URL(`${baseUrl}/${query}`);
     const url = new URL(`${baseUrl}/${query}`);
     
-    // Ajouter les paramètres dynamiques à l'URL
-    Object.keys(params).forEach(key => {
-      url.searchParams.append(key, params[key]); // NE PAS réencoder ici !
-    });
+    // // Ajouter les paramètres dynamiques à l'URL
+    // Object.keys(params).forEach(key => {
+    //   url.searchParams.append(key, params[key]); // NE PAS réencoder ici !
+    // });
   
     return url.toString();
   }

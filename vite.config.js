@@ -3,11 +3,22 @@ import { defineConfig } from 'vite'
 
     export default defineConfig({
       plugins: [react()],
-      optimizeDeps: {
-        include: ['react', 'react-dom', 'recharts']
+        optimizeDeps: {
+          include: ['react', 'react-dom', 'recharts']
       },
-	  server: {
-		allowedHosts: ['djib_poc.karl-fixto.net', 'djib-poc.karl-fixto.net'],
-		port: 3476
-	}
+      server: {
+        allowedHosts: ['djib_poc.karl-fixto.net', 'djib-poc.karl-fixto.net', 'http://localhost:5000'],
+        port: 3476
+	    },
+      build: {
+        rollupOptions: {
+          onwarn(warning, warn) {
+            // Suppress "Module level directives cause errors when bundled" warnings
+            if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+              return;
+            }
+            warn(warning);
+          },
+        },
+      },
     })

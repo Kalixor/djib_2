@@ -15,11 +15,11 @@ import CustomMultiSelect from './CustomMultiSelect'
 
 export default function TableauTabs() {
   const [activeTab, setActiveTab] = useState('tableau1')
-  
+
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [headerGroup, setHeaderGroup] = useState(null);
-  const [month, setMonth] = useState("2024-01");
+  const [month, setMonth] = useState("2022-01");
   const { preloadedData, loading, error } = useContext(PreloadedDataContext);
 
   const handleDateChange = (e) => {
@@ -28,64 +28,111 @@ export default function TableauTabs() {
   }
 
   // Données de transaction 
-  const transactions = preloadedData.totTaxByBurByMonth
-  
+  const transactions = preloadedData.recettesBureau
+
   const dates = useMemo(() => Array.from(new Set(transactions.map(t => t.Month)))
-  , [])
+    , [])
 
   // Table de liaison CodeTaxe -> TaxeDescription
-  const taxeDescriptions = preloadedData.taxByName
-  
-  // Office groupings
+  const taxeDescriptions = preloadedData.taxes
+
+  // Table de liaison CodeTaxe -> TaxeDescription
+  const codeOfficeByName = preloadedData.bureaux
+
   const bureauGroups = {
     "SITE-PORT": [
-        "Bureau du Port",
-        "Bureau Hydrocarbures",
-        "Bureau Free Zone",
-        "Djibouti International Free Trade",
-        "Bureau FZ East Africa Holding",
-        "Bureau Zone Franche",
-        "Bureau Transit",
-        "Bureau UKAB HOLDING",
-        "Bureau révision",
-        "Bureau exonération"
+      "Bureau du Port", //OK
+      "Bureau  Hydrocarbures", //Ok
+      "Bureau Free Zone", //OK
+      "Djibouti International Free Trade", //OK
+      "Bureau FZ East Africa Holding", //OK
+      "Bureau Zone Franche", //OK
+      "Bureau Transit", //OK
+      "Bureau UKAB HOLDING ", //OK
+      "Bureau Révision", //Ok
+      "Bureau Exonérations",
+      "Bureau UKAB HOLDING"
+
     ],
     "SITE-AEROPORT": [
-        "Bureau Frêt",
-        "Bureau Khat",
-        "Bureau Passager"
+      "Bureau Aéroport Fret",
+      "Bureau Khat",
+      "Brigade Aéroport Passager"
     ],
     "SITE-VILLE": [
-        "Bureau Gare",
-        "Bureau Poste"
+      "Bureau de la Gare",
+      "Bureau  Poste",
+      "Djibouti International Free Trade"
     ]
   };
 
   // Filter transactions by selected month and offices
-  const filterTransactions = useCallback( (month, selectedOffices) => {
+  const filterTransactions = useCallback((month, selectedOffices) => {
     return transactions.filter(entry => entry.Month === month && (selectedOffices === '*' || selectedOffices.includes(entry.CodeOffice)));
   });
 
   // Transform transactions into pivoted table data
-  const transformData = useCallback( (filteredTransactions) => {
-    const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
-    const transformedData = {};
+  const transformData = useCallback((filteredTransactions, uniqueOffices) => {
 
-    filteredTransactions.forEach(({ CodeOffice, CodeTaxe, TotalAmountPaid }) => {
+      const sumRows = (data) => {
+        // Iterate through each parent object
+        for (const parentKey in data) {
+          const details = data[parentKey];
+          let total = 0;
+
+          // Iterate over each key in the inner object
+          for (const key in details) {
+            if (key.startsWith("D")) {
+              const value = details[key];
+              // If the value is a number, add it directly
+              if (typeof value === "number") {
+                total += value;
+              }
+              // If it's a non-empty string, try to convert it to a number
+              else if (typeof value === "string" && value !== "") {
+                const numberVal = parseFloat(value);
+                if (!isNaN(numberVal)) {
+                  total += numberVal;
+                }
+              }
+            }
+          }
+          // Add a new key with the total (e.g., "TOT-AIB")
+          details[`total`] = total;
+        }
+      }
+
+      const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
+
+      const transformedData = {};
+
+      filteredTransactions.forEach(({ CodeOffice, CodeTaxe, TotalAmountPaid }) => {
         if (!transformedData[CodeTaxe]) {
-            transformedData[CodeTaxe] = { CodeTaxe, TaxeDescription: taxeMap[CodeTaxe] || CodeTaxe };
+          transformedData[CodeTaxe] = { CodeTaxe, TaxeDescription: taxeMap[CodeTaxe] || CodeTaxe };
+
+          // Initialize all CodeOffice fields to prevent missing columns
+          uniqueOffices.forEach(office => {
+            transformedData[CodeTaxe][office] = '';
+          });
         }
         transformedData[CodeTaxe][CodeOffice] = TotalAmountPaid;
+      });
+
+
+      sumRows(transformedData)
+
+      return Object.values(transformedData);
     });
-    return Object.values(transformedData);
-  });
 
   // Generate PrimeReact table columns
-  const generateColumns = useCallback( (uniqueOffices) => {
+  const generateColumns = useCallback((groupedData) => {
+
     return [
-        { field: "CodeTaxe", header: "Code Taxe" },
-        { field: "TaxeDescription", header: "Description" },
-        ...uniqueOffices.map(office => ({ field: office, header: office }))
+      { field: "CodeTaxe", header: "Code Taxe", frozen: true },
+      { field: "TaxeDescription", header: "Description" , bodyStyle : {backgroundColor: "#081028"}},
+      ...groupedData.map(office => ({ field: office, header: office })),
+      { field: "total", header: "TOTAL", bodyStyle : { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" } , frozen: true, alignFrozen: "right" },
+      // ...[...uniqueOffices].reverse().map(office => ({ field: office, header: office }))
     ];
   });
 
@@ -95,64 +142,130 @@ export default function TableauTabs() {
     const subHeaderRows = [<Column header="" key="empty" />];
     const freeGroup = [];
 
+    // Extract office fields from primeColumns (skip first two: CodeTaxe & TaxeDescription)
+    // const orderedOffices = primeColumns.slice(2).map(col => col.field);
+
+    const calculateColSpan = (labelLength, min = 1, max = 1.5) => {
+      return Math.min(max, Math.max(min, Math.ceil(labelLength / 10))); // Ajuster sur un facteur de 10
+    };
+
+    const decodeHtmlEntities = (str) => {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = str;
+      return txt.value;
+    };
+
+    // Map CodeOffice to OfficeDescription
+    const officeCodeToName = Object.fromEntries(codeOfficeByName.map(t => [t.CodeOffice, t.OfficeName]));
+    const officeNames = uniqueOffices.map(code => officeCodeToName[code] || code);
+
+    subHeaderRows.push(
+      <Column header={''} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
+    );
+
+    const officeMap = Object.fromEntries(codeOfficeByName.map(off => [off.OfficeName, off.CodeOffice]));
+
     Object.entries(bureauGroups).forEach(([groupName, offices]) => {
-        const groupOffices = offices.filter(office => uniqueOffices.includes(office));
-        if (groupOffices.length > 0) {
-            headerRows.push(
-                <Column key={groupName} header={groupName} colSpan={groupOffices.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-            );
-            groupOffices.forEach(office => {
-                subHeaderRows.push(
-                    <Column key={office} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-                );
-            });
-        }
+
+      const groupOffices = offices.filter(office => officeNames.includes(office));
+      // const groupOffices = orderedOffices.filter(office => offices.includes(officeCodeToName[office]));
+
+      if (groupOffices.length > 0) {
+
+        headerRows.push(
+          <Column key={groupName} header={groupName} colSpan={groupOffices.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
+        );
+        groupOffices.forEach(office => {
+          subHeaderRows.push(
+            <Column key={officeMap[office]} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
+          );
+        });
+      }
     });
 
     // Find offices not in predefined groups
-    uniqueOffices.forEach(office => {
-        if (!Object.values(bureauGroups).some(group => group.includes(office))) {
-            freeGroup.push(office);
-        }
+    officeNames.forEach(office => {
+      if (!Object.values(bureauGroups).some(group => group.includes(office))) {
+        freeGroup.push(office);
+      }
     });
 
     // Add "Free" group for unclassified offices
     if (freeGroup.length > 0) {
-        headerRows.push(
-            <Column key="Free" header="Free" colSpan={freeGroup.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
+      headerRows.push(
+        <Column key="Free" header="SITE-?" colSpan={freeGroup.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
+      );
+      freeGroup.forEach(office => {
+        subHeaderRows.push(
+          <Column key={office} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
         );
-        freeGroup.forEach(office => {
-            subHeaderRows.push(
-                <Column key={office} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-            );
-        });
+      });
     }
+
+    const keySubHeader = subHeaderRows.map((s) => s.key).slice(2)
+
+    const cols = generateColumns(keySubHeader)
+
+    setColumns(cols)
+
+    // Ajouter la colonne "Total" si nécessaire
+    if (uniqueOffices.length > 0) {
+      headerRows.push(
+        <Column
+          header="TOTAUX"
+          colSpan={1}
+          alignHeader="left"
+          headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }}
+          key="TOTAL"
+          frozen 
+          alignFrozen="right"
+        />
+      );
+      subHeaderRows.push(
+        <Column
+          header="Total"
+          headerStyle={{ color: '#f5e58c', fontWeight: 'bold'}}
+          key="Total"
+          frozen 
+          alignFrozen="right"
+        />
+      );
+    }
+
+    return (
+      <ColumnGroup>
+        <Row >
+          <Column header="Taxes et Surtaxes" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold' }} frozen />
+          <Column header="Description" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold', zIndex: 1}}  />
+          {headerRows}
+        </Row>
+        <Row >
+          {subHeaderRows}
+        </Row>
+      </ColumnGroup>
+    );
   });
+
 
   useEffect(() => {
 
-    console.log('entering loading transformaing')
-
     setMonth(month);
 
-    const selectedOffices = '*'; // ['DIFTZ', 'DJAFR', 'DJAKH', 'DJBAP', 'DJCDF']
-    
+    const selectedOffices = '*'; //  ['DIFTZ', 'DJAFR', 'DJAKH', 'DJBAP', 'DJCDF']
+
     const filteredTransactions = filterTransactions(month, selectedOffices);
 
     const uniqueOffices = Array.from(new Set(filteredTransactions.map(t => t.CodeOffice)));
 
-    const data = transformData(filteredTransactions);
-
-    const cols = generateColumns(uniqueOffices);
+    const data = transformData(filteredTransactions, uniqueOffices);
 
     const headerGrp = generateHeaderGroup(uniqueOffices);
 
     setTableData(data);
-    setColumns(cols);
     setHeaderGroup(headerGrp);
 
-  },[loading, month])
-  
+  }, [loading, month])
+
   // Définition du groupe de colonnes pour l'en-tête
   const heaerGroup = (
     <ColumnGroup>
@@ -244,23 +357,23 @@ export default function TableauTabs() {
     <div>
       <h2 className="text-xl text-center font-bold text-white mb-4 p-6">RECETTE  MENSUELLE  PAR  BUREAUX POUR LE MOIS : <span className='text-back-200'>{month}</span>  </h2>
       <div className="absolute top-16 ml-10 w-48">
-                    <select
-                      value={month}
-                      // label={bureauLabel}
-                      onChange = {handleDateChange}
-                      placeholder="Dates"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        <select
+          value={month}
+          // label={bureauLabel}
+          onChange={handleDateChange}
+          placeholder="Dates"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
 
-                      // selectedOptions={bureauOptions}
-                      // setSelectedOptions={setBureauOptions}
-                      >
-                        {dates.map((date, index) => (
-                          <option key={index} value={date}>
-                            {date}
-                          </option>
-                        ))}
-                      </select>
-                  </div>
+        // selectedOptions={bureauOptions}
+        // setSelectedOptions={setBureauOptions}
+        >
+          {dates.map((date, index) => (
+            <option key={index} value={date}>
+              {date}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="mt-4 bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
         <div className="card">
@@ -281,8 +394,14 @@ export default function TableauTabs() {
             className="custom-datatable"
           >
             {columns.map(col => (
-                                  <Column key={col.field} field={col.field} header={col.header} />
-                ))}
+              <Column key={col.field}
+                      field={col.field}
+                      header={col.header}
+                      bodyStyle={col.bodyStyle}
+                      frozen={col.frozen || false}
+                      alignFrozen={col.alignFrozen}
+                     />
+            ))}
 
           </DataTable>
         </div>

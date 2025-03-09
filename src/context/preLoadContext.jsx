@@ -5,67 +5,26 @@ import { fetchData } from '../utils/apiUtils'; // Import de ta fonction fetchDat
 export const PreloadedDataContext = createContext();
 
 export const PreloadedDataProvider = ({ children }) => {
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
   // État pour stocker les données préchargées
   const [preloadedData, setPreloadedData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Définition des paramètres SQL dynamiques
-  const table = "df_offices_taxes"; // Table à utiliser
-  const column1 = "TotalPaidValue"; // Première colonne obligatoire
-  const column2 = "TotalAssessedValue"; // Seconde colonne optionnelle (null si non utilisée)
-  const period = "Period"; // Nom du champ période (ex: Year, Month, Week...)
-  const periodFormat = "%Y"; // Format de la période (ex: %Y, %Y-%m, %Y-%W...)
-
-  const getSqlQuery =(fld) => {
-    return  `
-    SELECT 
-      STRFTIME('${fld.periodFormat}', CAST(Date AS DATE)) AS ${fld.period},
-      SUM(${fld.column1}) AS ${fld.column1}
-      ${column2 ? `, SUM(${column2}) AS ${column2}` : ''} 
-    FROM ${table}
-    GROUP BY ${fld.period}
-    ORDER BY ${fld.period}
-  `
-
-  }
-
-  // Liste des requêtes SQL à précharger
   const queries = {
-    totPerYear: getSqlQuery({table : 'df_offices_taxes', 
-                        column1 : 'TotalPaidValue',
-                        column2 : 'TotalAssessedValue',
-                        period : 'Year',
-                        periodFormat :'%Y' }),
-    totPerMonth: getSqlQuery({table : 'df_offices_taxes', 
-                        column1 : 'TotalPaidValue',
-                        column2 : 'TotalAssessedValue',
-                        period : 'Month',
-                        periodFormat :'%Y-%m' }),
-    totPerWeek: getSqlQuery({table : 'df_offices_taxes', 
-                        column1 : 'TotalPaidValue',
-                        column2 : 'TotalAssessedValue',
-                        period : 'Week',
-                        periodFormat :'%Y-%W' }),
-    totPerDay: getSqlQuery({table : 'df_offices_taxes', 
-                        column1 : 'TotalPaidValue',
-                        column2 : 'TotalAssessedValue',
-                        period : 'Day',
-                        periodFormat :'%Y-%m-%d'}),
-    burByName:  `SELECT DISTINCT CodeOffice, OfficeName, FROM df_offices_taxes`,
-    taxByName:  `SELECT DISTINCT CodeTaxe, TaxeDescription, FROM df_taxes WHERE TaxeDescription IS NOT NULL`,
-    totTaxByBurByMonth : `SELECT CodeOffice,
-                            CodeTaxe,
-                            STRFTIME('%Y-%m',
-                            CAST(Date AS DATE)) AS Month,
-                            SUM(AmountPaid) AS TotalAmountPaid
-                           FROM df_taxes
-                           GROUP BY CodeOffice, CodeTaxe, Month
-                           ORDER BY CodeOffice, Month, CodeTaxe`
-    
-  };
+    recettesBureau : 'recettes-par-bureau',
+    recettesTaxes : 'recettes-par-taxe',
+    recettesMode : 'recettes-par-mode',
+    recettes : 'recettes',
+    recettesTicTva : 'recettes_tic_tva',
+    bureaux : 'bureaux',
+    taxes : 'taxes',
+    recetteAnnuel : 'recettes_annuel',
+    recetteMensuelle : 'recettes_mensuelle',
+    recetteHebdo : 'recettes_hebdo',
+    recetteJour : 'recettes_jour'
+  }
 
   // Fonction pour charger toutes les requêtes en parallèle
 //   useEffect(() => {
@@ -93,15 +52,16 @@ export const PreloadedDataProvider = ({ children }) => {
 //   }, []);
 
   // Fonction pour charger toutes les requêtes séquenciellement
-   useEffect(() => {
+   
+  useEffect(() => {
     const fetchSequentially = async () => {
       try {
         setLoading(true);
         let results = {};
 
         // EXÉCUTE LES REQUÊTES EN SÉQUENTIEL (évite les blocages)
-        for (const [key, sql] of Object.entries(queries)) {
-          results[key] = await fetchData(BASE_URL, "query", { sql });
+        for (const [key, query] of Object.entries(queries)) {
+          results[key] = await fetchData(BASE_URL, query);
         }
 
         setPreloadedData(results);
