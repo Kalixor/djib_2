@@ -1,7 +1,10 @@
 import { usePeriod } from '../context/PeriodContext'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import CustomDatePicker from './CustomDatePicker'
 import TableauTabs from './TableauTabs'
+import { PreloadedDataContext } from '../context/preLoadContext';
+import NotificationPopup from '../components/NotificationPopup'
+
 
 export default function Navbar({ onPageChange }) {
   const { period, togglePeriod } = usePeriod()
@@ -10,6 +13,11 @@ export default function Navbar({ onPageChange }) {
   const [activePage, setActivePage] = useState('home')
   const [showTableauTabs, setShowTableauTabs] = useState(false)
   const animationFrameRef = useRef()
+
+  const [notification, setNotification] = useState(null)
+  const [loaded, setloaded] = useState(false)
+
+  const { loading, error } = useContext(PreloadedDataContext);
 
   const updateTime = () => {
     setCurrentTime(getFormattedTime())
@@ -44,6 +52,16 @@ export default function Navbar({ onPageChange }) {
 
   return (
     <nav className="bg-brand-800 shadow p-3 relative mx-1">
+
+      {loading && (
+        <NotificationPopup
+          type={'info'}
+          message={'Extraction des donnée en cour...'}
+          duration={20000}
+          // onClose={() => setNotification(null)}
+        />
+      )}
+
       <div className="w-full flex justify-between items-center mt-3">
         <div className="ml-2">
           <h1 className="text-2xl font-semibold text-white">
@@ -55,12 +73,12 @@ export default function Navbar({ onPageChange }) {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-card-text">Au :</span>
-            <CustomDatePicker 
+            <CustomDatePicker
               value={period.currentDate}
               onChange={(newValue) => togglePeriod({ currentDate: newValue })}
             />
           </div>
-          
+
           <div className="bg-brand-800/50 backdrop-blur-sm p-2 rounded-lg border border-[#cb3cff]/50">
             <div className="flex gap-1">
               {['Journalières', 'Hebdomadaires', 'Mensuelles', 'Annuelles'].map((p) => (
@@ -73,10 +91,9 @@ export default function Navbar({ onPageChange }) {
                     px-2 py-1 rounded-md
                     text-xs font-medium
                     transition-colors duration-100
-                    ${
-                      period.grain === p
-                        ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
-                        : 'text-card-text'
+                    ${period.grain === p
+                      ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                      : 'text-card-text'
                     }
                     after:absolute
                     after:inset-0
@@ -97,10 +114,9 @@ export default function Navbar({ onPageChange }) {
           <div className="flex items-center gap-2">
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors
-                ${
-                  activePage === 'home'
-                    ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
-                    : 'text-card-text hover:bg-brand-700/50'
+                ${activePage === 'home'
+                  ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                  : 'text-card-text hover:bg-brand-700/50'
                 }`}
               onClick={() => handlePageChange('home')}
             >
@@ -108,10 +124,9 @@ export default function Navbar({ onPageChange }) {
             </button>
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors
-                ${
-                  activePage === 'tableaux'
-                    ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
-                    : 'text-card-text hover:bg-brand-700/50'
+                ${activePage === 'tableaux'
+                  ? 'bg-[#cb3cff]/10 text-[#cb3cff]'
+                  : 'text-card-text hover:bg-brand-700/50'
                 }`}
               onClick={() => handlePageChange('tableaux')}
             >
