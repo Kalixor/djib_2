@@ -2,6 +2,7 @@ import { useState, useContext, useEffect, useMemo, useCallback } from 'react'
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { InputText } from "primereact/inputtext";
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { FilterMatchMode } from 'primereact/api';
@@ -15,6 +16,7 @@ import CustomMultiSelect from './CustomMultiSelect'
 
 export default function TableauTabs() {
   const [activeTab, setActiveTab] = useState('tableau1')
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -27,11 +29,35 @@ export default function TableauTabs() {
     setMonth(selectedValue);
   }
 
+  // Convert `data` from an object into an array
+  const dataArray = Object.values(tableData);
+
+  // Filtering logic: Search in CodeTaxe and TaxeDescription
+  const filteredData = dataArray.filter(row =>
+    row.CodeTaxe.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.TaxeDescription.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Custom header with search input
+  const headerWithSearch = () => (
+    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        <span>Code Taxe:</span>
+        <InputText
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search..."
+            style={{ width: "100px" }}
+        />
+    </div>
+);
   // Données de transaction 
   const transactions = preloadedData.recettesBureau
 
   const dates = useMemo(() => Array.from(new Set(transactions.map(t => t.Month)))
     , [])
+
+
+  
 
   // Table de liaison CodeTaxe -> TaxeDescription
   const taxeDescriptions = preloadedData.taxes
@@ -118,15 +144,15 @@ export default function TableauTabs() {
             // Convertir la valeur en nombre si nécessaire (les chaînes vides seront considérées comme 0)
             let numberVal = typeof value === "number" ? value : parseFloat(value) || 0;
             // Nommer le champ dans le résumé en ajoutant "TOT-" devant le nom original
-            const summaryKey =  key;
+            const summaryKey = key;
             summary[summaryKey] = (summary[summaryKey] || 0) + numberVal;
           }
         }
       }
 
       data["TOTAL"] = summary;
-      data["TOTAL"]["CodeTaxe"] = "";
-      data["TOTAL"]["TaxeDescription"] = "TOTAUX :";
+      data["TOTAL"]["CodeTaxe"] = "TOTAUX";
+      data["TOTAL"]["TaxeDescription"] = "Par Bureaux";
     }
 
     const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
@@ -162,8 +188,7 @@ export default function TableauTabs() {
     return [
       { field: "CodeTaxe", header: "Code Taxe", frozen: true },
       { field: "TaxeDescription", header: "Description", bodyStyle: { backgroundColor: "#081028" } },
-      ...groupedData.map(office => (office != 'TOTAUX :' ? ({ field: office, header: office }) : 
-        ({ field: office, header: office, bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "bottom" })) ),
+      ...groupedData.map(office => ( ({ field: office, header: office })) ),
       { field: "total", header: "TOTAL", bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "right" },
       // ...[...uniqueOffices].reverse().map(office => ({ field: office, header: office }))
     ];
@@ -379,7 +404,7 @@ export default function TableauTabs() {
   const renderTable1 = () => (
     <div>
       <h2 className="text-xl text-center font-bold text-white mb-4 p-6">RECETTE  MENSUELLE  PAR  BUREAUX POUR LE MOIS : <span className='text-back-200'>{month}</span>  </h2>
-      <div className="absolute top-16 ml-10 w-48">
+      <div className="flex flex-row absolute top-14 ml-10 w-48 gap-8">
         <select
           value={month}
           // label={bureauLabel}
@@ -396,12 +421,23 @@ export default function TableauTabs() {
             </option>
           ))}
         </select>
+
+        <div style={{ marginBottom: "1px" }}>
+                <span className='text-sm text-card-text'>Taxe: </span>
+                <InputText
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Chercher..."
+                    style={{ width: "150px" }}
+                />
+            </div>
+
       </div>
 
       <div className="mt-4 bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
         <div className="card">
           <DataTable
-            value={tableData}
+            value={filteredData}
             // rowGroupMode="subheader"
             // groupRowsBy="date"
             // sortMode="single"
@@ -415,8 +451,15 @@ export default function TableauTabs() {
             scrollHeight="700px"
             // style={{ width: '800px' }}
             className="custom-datatable"
-            rowClassName={rowData => rowData.TaxeDescription == "TOTAUX :" ? "summary-row" : ""}
+            rowClassName={rowData => rowData.CodeTaxe == "TOTAUX" ? "summary-row" : ""}
           >
+            {/* <Column field="CodeTaxe" header={headerWithSearch} frozen style={{ minWidth: "150px" }} /> */}
+            {/* <Column field="TaxeDescription" header="Description" style={{ minWidth: "200px" }} />
+            {Object.keys(filteredData[0] || {}).filter(key => key !== "CodeTaxe" && key !== "TaxeDescription").map(colKey => (
+                <Column key={colKey} field={colKey} header={colKey} />
+            ))} */}
+            
+            
             {columns.map(col => (
               <Column key={col.field}
                 field={col.field}
