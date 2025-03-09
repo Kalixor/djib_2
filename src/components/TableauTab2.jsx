@@ -100,7 +100,18 @@ export default function TableauTab2() {
     { field: '10',              header: 'Octobre' },
     { field: '11',              header: 'Novembre' },
     { field: '12',              header: 'Décembre' },
-    { field: 'total',           header: 'Total',           frozen: true, alignFrozen: 'right' },
+    {
+      field: 'total',
+      header: 'Total',
+      frozen: true,
+      alignFrozen: 'right',
+      bodyStyle: { 
+        backgroundColor: '#0b1739', 
+        color: '#b6d16b', 
+        fontWeight: 'bold', 
+        textAlign: 'right' 
+      },
+    }
   ], []);
 
   return (
