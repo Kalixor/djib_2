@@ -1,485 +1,217 @@
-import { useState, useContext, useEffect, useMemo, useCallback } from 'react'
-
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { InputText } from "primereact/inputtext";
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { FilterMatchMode } from 'primereact/api';
-// import 'primereact/resources/themes/saga-blue/theme.css';  // Thème
-import 'primereact/resources/themes/md-dark-indigo/theme.css';
-import 'primereact/resources/primereact.min.css';          // Styles de base
-import 'primeicons/primeicons.css';
-import '../tabs_styles.css';
 import { PreloadedDataContext } from '../context/preLoadContext';
-import CustomSelect from './CustomSelect'
-import StyledInputText from './StyledInputText'
 
-
-export default function TableauTabs() {
-  const [activeTab, setActiveTab] = useState('tableau1')
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const [tableData, setTableData] = useState([]);
-  const [columns, setColumns] = useState([]);
-  const [headerGroup, setHeaderGroup] = useState(null);
-  const [month, setMonth] = useState("2022-01");
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const [selectedMonth, setselectedMonth] = useState([]);
+/**
+ * On suppose que chaque objet `data` a les champs suivants:
+ * {
+ *   CodeOffice: "DJAKH",
+ *   OfficeName: "Bureau Aéroport Khat",
+ *   Month: "2025-01",              // format YYYY-MM
+ *   ModeRecouvrement: "Cash",      // ex: 'Cash', 'Check', 'Electronic'
+ *   TotalAmountPaid: 12345
+ * }
+ */
+export default function TableauTab3() {
+  // Définissez ici vos 3 modes de recouvrement, 
+  // ou récupérez-les dynamiquement si besoin
+  const recouvrementModes = ['Cash', 'Check', 'Electronic'];
 
   const { preloadedData, loading, error } = useContext(PreloadedDataContext);
 
-  const handleDateChange = (s) => {
-    console.log(s)
-    setselectedMonth(s);
-    setMonth(s.value);
-  }
+  // Données de transaction 
+  const data = preloadedData.recettesMode
 
-  // Convert `data` from an object into an array
-  const dataArray = Object.values(tableData);
+  // 1) Extraire la liste des mois distincts, triés
+  const months = useMemo(() => {
+    const uniqueMonths = Array.from(new Set(data.map(d => d.Month)));
+    // Tri lexical : 2022-01, 2022-02, ..., 2023-01, etc.
+    uniqueMonths.sort();
+    return uniqueMonths;
+  }, [data]);
 
-  // Filtering logic: Search in CodeTaxe and TaxeDescription
-  const filteredData = dataArray.filter(row =>
-    row.CodeTaxe.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.TaxeDescription.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 2) Extraire la liste des modes de paiement distincts, triés
+  const modes = useMemo(() => {
+    const uniqueModes = Array.from(new Set(data.map(d => d.MopDsc)));
+    uniqueModes.sort(); // Tri alphabétique
+    return uniqueModes;
+  }, [data]);
 
-  // Custom header with search input
-  const headerWithSearch = () => (
-    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-      <span>Code Taxe:</span>
-      <InputText
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search..."
-        style={{ width: "100px" }}
-      />
+  // 3) Générer les données pivotées pour le tableau
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const pivoted = pivotOfficeMopDsc(data, months, modes);
+    setTableData(pivoted);
+  }, [data, months, modes]);
+
+  // 4) Définir le groupement de colonnes pour avoir 2 rangées d'en-tête
+  //    - 1ère rangée : "Bureau", puis un colSpan=nombre_de_modes par Mois, puis "Total"
+  //    - 2ème rangée : les noms des modes
+  const headerColumnGroup = useMemo(() => (
+    <ColumnGroup>
+      {/* -- Première ligne -- */}
+      <Row>
+        <Column header="Bureau" rowSpan={2} />
+        {months.map((month) => (
+          <Column
+            key={month}
+            header={month}
+            colSpan={modes.length}
+          />
+        ))}
+        <Column header="Total" rowSpan={2} />
+      </Row>
+      {/* -- Deuxième ligne : sous-colonnes pour chaque mode -- */}
+      <Row>
+        {months.map((month) =>
+          modes.map((mode) => (
+            <Column key={month + '_' + mode} header={mode} />
+          ))
+        )}
+      </Row>
+    </ColumnGroup>
+  ), [months, modes]);
+
+  // 5) Générer la liste de colonnes dynamiques (pour <DataTable>)
+const dynamicColumns = useMemo(() => {
+  const cols = [];
+  // Première colonne : Bureau
+  cols.push({ field: 'OfficeName', header: 'Bureau' });
+
+  // Pour chaque (mois, mode), on définit un champ "YYYY-MM_Mode"
+  months.forEach((month) => {
+    modes.forEach((mode) => {
+      const fieldName = `${month}_${mode}`;
+      cols.push({ field: fieldName, header: mode });
+    });
+  });
+
+  // Colonne finale "total" : on la freeze à droite et on la stylise
+  cols.push({
+    field: 'total',
+    header: 'Total',
+    frozen: true,             // Gèle la colonne
+    alignFrozen: 'right',     // L’aligne à droite
+    headerStyle: {
+      color: '#f5e58c',
+      fontWeight: 'bold'
+    },
+    bodyStyle: {
+      color: '#f5e58c',
+      fontWeight: 'bold'
+    }
+  });
+  return cols;
+}, [months, modes]);
+
+
+
+
+  return (
+    <div style={{ marginTop: '1rem' }}>
+      <h2 className="text-xl text-center font-bold text-white mb-4 p-6">
+        MODALITES DE RECOUVREMENTS PAR BUREAUX PAR ANNEE
+      </h2>
+
+      <div className="card">
+        <DataTable
+          value={tableData}
+          headerColumnGroup={headerColumnGroup}
+          scrollable
+          scrollHeight="650px"
+          className="custom-datatable"
+          // Par ex., styliser la ligne TOT
+          rowClassName={(rowData) =>
+            rowData.OfficeName === 'TOTAUX' ? 'summary-row' : ''
+          }
+        >
+          {dynamicColumns.map((col) => (
+            <Column
+              key={col.field}
+              field={col.field}
+              header={col.header}
+              frozen={col.frozen}          // important pour activer le gel
+              alignFrozen={col.alignFrozen}
+              bodyStyle={col.bodyStyle}
+              headerStyle={col.headerStyle}
+              style={{ minWidth: '120px', textAlign: 'right' }}
+            />
+          ))}
+        </DataTable>
+      </div>
     </div>
   );
-  // Données de transaction 
-  const transactions = preloadedData.recettesBureau
+}
 
-  const dates = useMemo(() => Array.from(new Set(transactions.map(t => t.Month)))
-    , [])
+/**
+* @function pivotOfficeMopDsc
+* 
+* Pivote la data en fonction de:
+* - Lignes = OfficeName
+* - Colonnes = (Month + '_' + MopDsc)
+* - Valeur = somme de TotalAmountPaid
+* Ajoute également:
+* - un champ 'total' (somme de toutes les colonnes) pour chaque bureau
+* - une ligne globale "TOTAUX"
+*/
+function pivotOfficeMopDsc(data, months, modes) {
+  const result = {};
 
-  // Table de liaison CodeTaxe -> TaxeDescription
-  const taxeDescriptions = preloadedData.taxes
+  data.forEach(item => {
+    const { OfficeName, Month, MopDsc, TotalAmountPaid } = item;
 
-  // Table de liaison CodeTaxe -> TaxeDescription
-  const codeOfficeByName = preloadedData.bureaux
-
-  const bureauGroups = {
-    "SITE-PORT": [
-      "Bureau du Port", //OK
-      "Bureau  Hydrocarbures", //Ok
-      "Bureau Free Zone", //OK
-      "Djibouti International Free Trade", //OK
-      "Bureau FZ East Africa Holding", //OK
-      "Bureau Zone Franche", //OK
-      "Bureau Transit", //OK
-      "Bureau UKAB HOLDING ", //OK
-      "Bureau Révision", //Ok
-      "Bureau Exonérations",
-      "Bureau UKAB HOLDING"
-
-    ],
-    "SITE-AEROPORT": [
-      "Bureau Aéroport Fret",
-      "Bureau Khat",
-      "Brigade Aéroport Passager"
-    ],
-    "SITE-VILLE": [
-      "Bureau de la Gare",
-      "Bureau  Poste",
-      "Djibouti International Free Trade"
-    ]
-  };
-
-  // Filter transactions by selected month and offices
-  const filterTransactions = useCallback((month, selectedOffices) => {
-    return transactions.filter(entry => entry.Month === month && (selectedOffices === '*' || selectedOffices.includes(entry.CodeOffice)));
-  });
-
-  // Transform transactions into pivoted table data
-  const transformData = useCallback((filteredTransactions, uniqueOffices) => {
-
-    const sumRows = (data) => {
-      // Iterate through each parent object
-      for (const parentKey in data) {
-        const details = data[parentKey];
-        let total = 0;
-
-        // Iterate over each key in the inner object
-        for (const key in details) {
-          if (key.startsWith("D")) {
-            const value = details[key];
-            // If the value is a number, add it directly
-            if (typeof value === "number") {
-              total += value;
-            }
-            // If it's a non-empty string, try to convert it to a number
-            else if (typeof value === "string" && value !== "") {
-              const numberVal = parseFloat(value);
-              if (!isNaN(numberVal)) {
-                total += numberVal;
-              }
-            }
-          }
-        }
-        // Add a new key with the total (e.g., "TOT-AIB")
-        details[`total`] = total;
-      }
-    }
-
-
-    const sunColumns = (data) => {
-      // Création d'un objet résumé pour accumuler les sommes verticales
-      const summary = {};
-
-      // Parcourir chaque objet parent de la structure
-      for (const parentKey in data) {
-        const details = data[parentKey];
-        // Parcourir chaque clé de l'objet courant
-        for (const key in details) {
-          // On ne considère que les champs qui commencent par "D" et qui ne sont pas déjà un total
-          if (key.startsWith("D") && !key.startsWith("tot")) {
-            let value = details[key];
-            // Convertir la valeur en nombre si nécessaire (les chaînes vides seront considérées comme 0)
-            let numberVal = typeof value === "number" ? value : parseFloat(value) || 0;
-            // Nommer le champ dans le résumé en ajoutant "TOT-" devant le nom original
-            const summaryKey = key;
-            summary[summaryKey] = (summary[summaryKey] || 0) + numberVal;
-          }
-        }
-      }
-
-      data["TOTAL"] = summary;
-      data["TOTAL"]["CodeTaxe"] = "TOTAUX";
-      data["TOTAL"]["TaxeDescription"] = "Par Bureaux";
-    }
-
-    const taxeMap = Object.fromEntries(taxeDescriptions.map(taxe => [taxe.CodeTaxe, taxe.TaxeDescription]));
-
-    const transformedData = {};
-
-    filteredTransactions.forEach(({ CodeOffice, CodeTaxe, TotalAmountPaid }) => {
-      if (!transformedData[CodeTaxe]) {
-        transformedData[CodeTaxe] = { CodeTaxe, TaxeDescription: taxeMap[CodeTaxe] || CodeTaxe };
-
-        // Initialize all CodeOffice fields to prevent missing columns
-        uniqueOffices.forEach(office => {
-          transformedData[CodeTaxe][office] = '';
+    // Initialise la ligne si pas encore existante
+    if (!result[OfficeName]) {
+      result[OfficeName] = {
+        OfficeName,
+        total: 0,
+      };
+      // On crée un champ = 0 pour chaque (mois, mode)
+      months.forEach(m => {
+        modes.forEach(mode => {
+          result[OfficeName][`${m}_${mode}`] = 0;
         });
-      }
-      transformedData[CodeTaxe][CodeOffice] = TotalAmountPaid;
-    });
-
-    sumRows(transformedData)
-    sunColumns(transformedData)
-
-    console.log('transformedData is :', transformedData)
-
-    return Object.values(transformedData);
-  });
-
-  // Generate PrimeReact table columns
-  const generateColumns = useCallback((groupedData) => {
-
-    console.log('groupedData is :', groupedData)
-
-
-    return [
-      { field: "CodeTaxe", header: "Code Taxe", frozen: true },
-      { field: "TaxeDescription", header: "Description", bodyStyle: { backgroundColor: "#081028" } },
-      ...groupedData.map(office => (({ field: office, header: office }))),
-      { field: "total", header: "TOTAL", bodyStyle: { color: '#f5e58c', backgroundColor: "#081028", textAlign: "left" }, frozen: true, alignFrozen: "right" },
-      // ...[...uniqueOffices].reverse().map(office => ({ field: office, header: office }))
-    ];
-  });
-
-  // Generate dynamic header group
-  const generateHeaderGroup = useCallback((uniqueOffices) => {
-    const headerRows = [];
-    const subHeaderRows = [<Column header="" key="empty" />];
-    const freeGroup = [];
-
-    // Map CodeOffice to OfficeDescription
-    const officeCodeToName = Object.fromEntries(codeOfficeByName.map(t => [t.CodeOffice, t.OfficeName]));
-    const officeNames = uniqueOffices.map(code => officeCodeToName[code] || code);
-
-    subHeaderRows.push(
-      <Column header={''} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-    );
-
-    const officeMap = Object.fromEntries(codeOfficeByName.map(off => [off.OfficeName, off.CodeOffice]));
-
-    Object.entries(bureauGroups).forEach(([groupName, offices]) => {
-
-      const groupOffices = offices.filter(office => officeNames.includes(office));
-      // const groupOffices = orderedOffices.filter(office => offices.includes(officeCodeToName[office]));
-
-      if (groupOffices.length > 0) {
-
-        headerRows.push(
-          <Column key={groupName} header={groupName} colSpan={groupOffices.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-        );
-        groupOffices.forEach(office => {
-          subHeaderRows.push(
-            <Column key={officeMap[office]} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-          );
-        });
-      }
-    });
-
-    // Find offices not in predefined groups
-    officeNames.forEach(office => {
-      if (!Object.values(bureauGroups).some(group => group.includes(office))) {
-        freeGroup.push(office);
-      }
-    });
-
-    // Add "Free" group for unclassified offices
-    if (freeGroup.length > 0) {
-      headerRows.push(
-        <Column key="Free" header="SITE-?" colSpan={freeGroup.length} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-      );
-      freeGroup.forEach(office => {
-        subHeaderRows.push(
-          <Column key={office} header={office} headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        );
       });
     }
 
-    const keySubHeader = subHeaderRows.map((s) => s.key).slice(2)
-
-    const cols = generateColumns(keySubHeader)
-
-    console.log('cols is :', cols)
-
-
-    setColumns(cols)
-
-    // Ajouter la colonne "Total" si nécessaire
-    if (uniqueOffices.length > 0) {
-      headerRows.push(
-        <Column
-          header="TOTAUX"
-          colSpan={1}
-          alignHeader="left"
-          headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }}
-          key="TOTAL"
-          frozen
-          alignFrozen="right"
-        />
-      );
-      subHeaderRows.push(
-        <Column
-          header="Total"
-          headerStyle={{ color: '#f5e58c', fontWeight: 'bold' }}
-          key="Total"
-          frozen
-          alignFrozen="right"
-        />
-      );
+    // On cumule la valeur dans le champ Month_Mode
+    const fieldName = `${Month}_${MopDsc}`;
+    // Vérifie que le champ existe (au cas où un MopDsc inattendu arriverait)
+    if (fieldName in result[OfficeName]) {
+      result[OfficeName][fieldName] += TotalAmountPaid;
+      result[OfficeName].total += TotalAmountPaid;
     }
-
-    return (
-      <ColumnGroup>
-        <Row >
-          <Column header="Taxes et Surtaxes" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold' }} frozen />
-          <Column header="Description" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold', zIndex: 1 }} />
-          {headerRows}
-        </Row>
-        <Row >
-          {subHeaderRows}
-        </Row>
-      </ColumnGroup>
-    );
   });
 
-  useEffect(() => {
-
-    setMonth(month);
-
-    const selectedOffices = '*'; //  ['DIFTZ', 'DJAFR', 'DJAKH', 'DJBAP', 'DJCDF']
-
-    const filteredTransactions = filterTransactions(month, selectedOffices);
-
-    const uniqueOffices = Array.from(new Set(filteredTransactions.map(t => t.CodeOffice)));
-
-    const data = transformData(filteredTransactions, uniqueOffices);
-
-    const headerGrp = generateHeaderGroup(uniqueOffices);
-
-    setTableData(data);
-    setHeaderGroup(headerGrp);
-
-  }, [loading, month])
-
-  // Définition du groupe de colonnes pour l'en-tête
-  const heaerGroup = (
-    <ColumnGroup>
-      {/* Première ligne : Catégories principales */}
-      <Row>
-        <Column header="Taxes et Surtaxes" colSpan={1} headerStyle={{ color: '#96c5d3', fontWeight: 'bold' }} />
-        <Column header="SITE-PORT" colSpan={4} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-        <Column header="SITE-AEROPORT" colSpan={3} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-        <Column header="SITE-VILLE" colSpan={2} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-        <Column header="" colSpan={1} alignHeader="left" />
-        <Column header="TOTAL" colSpan={1} alignHeader="left" headerStyle={{ color: '#b6d16b', fontWeight: 'bold' }} />
-      </Row>
-
-      {/* Deuxième ligne : Détails des bureaux */}
-      <Row frozen>
-        <Column header="" />
-        {/* Bureaux sous SITE-PORT */}
-        <Column header="Bureau des Liquidations" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Régimes Suspensifs" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Bureau de la Révision" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Bureau d'Exonération" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        {/* Bureaux sous SITE-AEROPORT */}
-        <Column header="KATH-Particulier-Sogick" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Frêt" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Passager" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        {/* Bureaux sous SITE-VILLE */}
-        <Column header="Bureau de la Gare" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        <Column header="Bureau de la Poste" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        {/* Agence Spécial */}
-        <Column header="Agence Spécial" headerStyle={{ color: '#c09f62', fontWeight: 'bold' }} />
-        {/* TOTAL */}
-        <Column header="Total" headerStyle={{ color: '#f5e58c', fontWeight: 'bold' }} />
-      </Row>
-    </ColumnGroup>
-  );
-
-  // État pour les filtres
-  // const [filters, setFilters] = useState({
-  //   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  //   bureau: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  //   statut: { value: null, matchMode: FilterMatchMode.CONTAINS }
-  // });
-
-  // const formattedData = rawData.map(item => ({
-  //   ...item,
-  //   date: new Date(`${item.date}-01`), // Conversion en objet Date
-  // }));
-
-  // setProducts(formattedData);
-
-  // Fonction pour formater le mois en 'MMMM yyyy'
-  const formatMonth = (date) => {
-    return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' });
+  // -- Ligne finale TOTAUX --
+  const totalRow = {
+    OfficeName: 'TOTAUX',
+    total: 0,
   };
+  // Initialise chaque (mois, mode) à 0
+  months.forEach((m) => {
+    modes.forEach((mode) => {
+      totalRow[`${m}_${mode}`] = 0;
+    });
+  });
 
-  // Modèle pour les sous-en-têtes avec une classe CSS spécifique
-  const rowGroupHeaderTemplate = (data) => (
-    <tr className="custom-subheader">
-      <td colSpan="4">{data.date}</td>
-    </tr>
-  );
+  // On additionne toutes les lignes
+  Object.values(result).forEach((row) => {
+    months.forEach((m) => {
+      modes.forEach((mode) => {
+        totalRow[`${m}_${mode}`] += row[`${m}_${mode}`];
+      });
+    });
+    totalRow.total += row.total;
+  });
 
-  // Modèle pour les sous-en-têtes avec une classe CSS spécifique
-  // Function to calculate the total amount for a group
-  const calculateGroupTotal = (group) => {
-    return group.reduce((acc, item) => acc + item.montant, 0);
-  };
+  // On insère la ligne TOTAUX
+  result['TOTAUX'] = totalRow;
 
-  // Template for the group footer
-  // const rowGroupFooterTemplate = (data, options) => {
-
-  //   console.log('options is : ', options)
-
-  //   const groupTotal = calculateGroupTotal(options.rows);
-  //   return (
-  //     <tr className="custom-group-footer">
-  //       <td colSpan="2" style={{ textAlign: 'right', fontWeight: 'bold' }}>
-  //         Total for {formatMonth(data.date)}:
-  //       </td>
-  //       <td style={{ fontWeight: 'bold' }}>{groupTotal.toLocaleString()} Fdj</td>
-  //       <td></td>
-  //     </tr>
-  //   );
-  // };
-
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split('-');
-    return `${day ? day + '/' : ''}${month}/${year}`;
-  }
-
-  const currentDates = useMemo(() =>
-    dates.map(date => ({
-      value: date,
-      label: `${date}` // Tu peux adapter le format ici
-    })),
-    [dates]
-  );
- 
-  return (
-    <div>
-      <h2 className="text-xl text-center font-bold text-white mb-4 p-6">MODALITES DE RECOUVREMENTS - ANNEE : <span className='text-back-300'>{formatDate(month)}</span>  </h2>
-      <div className="flex flex-row -mt-16 top-10 ml-10 w-68 gap-8 ">
-        <CustomSelect
-          options={currentDates}
-          value={month}
-          label={''}
-          fowardChange={(selected) => handleDateChange(selected)}
-          placeHolder="Selectionner date..."
-          classNamePrefix="react-select"
-          selectedOptions={month}
-          setSelectedOptions={(s) => setMonth(s)}
-        />
-
-        <div style={{ marginBottom: "1px" }}>
-          <span className='text-sm text-card-text'>Taxe: </span>
-          <StyledInputText
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Chercher..."
-            width="150px"
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 bg-white dark:bg-card p-4 rounded-lg shadow border border-[#343b4f]">
-        <div className="card">
-          <DataTable
-            value={filteredData}
-            // rowGroupMode="subheader"
-            // groupRowsBy="date"
-            // sortMode="single"
-            // sortField="date"
-            // sortOrder={1}
-            // rowGroupHeaderTemplate={rowGroupHeaderTemplate}
-            // rowGroupFooterTemplate={rowGroupFooterTemplate}
-            headerColumnGroup={headerGroup}
-            scrollable
-            // showGridlines
-            scrollHeight="700px"
-            // style={{ width: '800px' }}
-            className="custom-datatable"
-            rowClassName={rowData => rowData.CodeTaxe == "TOTAUX" ? "summary-row" : ""}
-          >
-            {/* <Column field="CodeTaxe" header={headerWithSearch} frozen style={{ minWidth: "150px" }} /> */}
-            {/* <Column field="TaxeDescription" header="Description" style={{ minWidth: "200px" }} />
-            {Object.keys(filteredData[0] || {}).filter(key => key !== "CodeTaxe" && key !== "TaxeDescription").map(colKey => (
-                <Column key={colKey} field={colKey} header={colKey} />
-            ))} */}
-
-
-            {columns.map(col => (
-              <Column key={col.field}
-                field={col.field}
-                header={col.header}
-                bodyStyle={col.bodyStyle}
-                frozen={col.frozen || false}
-                alignFrozen={col.alignFrozen}
-              />
-            ))}
-
-          </DataTable>
-        </div>
-      </div>
-    </div>
-  )
+  // Retourne un tableau pour DataTable
+  return Object.values(result);
 }

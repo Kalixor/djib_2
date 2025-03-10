@@ -160,7 +160,7 @@ export default function TableauTab2() {
         <DataTable
           value={filteredData}
           scrollable
-          scrollHeight="700px"
+          scrollHeight="600px"
           className="custom-datatable"
           rowClassName={(rowData) => rowData.CodeTaxe === 'TOTAUX' ? 'summary-row' : ''}
         >
