@@ -7,6 +7,18 @@
 .p-datatable td,
 .p-datatable th {
   border: 1px solid #4a4a4a; /* Couleur de la bordure */
+
+  /* Change la couleur de fond au survol */
+.p-datatable .p-datatable-tbody > tr.p-selectable-row:hover {
+  background-color: #344c53; /* Couleur de fond sur hover */
+  opacity: .8;
+}
+
+/* Optionnel : changer aussi la couleur du texte */
+.p-datatable .p-datatable-tbody > tr.p-selectable-row:hover td {
+    color: #fff6c2;
+}
+
  
 .summary-row {
     font-weight: bold;

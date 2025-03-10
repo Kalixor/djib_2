@@ -4,6 +4,8 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { PreloadedDataContext } from '../context/preLoadContext';
+import '../tabs_styles.css';
+
 
 /**
  * On suppose que chaque objet `data` a les champs suivants:
@@ -122,6 +124,8 @@ const dynamicColumns = useMemo(() => {
           value={tableData}
           headerColumnGroup={headerColumnGroup}
           scrollable
+          rowHover          // Active le hover
+          selectionMode="single" // Rend les lignes "sélectionnables"
           scrollHeight="650px"
           className="custom-datatable"
           // Par ex., styliser la ligne TOT

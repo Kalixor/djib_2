@@ -4,6 +4,8 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { Paginator } from 'primereact/paginator';
+import '../tabs_styles.css';
+
 
 import { PreloadedDataContext } from '../context/preLoadContext';
 import {
@@ -159,6 +161,8 @@ export default function TableauTab4() {
             value={tableData}
             headerColumnGroup={headerGroup}
             scrollable
+            rowHover          // Active le hover
+            selectionMode="single" // Rend les lignes "sélectionnables"
             scrollHeight="600px"
             className="custom-datatable"
             rowClassName={(rowData) => rowData.Date === 'TOTAUX' ? 'summary-row' : ''}
@@ -286,7 +290,7 @@ function generateHeaderGroup(uniqueOffices, bureauGroups, codeOfficeByName) {
       rowSpan={2}
       frozen
       alignFrozen="right"
-      headerStyle={{ color: 'yellow', fontWeight: 'bold' }}
+      headerStyle={{ color: '#f5e58c', fontWeight: 'bold' }}
     />
   );
 
@@ -340,8 +344,8 @@ function generateColumns(uniqueOffices) {
     header: 'Total',
     frozen: true,
     alignFrozen: 'right',
-    headerStyle: { color: 'yellow', fontWeight: 'bold' },
-    bodyStyle: { color: 'yellow', fontWeight: 'bold' },
+    headerStyle: { color: '#f5e58c', fontWeight: 'bold' },
+    bodyStyle: { color: '#f5e58c', fontWeight: 'bold' },
   });
   return cols;
 }
