@@ -3,8 +3,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { Paginator } from 'primereact/paginator';
-
 import { PreloadedDataContext } from '../context/preLoadContext';
 import {
   ClipLoader,
@@ -70,7 +68,7 @@ export default function TableauTab4() {
   // Données de transaction 
   const data = preloadedData.recettes
 
-  // Table de liaison CodeTaxe -> TaxeDescription
+    // Table de liaison CodeTaxe -> TaxeDescription
 
   const codeOfficeByName = preloadedData.bureaux
 
@@ -147,11 +145,12 @@ export default function TableauTab4() {
   return (
     <div style={{ marginTop: '1rem' }}>
       <h2 className="text-xl text-center font-bold text-white mb-4 p-6">
-        RECETTES PAR JOUR PAR BUREAUX
+        Recettes par Jour et par Bureau
       </h2>
+
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-          <BeatLoader color="#36d7b7" size={25} />
+          <BeatLoader color="#36d7b7" size={15} />
         </div>
       ) : (
         <div className="card">
@@ -163,10 +162,10 @@ export default function TableauTab4() {
             className="custom-datatable"
             rowClassName={(rowData) => rowData.Date === 'TOTAUX' ? 'summary-row' : ''}
 
-          // Pagination client
-          // paginator
-          // rows={50}
-          // rowsPerPageOptions={[10, 25, 50, 100]}
+            // Pagination client
+            paginator
+            rows={50}
+            rowsPerPageOptions={[10, 25, 50, 100]}
           >
             {columns.map((col) => (
               <Column
